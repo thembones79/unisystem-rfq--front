@@ -1,0 +1,43 @@
+@mixin floatingradient {
+  background-image: linear-gradient(-45deg, #23d5ab, #23a6d5, #e73c7e, #ee7752);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 300%;
+  background-position: -100%;
+  margin: 0;
+  padding: 0;
+  //text-shadow: 3px 3px 2px rgba(255, 255, 255, 0.15);
+  animation: animatedText 5s infinite alternate-reverse;
+}
+
+@keyframes animatedText {
+  to {
+    background-position: 100%;
+  }
+}
+
+.floatingTitle {
+  @include floatingradient();
+  font-size: 12vw;
+  font-weight: 800;
+  margin-bottom: 30px;
+}
+
+.floatingTxt {
+  @include floatingradient();
+  font-size: 4vw;
+  margin-bottom: 20px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.fat {
+  font-weight: 900;
+  font-size: 3vw;
+}

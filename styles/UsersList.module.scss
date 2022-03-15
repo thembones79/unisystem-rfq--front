@@ -1,0 +1,29 @@
+.usersRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 50px;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgb(241, 241, 241);
+
+  &:hover {
+    background-color: rgb(249, 249, 249);
+  }
+
+  &__item {
+    width: 400px;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid black;
+    padding: 5px;
+    border-bottom: 1px solid rgb(241, 241, 241);
+  }
+}
+
+.usersList {
+  margin-left: 20px;
+}
