@@ -1,10 +1,8 @@
-import type { AppContext } from "next/app";
 import React, { useState, useEffect } from "react";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { IUser } from "../../users";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { ssrRequest } from "../../../api/ssr-request";
 import { IDistributor } from "../";
 
 interface EditDistributorProps {
@@ -12,30 +10,46 @@ interface EditDistributorProps {
 }
 
 const EditDistributor = ({ currentUser }: EditDistributorProps) => {
-  useEffect(() => {
-    if (!currentUser) {
-      Router.push("/");
-    }
+  const router = useRouter();
+  const { distributorId } = router.query;
+  const [distributor, setDistributor] = useState<IDistributor>();
+
+  const [newName, setName] = useState("");
+
+  const { doRequest, errorsJSX, inputStyle } = useRequest({
+    url: `/distributors/${distributorId}`,
+    method: "put",
+    body: {
+      name: newName,
+    },
+    onSuccess: () => router.push(`/distributors`),
+  });
+  const initRequest = useRequest({
+    url: `/distributors/${distributorId}`,
+    method: "get",
+    onSuccess: (data: IDistributor) => setData(data),
   });
 
-  const [distributor, setDistributor] = useState<IDistributor>();
+  const setData = (data: IDistributor) => {
+    setDistributor(data);
+    setName(data.name);
+  };
+
+  const getDistributor = initRequest.doRequest;
+
+  useEffect(() => {
+    getDistributor();
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) {
+      router.push("/");
+    }
+  });
 
   if (!distributor) {
     return <h1>Distributor not found</h1>;
   } else {
-    const { name, id } = distributor;
-
-    const [newName, setName] = useState(name);
-
-    const { doRequest, errorsJSX, inputStyle } = useRequest({
-      url: `/distributors/${id}`,
-      method: "put",
-      body: {
-        name: newName,
-      },
-      onSuccess: () => Router.push(`/distributors`),
-    });
-
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       await doRequest();
@@ -45,7 +59,7 @@ const EditDistributor = ({ currentUser }: EditDistributorProps) => {
       event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       event.preventDefault();
-      Router.push(`/distributors`);
+      router.push(`/distributors`);
     };
 
     return currentUser ? (
@@ -89,14 +103,6 @@ const EditDistributor = ({ currentUser }: EditDistributorProps) => {
       <div></div>
     );
   }
-};
-
-EditDistributor.getInitialProps = async (ctx: AppContext["ctx"]) => {
-  const { distributorId } = ctx.query;
-  console.log({ ctx });
-  const url = `/distributors/${distributorId}`;
-  const { data } = await ssrRequest(url, "dupa");
-  return { distributor: data };
 };
 
 export default EditDistributor;

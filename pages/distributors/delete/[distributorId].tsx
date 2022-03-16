@@ -1,24 +1,34 @@
-import type { AppContext } from "next/app";
-import React, { useEffect } from "react";
-import Router from "next/router";
+import React, { useEffect, useState } from "react";
+import Router, { useRouter } from "next/router";
 import { IUser } from "../../users";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { ssrRequest } from "../../../api/ssr-request";
 import { IDistributor } from "../";
 
 interface DeleteDistributorProps {
-  distributor: IDistributor;
   currentUser: IUser;
 }
 
-const DeleteDistributor = ({
-  distributor,
-  currentUser,
-}: DeleteDistributorProps) => {
+const DeleteDistributor = ({ currentUser }: DeleteDistributorProps) => {
+  const router = useRouter();
+  const { distributorId } = router.query;
+  const [distributor, setDistributor] = useState<IDistributor>();
+
+  const initRequest = useRequest({
+    url: `/distributors/${distributorId}`,
+    method: "get",
+    onSuccess: (data: IDistributor) => setDistributor(data),
+  });
+
+  const getDistributor = initRequest.doRequest;
+
+  useEffect(() => {
+    getDistributor();
+  }, []);
+
   useEffect(() => {
     if (!currentUser) {
-      Router.push("/");
+      router.push("/");
     }
   });
 
@@ -34,7 +44,7 @@ const DeleteDistributor = ({
     const { doRequest, errorsJSX } = useRequest({
       url: `/distributors/${id}`,
       method: "delete",
-      onSuccess: () => Router.push(`/distributors`),
+      onSuccess: () => router.push(`/distributors`),
     });
 
     const deleteDistributor = async () => {
@@ -67,7 +77,7 @@ const DeleteDistributor = ({
               <span className="m-3"></span>
               <NiceButton
                 color="cancel"
-                onClick={() => Router.push(`/distributors`)}
+                onClick={() => router.push(`/distributors`)}
               >
                 No. I was wrong. Take me back, please
               </NiceButton>
@@ -77,13 +87,6 @@ const DeleteDistributor = ({
       </div>
     );
   }
-};
-
-DeleteDistributor.getInitialProps = async (ctx: AppContext["ctx"]) => {
-  const { distributorId } = ctx.query;
-  const url = `/distributors/${distributorId}`;
-  const { data } = await ssrRequest(ctx, url);
-  return { distributor: data };
 };
 
 export default DeleteDistributor;

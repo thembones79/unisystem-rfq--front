@@ -1,20 +1,32 @@
-import type { AppContext } from "next/app";
-import React, { useEffect } from "react";
-import Router from "next/router";
+import React, { useEffect, useState } from "react";
+import Router, { useRouter } from "next/router";
 import { IUser } from "..";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { ssrRequest } from "../../../api/ssr-request";
 
 interface DeleteUserProps {
-  user: IUser;
   currentUser: IUser;
 }
 
-const DeleteUser = ({ user, currentUser }: DeleteUserProps) => {
+const DeleteUser = ({ currentUser }: DeleteUserProps) => {
+  const [user, setUser] = useState<IUser>();
+  const router = useRouter();
+  const { userId } = router.query;
+  const initRequest = useRequest({
+    url: `/users/${userId}`,
+    method: "get",
+    onSuccess: (data: IUser) => setUser(data),
+  });
+
+  const getUser = initRequest.doRequest;
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   useEffect(() => {
     if (!currentUser) {
-      Router.push("/");
+      router.push("/");
     }
   });
 
@@ -33,7 +45,7 @@ const DeleteUser = ({ user, currentUser }: DeleteUserProps) => {
       body: {
         id,
       },
-      onSuccess: () => Router.push(`/users`),
+      onSuccess: () => router.push(`/users`),
     });
 
     const deleteUser = async () => {
@@ -63,7 +75,7 @@ const DeleteUser = ({ user, currentUser }: DeleteUserProps) => {
                 <span className="m-1"></span> Yes, I'm 100% sure. Fatality!
               </NiceButton>
               <span className="m-3"></span>
-              <NiceButton color="cancel" onClick={() => Router.push(`/users`)}>
+              <NiceButton color="cancel" onClick={() => router.push(`/users`)}>
                 No. I was wrong. Let's be friends
               </NiceButton>
             </div>
@@ -72,13 +84,6 @@ const DeleteUser = ({ user, currentUser }: DeleteUserProps) => {
       </div>
     );
   }
-};
-
-DeleteUser.getInitialProps = async (ctx: AppContext["ctx"]) => {
-  const { userId } = ctx.query;
-  const url = `/users/${userId}`;
-  const { data } = await ssrRequest(ctx, url);
-  return { user: data };
 };
 
 export default DeleteUser;

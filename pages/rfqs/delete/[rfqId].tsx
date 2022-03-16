@@ -1,28 +1,33 @@
-import type { AppContext } from "next/app";
-import React, { useEffect } from "react";
-import Router from "next/router";
+import React, { useEffect, useState } from "react";
+import Router, { useRouter } from "next/router";
 import { IUser } from "../../users";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { ssrRequest } from "../../../api/ssr-request";
 import { IRfq } from "../";
 
-interface IRfqWithIds extends IRfq {
-  customer_id: number;
-  distributor_id: number;
-  pm_id: number;
-  kam_id: number;
-}
-
 interface DeleteRfqProps {
-  rfq: IRfqWithIds;
   currentUser: IUser;
 }
 
-const DeleteRfq = ({ rfq, currentUser }: DeleteRfqProps) => {
+const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
+  const [rfq, setRfq] = useState<IRfq>();
+  const router = useRouter();
+  const { rfqId } = router.query;
+  const initRequest = useRequest({
+    url: `/rfqs/${rfqId}`,
+    method: "get",
+    onSuccess: (data: IRfq) => setRfq(data),
+  });
+
+  const getRfq = initRequest.doRequest;
+
+  useEffect(() => {
+    getRfq();
+  }, []);
+
   useEffect(() => {
     if (!currentUser) {
-      Router.push("/");
+      router.push("/");
     }
   });
 
@@ -38,7 +43,7 @@ const DeleteRfq = ({ rfq, currentUser }: DeleteRfqProps) => {
     const { doRequest, errorsJSX } = useRequest({
       url: `/rfqs/${id}`,
       method: "delete",
-      onSuccess: () => Router.push(`/rfqs`),
+      onSuccess: () => router.push(`/rfqs`),
     });
 
     const deleteRfq = async () => {
@@ -71,7 +76,7 @@ const DeleteRfq = ({ rfq, currentUser }: DeleteRfqProps) => {
               <span className="m-3"></span>
               <NiceButton
                 color="cancel"
-                onClick={() => Router.push(`/rfqs/${id}`)}
+                onClick={() => router.push(`/rfqs/${id}`)}
               >
                 No. I was wrong. Take me back, please
               </NiceButton>
@@ -81,13 +86,6 @@ const DeleteRfq = ({ rfq, currentUser }: DeleteRfqProps) => {
       </div>
     );
   }
-};
-
-DeleteRfq.getInitialProps = async (ctx: AppContext["ctx"]) => {
-  const { rfqId } = ctx.query;
-  const url = `/rfqs/${rfqId}`;
-  const { data } = await ssrRequest(ctx, url);
-  return { rfq: data };
 };
 
 export default DeleteRfq;

@@ -1,20 +1,33 @@
-import type { AppContext } from "next/app";
 import React, { useState, useEffect } from "react";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { ssrRequest } from "../../../api/ssr-request";
+
 import { IUser } from "../";
 
 interface EditUserProps {
-  user: IUser;
   currentUser: IUser;
 }
 
-const EditUser = ({ user, currentUser }: EditUserProps) => {
+const EditUser = ({ currentUser }: EditUserProps) => {
+  const [user, setUser] = useState<IUser>();
+  const router = useRouter();
+  const { userId } = router.query;
+  const initRequest = useRequest({
+    url: `/users/${userId}`,
+    method: "get",
+    onSuccess: (data: IUser) => setUser(data),
+  });
+
+  const getUser = initRequest.doRequest;
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   useEffect(() => {
     if (!currentUser) {
-      Router.push("/");
+      router.push("/");
     }
   });
 
@@ -33,7 +46,7 @@ const EditUser = ({ user, currentUser }: EditUserProps) => {
         password: newPassword,
         passwordConfirm,
       },
-      onSuccess: () => Router.push(`/users`),
+      onSuccess: () => router.push(`/users`),
     });
 
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,7 +58,7 @@ const EditUser = ({ user, currentUser }: EditUserProps) => {
       event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       event.preventDefault();
-      Router.push("/users");
+      router.push("/users");
     };
 
     return currentUser ? (
@@ -100,13 +113,6 @@ const EditUser = ({ user, currentUser }: EditUserProps) => {
       <div></div>
     );
   }
-};
-
-EditUser.getInitialProps = async (ctx: AppContext["ctx"]) => {
-  const { userId } = ctx.query;
-  const url = `/users/${userId}`;
-  const { data } = await ssrRequest(ctx, url);
-  return { user: data };
 };
 
 export default EditUser;

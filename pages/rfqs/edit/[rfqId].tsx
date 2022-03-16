@@ -1,11 +1,9 @@
-import type { AppContext } from "next/app";
 import React, { useState, useEffect } from "react";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { UserPicker } from "../../../components/user-picker";
 import { IUser } from "../../users";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { ssrRequest } from "../../../api/ssr-request";
 import { IRfq } from "../";
 
 interface IRfqWithIds extends IRfq {
@@ -21,14 +19,28 @@ interface IRfqWithIds extends IRfq {
 }
 
 interface EditRfqProps {
-  rfq: IRfqWithIds;
   currentUser: IUser;
 }
 
-const EditRfq = ({ rfq, currentUser }: EditRfqProps) => {
+const EditRfq = ({ currentUser }: EditRfqProps) => {
+  const [rfq, setRfq] = useState<IRfqWithIds>();
+  const router = useRouter();
+  const { rfqId } = router.query;
+  const initRequest = useRequest({
+    url: `/rfqs/${rfqId}`,
+    method: "get",
+    onSuccess: (data: IRfqWithIds) => setRfq(data),
+  });
+
+  const getRfq = initRequest.doRequest;
+
+  useEffect(() => {
+    getRfq();
+  }, []);
+
   useEffect(() => {
     if (!currentUser) {
-      Router.push("/");
+      router.push("/");
     }
   });
 
@@ -82,7 +94,7 @@ const EditRfq = ({ rfq, currentUser }: EditRfqProps) => {
         mp_expected: newMpExpected,
         eau_max: newEauMax,
       },
-      onSuccess: () => Router.push(`/rfqs/${id}`),
+      onSuccess: () => router.push(`/rfqs/${id}`),
     });
 
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +106,7 @@ const EditRfq = ({ rfq, currentUser }: EditRfqProps) => {
       event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       event.preventDefault();
-      Router.push(`/rfqs/${id}`);
+      router.push(`/rfqs/${id}`);
     };
 
     return (
@@ -232,13 +244,6 @@ const EditRfq = ({ rfq, currentUser }: EditRfqProps) => {
       </div>
     );
   }
-};
-
-EditRfq.getInitialProps = async (ctx: AppContext["ctx"]) => {
-  const { rfqId } = ctx.query;
-  const url = `/rfqs/${rfqId}`;
-  const { data } = await ssrRequest(ctx, url);
-  return { rfq: data };
 };
 
 export default EditRfq;

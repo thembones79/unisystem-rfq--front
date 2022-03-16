@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRequest } from "../hooks/useRequest";
 import type { AppProps, AppContext } from "next/app";
-import { ssrRequest } from "../api/ssr-request";
 import { Header } from "../components/header";
 import { IUser } from "./users";
 import "../styles/bulma.scss";

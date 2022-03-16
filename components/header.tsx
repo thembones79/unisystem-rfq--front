@@ -41,7 +41,7 @@ export const Header = ({ currentUser }: HeaderProps) => {
                 <span className="icon">
                   <i className="fas fa-pizza-slice"></i>
                 </span>
-                <span>Riverdi RFQ</span>
+                <span>Unisystem RFQ</span>
               </span>
             </Link>
           </div>

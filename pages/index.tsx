@@ -36,7 +36,7 @@ const Home = ({ currentUser }: HomeProps) => {
     <div>
       <div className="full-page">
         <div className={styles.wrapper}>
-          <p className={styles.floatingTitle}>Riverdi RFQ</p>
+          <p className={styles.floatingTitle}>Unisystem RFQ</p>
 
           <p className={styles.floatingTxt}>
             {currentUser
