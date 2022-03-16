@@ -1,14 +1,37 @@
-import { IUser } from "./users";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { IUser } from "./users";
+
 import styles from "../styles/Home.module.scss";
 
 interface HomeProps {
-  currentUser: IUser;
-  guiVersion: string;
-  apiVersion: string;
+  currentUser: IUser | null;
 }
 
-const Home = ({ currentUser, guiVersion, apiVersion }: HomeProps) => {
+const Home = ({ currentUser }: HomeProps) => {
+  const [guiVersion, setGuiVersion] = useState("");
+  const [apiVersion, setApiVersion] = useState("");
+
+  useEffect(() => {
+    const getVersioning = async () => {
+      const frontend = await axios.get(
+        `https://raw.githubusercontent.com/thembones79/riverdi-rfq--frontend/main/package.json`
+      );
+      const backend = await axios.get(
+        `https://raw.githubusercontent.com/thembones79/riverdi-rfq--backend/master/package.json`
+      );
+
+      const guiVersion = frontend.data.version;
+      const apiVersion = backend.data.version;
+      setApiVersion(apiVersion);
+      setGuiVersion(guiVersion);
+
+      return { guiVersion, apiVersion };
+    };
+
+    getVersioning();
+  });
+  console.log({ CU: currentUser });
   return (
     <div>
       <div className="full-page">
@@ -52,20 +75,6 @@ const Home = ({ currentUser, guiVersion, apiVersion }: HomeProps) => {
       </div>
     </div>
   );
-};
-
-Home.getInitialProps = async ({ currentUser }: { currentUser: IUser }) => {
-  const frontend = await axios.get(
-    `https://raw.githubusercontent.com/thembones79/riverdi-rfq--frontend/main/package.json`
-  );
-  const backend = await axios.get(
-    `https://raw.githubusercontent.com/thembones79/riverdi-rfq--backend/master/package.json`
-  );
-
-  const guiVersion = frontend.data.version;
-  const apiVersion = backend.data.version;
-
-  return { guiVersion, apiVersion, currentUser };
 };
 
 export default Home;

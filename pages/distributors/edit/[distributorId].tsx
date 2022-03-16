@@ -8,19 +8,17 @@ import { ssrRequest } from "../../../api/ssr-request";
 import { IDistributor } from "../";
 
 interface EditDistributorProps {
-  distributor: IDistributor;
   currentUser: IUser;
 }
 
-const EditDistributor = ({
-  distributor,
-  currentUser,
-}: EditDistributorProps) => {
+const EditDistributor = ({ currentUser }: EditDistributorProps) => {
   useEffect(() => {
     if (!currentUser) {
       Router.push("/");
     }
   });
+
+  const [distributor, setDistributor] = useState<IDistributor>();
 
   if (!distributor) {
     return <h1>Distributor not found</h1>;
@@ -95,8 +93,9 @@ const EditDistributor = ({
 
 EditDistributor.getInitialProps = async (ctx: AppContext["ctx"]) => {
   const { distributorId } = ctx.query;
+  console.log({ ctx });
   const url = `/distributors/${distributorId}`;
-  const { data } = await ssrRequest(ctx, url);
+  const { data } = await ssrRequest(url, "dupa");
   return { distributor: data };
 };
 

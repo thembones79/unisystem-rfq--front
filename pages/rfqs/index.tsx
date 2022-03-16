@@ -33,6 +33,9 @@ const columns: IColumn<IRfq>[] = [
 ];
 
 const RfqsTable = ({ currentUser }: RfqsTableProps) => {
+  const [rows, setRows] = useState<IRfq[]>([]);
+  const [showChild, setShowChild] = useState(false);
+
   if (!currentUser) {
     useEffect(() => {
       Router.push("/");
@@ -40,7 +43,6 @@ const RfqsTable = ({ currentUser }: RfqsTableProps) => {
     return <div></div>;
   }
 
-  const [rows, setRows] = useState<IRfq[]>([]);
   const { doRequest, errorsJSX } = useRequest({
     url: "/rfqs",
     method: "get",
@@ -48,10 +50,14 @@ const RfqsTable = ({ currentUser }: RfqsTableProps) => {
   });
 
   useEffect(() => {
+    setShowChild(true);
+  }, []);
+  useEffect(() => {
     doRequest();
   }, []);
 
   return (
+    showChild &&
     rows.length > 0 && (
       <div className="table-container">
         <SfTable columns={columns} rows={rows} />

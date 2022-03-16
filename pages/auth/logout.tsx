@@ -1,16 +1,15 @@
 import React, { useEffect } from "react";
-import Router from "next/router";
-import { useRequest } from "../../hooks/useRequest";
 
 const Logout = () => {
-  const { doRequest } = useRequest({
-    url: "/users/logout",
-    method: "post",
-    body: {},
-    onSuccess: () => Router.push("/"),
-  });
+  const removeJwt = () => {
+    localStorage.removeItem("token");
+    window.location.replace(
+      `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
+    );
+  };
+
   useEffect(() => {
-    doRequest();
+    removeJwt();
   }, []);
 
   return <div>Loging you out...</div>;

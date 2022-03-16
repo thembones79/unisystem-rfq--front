@@ -22,6 +22,8 @@ const DistributorsTable: React.FC<DistributorsTableProps> = ({
     }
   });
 
+  console.log({ dist: currentUser });
+
   const [distributorsTable, setDistributorsTable] = useState<IDistributor[]>(
     []
   );

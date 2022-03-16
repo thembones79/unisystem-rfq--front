@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import Router from "next/router";
 import { NiceButton } from "../../components/nice-button";
 import { useRequest } from "../../hooks/useRequest";
+
+export interface IToken {
+  token: string;
+}
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,8 +16,17 @@ const Login = () => {
       email,
       password,
     },
-    onSuccess: () => Router.push("/"),
+    onSuccess: ({ token }: IToken) => onSuccess(token),
   });
+
+  const onSuccess = (token: string) => {
+    if (token) {
+      localStorage.setItem("token", token);
+      window.location.replace(
+        `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
+      );
+    }
+  };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

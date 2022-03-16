@@ -4,7 +4,7 @@ import { IUser } from "../pages/users";
 import styles from "../styles/Header.module.scss";
 
 interface HeaderProps {
-  currentUser: IUser;
+  currentUser: IUser | null;
 }
 
 export const Header = ({ currentUser }: HeaderProps) => {

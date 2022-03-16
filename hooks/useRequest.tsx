@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { ROOT_URL } from "../config";
+import { ROOT_URL, headers } from "../config";
 
 export const useRequest = ({
   url,
@@ -34,15 +34,17 @@ export const useRequest = ({
   };
 
   const doRequest = async (props = {}) => {
+    console.log(headers);
     try {
       const response = await axios[method](
         ROOT_URL + url,
         {
           ...body,
           ...props,
-          withCredentials: true,
+          headers,
         },
-        { withCredentials: true }
+
+        { headers }
       );
       setErrors([]);
 
@@ -50,7 +52,7 @@ export const useRequest = ({
         onSuccess(response.data);
       }
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       setErrors(error.response.data.errors);
     }
   };
