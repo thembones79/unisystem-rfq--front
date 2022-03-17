@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Router from "next/router";
+import { GetStaticPaths } from "next";
 import { useRequest } from "../../hooks/useRequest";
 import { UserPicker } from "../../components/user-picker";
 import { NiceButton } from "../../components/nice-button";
@@ -12,16 +13,6 @@ interface NewRfqProps {
 }
 
 const NewRfq = ({ currentUser }: NewRfqProps) => {
-  useEffect(() => {
-    if (!currentUser) {
-      Router.push("/");
-    }
-  });
-
-  if (!currentUser) {
-    return <div></div>;
-  }
-
   const [eau, setEau] = useState(0);
   const [customerId, setCustomerId] = useState(0);
   const [distributorId, setDistributorId] = useState(0);
@@ -69,6 +60,9 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
     Router.push("/rfqs");
   };
 
+  if (!currentUser) {
+    return <div></div>;
+  }
   const renderContent = () => (
     <form onSubmit={onSubmit}>
       <h1 className="title m-3 mb-5">🎯 New RFQ</h1>
@@ -209,6 +203,19 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
       </div>
     </div>
   );
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default NewRfq;

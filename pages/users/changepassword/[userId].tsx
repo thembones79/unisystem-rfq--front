@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Router, { useRouter } from "next/router";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-
+import { Loader } from "../../../components/loader";
+import { GetStaticPaths } from "next";
 import { IUser } from "../";
 
 interface EditUserProps {
@@ -25,41 +26,33 @@ const EditUser = ({ currentUser }: EditUserProps) => {
     getUser();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    }
+  const [newPassword, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+
+  const { doRequest, errorsJSX, inputStyle } = useRequest({
+    url: `/users/${userId}/changepassword`,
+    method: "put",
+    body: {
+      password: newPassword,
+      passwordConfirm,
+    },
+    onSuccess: () => router.push(`/users`),
   });
 
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await doRequest();
+  };
+
+  const onCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    router.push("/users");
+  };
+
   if (!user) {
-    return <h1>User not found</h1>;
+    return <Loader />;
   } else {
-    const { username, id } = user;
-
-    const [newPassword, setPassword] = useState("");
-    const [passwordConfirm, setPasswordConfirm] = useState("");
-
-    const { doRequest, errorsJSX, inputStyle } = useRequest({
-      url: `/users/${id}/changepassword`,
-      method: "put",
-      body: {
-        password: newPassword,
-        passwordConfirm,
-      },
-      onSuccess: () => router.push(`/users`),
-    });
-
-    const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      await doRequest();
-    };
-
-    const onCancel = (
-      event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
-      event.preventDefault();
-      router.push("/users");
-    };
+    const { username } = user;
 
     return currentUser ? (
       <div className="full-page">
@@ -113,6 +106,19 @@ const EditUser = ({ currentUser }: EditUserProps) => {
       <div></div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default EditUser;

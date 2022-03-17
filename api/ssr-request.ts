@@ -27,7 +27,6 @@ export const ssrRequest = async (
 
     return { data };
   } catch (error) {
-    console.warn(error);
     return { data: null };
   }
 };

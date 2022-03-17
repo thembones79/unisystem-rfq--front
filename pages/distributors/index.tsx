@@ -3,6 +3,7 @@ import Router from "next/router";
 import { IUser } from "../users";
 import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
+import { Loader } from "../../components/loader";
 
 export interface IDistributor {
   id: number;
@@ -21,8 +22,6 @@ const DistributorsTable: React.FC<DistributorsTableProps> = ({
       Router.push("/");
     }
   });
-
-  console.log({ dist: currentUser });
 
   const [distributorsTable, setDistributorsTable] = useState<IDistributor[]>(
     []
@@ -97,7 +96,7 @@ const DistributorsTable: React.FC<DistributorsTableProps> = ({
       {errorsJSX()}
     </div>
   ) : (
-    <div></div>
+    <Loader />
   );
 };
 

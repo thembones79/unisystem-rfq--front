@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Router, { useRouter } from "next/router";
+import { GetStaticPaths } from "next";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
+import { Loader } from "../../../components/loader";
 
 import { IUser } from "../";
 
@@ -10,13 +12,17 @@ interface EditUserProps {
 }
 
 const EditUser = ({ currentUser }: EditUserProps) => {
-  const [user, setUser] = useState<IUser>();
+  const [newEmail, setEmail] = useState("");
+  const [newUsername, setUsername] = useState("");
+  const [newShortname, setShortname] = useState("");
+  const [newRoleId, setRoleId] = useState(0);
   const router = useRouter();
   const { userId } = router.query;
+
   const initRequest = useRequest({
     url: `/users/${userId}`,
     method: "get",
-    onSuccess: (data: IUser) => setUser(data),
+    onSuccess: (data: IUser) => onUser(data),
   });
 
   const getUser = initRequest.doRequest;
@@ -25,46 +31,39 @@ const EditUser = ({ currentUser }: EditUserProps) => {
     getUser();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    }
+  const { doRequest, errorsJSX, inputStyle } = useRequest({
+    url: `/users/${userId}`,
+    method: "put",
+    body: {
+      email: newEmail,
+      username: newUsername,
+      shortname: newShortname,
+      role_id: newRoleId,
+    },
+    onSuccess: () => router.push(`/users`),
   });
 
-  if (!user) {
-    return <h1>User not found</h1>;
+  const onUser = (data: IUser) => {
+    const { shortname, email, role_id, username } = data;
+    setEmail(email);
+    setUsername(username);
+    setRoleId(role_id);
+    setShortname(shortname);
+  };
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await doRequest();
+  };
+
+  const onCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    router.push("/users");
+  };
+
+  if (!newUsername) {
+    return <Loader />;
   } else {
-    const { shortname, email, role_id, username, id } = user;
-
-    const [newEmail, setEmail] = useState(email);
-    const [newUsername, setUsername] = useState(username);
-    const [newShortname, setShortname] = useState(shortname);
-    const [newRoleId, setRoleId] = useState(role_id);
-
-    const { doRequest, errorsJSX, inputStyle } = useRequest({
-      url: `/users/${id}`,
-      method: "put",
-      body: {
-        email: newEmail,
-        username: newUsername,
-        shortname: newShortname,
-        role_id: newRoleId,
-      },
-      onSuccess: () => router.push(`/users`),
-    });
-
-    const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      await doRequest();
-    };
-
-    const onCancel = (
-      event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
-      event.preventDefault();
-      router.push("/users");
-    };
-
     return currentUser ? (
       <div className="full-page">
         <div className="card max-w-800 m-3 big-shadow">
@@ -147,6 +146,19 @@ const EditUser = ({ currentUser }: EditUserProps) => {
       <div></div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default EditUser;

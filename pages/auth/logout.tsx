@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import styles from "../../styles/Home.module.scss";
 
 const Logout = () => {
   const removeJwt = () => {
@@ -12,7 +13,15 @@ const Logout = () => {
     removeJwt();
   }, []);
 
-  return <div>Loging you out...</div>;
+  return (
+    <div className="full-page">
+      <div className={styles.wrapper}>
+        <p className={styles.floatingTxt}>
+          <span className={styles.fat}>⎋ logging you out...</span>
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Logout;

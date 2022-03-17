@@ -32,38 +32,24 @@ const columns: IColumn<IRfq>[] = [
   { name: "updated", label: "Updated" },
 ];
 
-const RfqsTable = ({ currentUser }: RfqsTableProps) => {
+const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   const [rows, setRows] = useState<IRfq[]>([]);
-  const [showChild, setShowChild] = useState(false);
-
-  if (!currentUser) {
-    useEffect(() => {
-      Router.push("/");
-    });
-    return <div></div>;
-  }
-
   const { doRequest, errorsJSX } = useRequest({
     url: "/rfqs",
     method: "get",
     onSuccess: (rfqs: IRfq[]) => setRows(rfqs),
   });
-
-  useEffect(() => {
-    setShowChild(true);
-  }, []);
   useEffect(() => {
     doRequest();
   }, []);
 
-  return (
-    showChild &&
-    rows.length > 0 && (
-      <div className="table-container">
-        <SfTable columns={columns} rows={rows} />
-        {errorsJSX()}
-      </div>
-    )
+  return rows.length > 0 ? (
+    <div className="table-container">
+      <SfTable columns={columns} rows={rows} />
+      {errorsJSX()}
+    </div>
+  ) : (
+    <div></div>
   );
 };
 

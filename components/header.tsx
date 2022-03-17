@@ -21,8 +21,8 @@ export const Header = ({ currentUser }: HeaderProps) => {
     currentUser && { label: "💔 Log Out", href: "/auth/logout" },
   ]
     .filter((truthyLink) => truthyLink)
-    //@ts-ignore
-    .map(({ label, href }) => {
+
+    .map(({ label, href }: any) => {
       return (
         <li key={href} className={router.pathname === href ? "is-active" : ""}>
           <Link href={href}>{label}</Link>
@@ -38,9 +38,10 @@ export const Header = ({ currentUser }: HeaderProps) => {
             <Link href="/">
               <span>
                 <span className="mx-1"></span>
-                <span className="icon">
+                <span className={`icon ${styles.spinning}`}>
                   <i className="fas fa-pizza-slice"></i>
                 </span>
+                <span className="mx-1"></span>
                 <span>Unisystem RFQ</span>
               </span>
             </Link>

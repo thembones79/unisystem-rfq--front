@@ -31,7 +31,7 @@ const Home = ({ currentUser }: HomeProps) => {
 
     getVersioning();
   });
-  console.log({ CU: currentUser });
+
   return (
     <div>
       <div className="full-page">

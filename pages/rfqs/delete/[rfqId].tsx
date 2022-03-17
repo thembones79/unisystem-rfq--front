@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Router, { useRouter } from "next/router";
+import { GetStaticPaths } from "next";
 import { IUser } from "../../users";
+import { Loader } from "../../../components/loader";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
 import { IRfq } from "../";
@@ -19,36 +21,30 @@ const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
     onSuccess: (data: IRfq) => setRfq(data),
   });
 
+  const { doRequest, errorsJSX } = useRequest({
+    url: `/rfqs/${rfqId}`,
+    method: "delete",
+    onSuccess: () => router.push(`/rfqs`),
+  });
+
+  const deleteRfq = async () => {
+    await doRequest();
+  };
+
   const getRfq = initRequest.doRequest;
 
   useEffect(() => {
     getRfq();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    }
-  });
-
   if (!currentUser) {
     return <div></div>;
   }
 
   if (!rfq) {
-    return <h1>RFQ not found</h1>;
+    return <Loader />;
   } else {
     const { rfq_code, id } = rfq;
-
-    const { doRequest, errorsJSX } = useRequest({
-      url: `/rfqs/${id}`,
-      method: "delete",
-      onSuccess: () => router.push(`/rfqs`),
-    });
-
-    const deleteRfq = async () => {
-      await doRequest();
-    };
 
     return (
       <div className="full-page">
@@ -86,6 +82,19 @@ const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
       </div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default DeleteRfq;

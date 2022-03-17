@@ -2,6 +2,11 @@ import axios from "axios";
 import { useState } from "react";
 import { ROOT_URL, headers } from "../config";
 
+export interface IError {
+  message: string;
+  field?: string;
+}
+
 export const useRequest = ({
   url,
   method,
@@ -13,9 +18,7 @@ export const useRequest = ({
   body?: Object;
   onSuccess: Function;
 }) => {
-  const [errors, setErrors] = useState<{ message: string; field?: string }[]>(
-    []
-  );
+  const [errors, setErrors] = useState<IError[]>([]);
 
   const errorsJSX = () => (
     <div>
@@ -34,7 +37,6 @@ export const useRequest = ({
   };
 
   const doRequest = async (props = {}) => {
-    console.log(headers);
     try {
       const response = await axios[method](
         ROOT_URL + url,

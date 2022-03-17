@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { GetStaticPaths } from "next";
 import Router, { useRouter } from "next/router";
 import { UserPicker } from "../../../components/user-picker";
 import { IUser } from "../../users";
+import { Loader } from "../../../components/loader";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
 import { IRfq } from "../";
@@ -26,11 +28,67 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
   const [rfq, setRfq] = useState<IRfqWithIds>();
   const router = useRouter();
   const { rfqId } = router.query;
+
+  const [newExtraNote, setExtraNote] = useState("");
+  const [newEau, setEau] = useState(0);
+  const [newCustomerId, setCustomerId] = useState(0);
+  const [newDistributorId, setDistributorId] = useState(0);
+  const [newPmId, setPmId] = useState(0);
+  const [newKamId, setKamId] = useState(0);
+  const [newFinalSolutions, setFinalSolutions] = useState("");
+  const [newConclusions, setConclusions] = useState("");
+  const [newSamplesExpected, setSamplesExpected] = useState("");
+  const [newMpExpected, setMpExpected] = useState("");
+  const [newEauMax, setEauMax] = useState(0);
+  const { doRequest, errorsJSX, inputStyle } = useRequest({
+    url: `/rfqs/${rfqId}`,
+    method: "put",
+    body: {
+      extra_note: newExtraNote,
+      eau: newEau,
+      customer_id: newCustomerId,
+      distributor_id: newDistributorId,
+      pm_id: newPmId,
+      kam_id: newKamId,
+      final_solutions: newFinalSolutions,
+      conclusions: newConclusions,
+      samples_expected: newSamplesExpected,
+      mp_expected: newMpExpected,
+      eau_max: newEauMax,
+    },
+    onSuccess: () => router.push(`/rfqs/${rfqId}`),
+  });
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await doRequest();
+  };
+
+  const onCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    router.push(`/rfqs/${rfqId}`);
+  };
+
   const initRequest = useRequest({
     url: `/rfqs/${rfqId}`,
     method: "get",
-    onSuccess: (data: IRfqWithIds) => setRfq(data),
+    onSuccess: (data: IRfqWithIds) => setData(data),
   });
+
+  const setData = (data: IRfqWithIds) => {
+    setRfq(data);
+    setExtraNote(data.extra_note || "");
+    setEau(data.eau);
+    setCustomerId(data.customer_id);
+    setDistributorId(data.distributor_id);
+    setPmId(data.pm_id);
+    setKamId(data.kam_id);
+    setFinalSolutions(data.final_solutions || "");
+    setConclusions(data.conclusions || "");
+    setSamplesExpected(data.samples_expected || "");
+    setMpExpected(data.mp_expected || "");
+    setEauMax(data.eau_max || 0);
+  };
 
   const getRfq = initRequest.doRequest;
 
@@ -38,84 +96,20 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
     getRfq();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    }
-  });
-
   if (!currentUser) {
     return <div></div>;
   }
 
   if (!rfq) {
-    return <h1>RFQ not found</h1>;
+    return <Loader />;
   } else {
-    const {
-      rfq_code,
-      extra_note,
-      eau,
-      customer_id,
-      distributor_id,
-      pm_id,
-      kam_id,
-      id,
-      final_solutions,
-      conclusions,
-      samples_expected,
-      mp_expected,
-      eau_max,
-    } = rfq;
-
-    const [newExtraNote, setExtraNote] = useState(extra_note);
-    const [newEau, setEau] = useState(eau);
-    const [newCustomerId, setCustomerId] = useState(customer_id);
-    const [newDistributorId, setDistributorId] = useState(distributor_id);
-    const [newPmId, setPmId] = useState(pm_id);
-    const [newKamId, setKamId] = useState(kam_id);
-    const [newFinalSolutions, setFinalSolutions] = useState(final_solutions);
-    const [newConclusions, setConclusions] = useState(conclusions);
-    const [newSamplesExpected, setSamplesExpected] = useState(samples_expected);
-    const [newMpExpected, setMpExpected] = useState(mp_expected);
-    const [newEauMax, setEauMax] = useState(eau_max);
-    const { doRequest, errorsJSX, inputStyle } = useRequest({
-      url: `/rfqs/${id}`,
-      method: "put",
-      body: {
-        extra_note: newExtraNote,
-        eau: newEau,
-        customer_id: newCustomerId,
-        distributor_id: newDistributorId,
-        pm_id: newPmId,
-        kam_id: newKamId,
-        final_solutions: newFinalSolutions,
-        conclusions: newConclusions,
-        samples_expected: newSamplesExpected,
-        mp_expected: newMpExpected,
-        eau_max: newEauMax,
-      },
-      onSuccess: () => router.push(`/rfqs/${id}`),
-    });
-
-    const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      await doRequest();
-    };
-
-    const onCancel = (
-      event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
-      event.preventDefault();
-      router.push(`/rfqs/${id}`);
-    };
-
     return (
       <div className="full-page">
         <div className="card max-w-900 m-3 big-shadow">
           <div className="card-content">
             <form onSubmit={onSubmit}>
               <h1 className="title m-3 mb-5 is-4">
-                <i className="fas fa-edit mr-1"></i> Edit {rfq_code}
+                <i className="fas fa-edit mr-1"></i> Edit {rfq.rfq_code}
               </h1>
               <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
                 <div className="field m-3">
@@ -244,6 +238,19 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
       </div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default EditRfq;

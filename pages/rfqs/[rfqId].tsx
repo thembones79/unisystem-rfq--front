@@ -1,4 +1,5 @@
 import Router, { useRouter } from "next/router";
+import { GetStaticPaths } from "next";
 import React, { useEffect, useState } from "react";
 import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
@@ -27,7 +28,7 @@ interface ShowRfqProps {
 
 const ShowRfq: React.FC = () => {
   const router = useRouter();
-  const rfqId = router.query.rfqId;
+  const { rfqId } = router.query;
   const [rfq, setRfq] = useState<IRfqWithNames>({
     id: 1,
     rfq_code: "LOADING",
@@ -49,8 +50,10 @@ const ShowRfq: React.FC = () => {
     eau_max: 6,
   });
 
+  const id = rfqId;
+
   const { doRequest, errorsJSX } = useRequest({
-    url: `/rfqs/${rfqId}`,
+    url: `/rfqs/${id}`,
     method: "get",
     onSuccess: (data: IRfqWithNames) => setRfq(data),
   });
@@ -221,6 +224,19 @@ const ShowRfq: React.FC = () => {
       </div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default ShowRfq;

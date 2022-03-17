@@ -9,12 +9,6 @@ interface NewUserProps {
 }
 
 const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
-  useEffect(() => {
-    if (!currentUser) {
-      Router.push("/");
-    }
-  });
-
   if (!currentUser) {
     return <div></div>;
   }

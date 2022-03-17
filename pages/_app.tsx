@@ -7,14 +7,22 @@ import "../styles/bulma.scss";
 import "../styles/globals.scss";
 import "../styles/fontawesome.css";
 
+export interface ICurrentUser {
+  currentUser: IUser;
+}
+
 function AppComponent({ Component, pageProps }: AppProps) {
   const [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
   const { doRequest, errorsJSX } = useRequest({
     url: "/users/currentuser",
     method: "get",
-    onSuccess: ({ currentUser }: any) => setCurrentUser(currentUser),
+    onSuccess: (data: ICurrentUser) => onSuccess(data.currentUser),
   });
+
+  const onSuccess = (curr: IUser) => {
+    setCurrentUser(curr);
+  };
 
   useEffect(() => {
     doRequest();
@@ -29,22 +37,5 @@ function AppComponent({ Component, pageProps }: AppProps) {
     </div>
   );
 }
-
-// AppComponent.getInitialProps = async (appContext: AppContext) => {
-//   const { Component, ctx } = appContext;
-
-//   console.log(ctx?.req?.headers);
-
-//   // const url = "/users/currentuser";
-//   // const { data } = await ssrRequest(ctx, url, qq);
-//   // console.log({ data });
-//   let pageProps = {};
-//   // const ctxWithUser = { ...ctx, ...data };
-
-//   if (Component.getInitialProps) {
-//     pageProps = await Component.getInitialProps(ctx);
-//   }
-//   return { pageProps };
-// };
 
 export default AppComponent;

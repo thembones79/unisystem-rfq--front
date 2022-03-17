@@ -1,54 +1,47 @@
 import React, { useEffect, useState } from "react";
 import Router, { useRouter } from "next/router";
-import { IUser } from "../../users";
+import { GetStaticPaths } from "next";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
 import { IDistributor } from "../";
+import { Loader } from "../../../components/loader";
 
-interface DeleteDistributorProps {
-  currentUser: IUser;
+interface IDeleteDistributor {
+  distributorId: string;
 }
 
-const DeleteDistributor = ({ currentUser }: DeleteDistributorProps) => {
-  const router = useRouter();
-  const { distributorId } = router.query;
-  const [distributor, setDistributor] = useState<IDistributor>();
-
-  const initRequest = useRequest({
+const DeleteDistributor: React.FC<IDeleteDistributor> = ({ distributorId }) => {
+  const { doRequest, errorsJSX } = useRequest({
     url: `/distributors/${distributorId}`,
-    method: "get",
-    onSuccess: (data: IDistributor) => setDistributor(data),
+    method: "delete",
+    onSuccess: () => router.push(`/distributors`),
   });
-
-  const getDistributor = initRequest.doRequest;
 
   useEffect(() => {
     getDistributor();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    }
+  const initRequest = useRequest({
+    url: `/distributors/${distributorId}`,
+    method: "get",
+    onSuccess: (data: IDistributor) => setData(data),
   });
+  const getDistributor = initRequest.doRequest;
+  const [distributor, setDistributor] = useState<IDistributor>();
 
-  if (!currentUser) {
-    return <div></div>;
-  }
+  const router = useRouter();
+
+  const setData = (data: IDistributor) => {
+    setDistributor(data);
+  };
 
   if (!distributor) {
-    return <h1>Distributor not found</h1>;
+    return <Loader />;
   } else {
-    const { id, name } = distributor;
+    const { name } = distributor;
 
-    const { doRequest, errorsJSX } = useRequest({
-      url: `/distributors/${id}`,
-      method: "delete",
-      onSuccess: () => router.push(`/distributors`),
-    });
-
-    const deleteDistributor = async () => {
-      await doRequest();
+    const deleteDistributor = () => {
+      doRequest();
     };
 
     return (
@@ -87,6 +80,19 @@ const DeleteDistributor = ({ currentUser }: DeleteDistributorProps) => {
       </div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: { distributorId: context.params.distributorId }, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default DeleteDistributor;

@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Router, { useRouter } from "next/router";
-import { IUser } from "../../users";
+import { GetStaticPaths } from "next";
+import { useRouter } from "next/router";
 import { NiceButton } from "../../../components/nice-button";
+import { Loader } from "../../../components/loader";
 import { useRequest } from "../../../hooks/useRequest";
 import { IDistributor } from "../";
 
-interface EditDistributorProps {
-  currentUser: IUser;
-}
-
-const EditDistributor = ({ currentUser }: EditDistributorProps) => {
+const EditDistributor: React.FC = () => {
   const router = useRouter();
   const { distributorId } = router.query;
   const [distributor, setDistributor] = useState<IDistributor>();
@@ -41,14 +38,8 @@ const EditDistributor = ({ currentUser }: EditDistributorProps) => {
     getDistributor();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    }
-  });
-
   if (!distributor) {
-    return <h1>Distributor not found</h1>;
+    return <Loader />;
   } else {
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -62,7 +53,7 @@ const EditDistributor = ({ currentUser }: EditDistributorProps) => {
       router.push(`/distributors`);
     };
 
-    return currentUser ? (
+    return (
       <div className="full-page">
         <div className="card max-w-800 m-3 big-shadow">
           <div className="card-content">
@@ -99,10 +90,21 @@ const EditDistributor = ({ currentUser }: EditDistributorProps) => {
           </div>
         </div>
       </div>
-    ) : (
-      <div></div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default EditDistributor;

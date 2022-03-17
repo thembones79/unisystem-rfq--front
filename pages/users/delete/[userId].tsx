@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Router, { useRouter } from "next/router";
+import { GetStaticPaths } from "next";
 import { IUser } from "..";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
+import { Loader } from "../../../components/loader";
 
 interface DeleteUserProps {
   currentUser: IUser;
@@ -24,33 +26,26 @@ const DeleteUser = ({ currentUser }: DeleteUserProps) => {
     getUser();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) {
-      router.push("/");
-    }
+  const { doRequest, errorsJSX } = useRequest({
+    url: `/users/disable`,
+    method: "post",
+    body: {
+      id: userId,
+    },
+    onSuccess: () => router.push(`/users`),
   });
 
+  const deleteUser = async () => {
+    await doRequest();
+  };
   if (!currentUser) {
     return <div></div>;
   }
 
   if (!user) {
-    return <h1>User not found</h1>;
+    return <Loader />;
   } else {
-    const { id, username } = user;
-
-    const { doRequest, errorsJSX } = useRequest({
-      url: `/users/disable`,
-      method: "post",
-      body: {
-        id,
-      },
-      onSuccess: () => router.push(`/users`),
-    });
-
-    const deleteUser = async () => {
-      await doRequest();
-    };
+    const { username } = user;
 
     return (
       <div className="full-page">
@@ -84,6 +79,19 @@ const DeleteUser = ({ currentUser }: DeleteUserProps) => {
       </div>
     );
   }
+};
+
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
 };
 
 export default DeleteUser;
