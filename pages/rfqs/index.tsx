@@ -19,6 +19,7 @@ export interface IRfq {
   pm: string;
   kam: string;
   updated: string;
+  department: string;
 }
 
 const columns: IColumn<IRfq>[] = [
@@ -27,6 +28,7 @@ const columns: IColumn<IRfq>[] = [
   { name: "eau", label: "EAU" },
   { name: "customer", label: "Customer" },
   { name: "distributor", label: "Distributor" },
+  { name: "department", label: "Department" },
   { name: "pm", label: "PM" },
   { name: "kam", label: "KAM" },
   { name: "updated", label: "Updated" },

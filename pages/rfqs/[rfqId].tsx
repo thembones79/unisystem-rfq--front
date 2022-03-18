@@ -19,6 +19,7 @@ interface IRfqWithNames extends IRfq {
   samples_expected: string;
   mp_expected: string;
   eau_max: number;
+  department: string;
 }
 
 interface ShowRfqProps {
@@ -48,6 +49,7 @@ const ShowRfq: React.FC = () => {
     samples_expected: "pupa",
     mp_expected: "pupa",
     eau_max: 6,
+    department: "pupa",
   });
 
   const id = rfqId;
@@ -79,6 +81,7 @@ const ShowRfq: React.FC = () => {
       samples_expected,
       mp_expected,
       eau_max,
+      department,
     } = rfq;
 
     const formatStatus = () => {
@@ -172,6 +175,10 @@ const ShowRfq: React.FC = () => {
             <div className="field m-3">
               <label className="label">Distributor</label>
               <div>{distributor}</div>
+            </div>
+            <div className="field m-3">
+              <label className="label">Department</label>
+              <div>{department}</div>
             </div>
             <div className="field m-3">
               <label className="label">Project Manager</label>

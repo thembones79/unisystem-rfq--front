@@ -17,12 +17,6 @@ interface DistributorsTableProps {
 const DistributorsTable: React.FC<DistributorsTableProps> = ({
   currentUser,
 }) => {
-  useEffect(() => {
-    if (!currentUser) {
-      Router.push("/");
-    }
-  });
-
   const [distributorsTable, setDistributorsTable] = useState<IDistributor[]>(
     []
   );

@@ -18,6 +18,7 @@ interface IRfqWithIds extends IRfq {
   samples_expected: string;
   mp_expected: string;
   eau_max: number;
+  department: string;
 }
 
 interface EditRfqProps {
@@ -28,7 +29,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
   const [rfq, setRfq] = useState<IRfqWithIds>();
   const router = useRouter();
   const { rfqId } = router.query;
-
+  const [newDepartment, setDepartment] = useState("");
   const [newExtraNote, setExtraNote] = useState("");
   const [newEau, setEau] = useState(0);
   const [newCustomerId, setCustomerId] = useState(0);
@@ -50,6 +51,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
       distributor_id: newDistributorId,
       pm_id: newPmId,
       kam_id: newKamId,
+      department: newDepartment,
       final_solutions: newFinalSolutions,
       conclusions: newConclusions,
       samples_expected: newSamplesExpected,
@@ -83,6 +85,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
     setDistributorId(data.distributor_id);
     setPmId(data.pm_id);
     setKamId(data.kam_id);
+    setDepartment(data.department || "");
     setFinalSolutions(data.final_solutions || "");
     setConclusions(data.conclusions || "");
     setSamplesExpected(data.samples_expected || "");
@@ -178,6 +181,25 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
                   fetch="/users"
                   initialValue={newKamId}
                 />
+
+                <div className="field m-3">
+                  <label className="label">Department</label>
+                  <div className={`select `}>
+                    <select
+                      name="department"
+                      id="department"
+                      value={newDepartment}
+                      required
+                      onChange={(e) => {
+                        setDepartment(e.target.value);
+                      }}
+                    >
+                      <option></option>
+                      <option value={"PL"}>PL</option>
+                      <option value={"EX"}>EX</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div className="field m-3">
                   <label className="label">Samples Expected</label>

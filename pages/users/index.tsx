@@ -8,6 +8,7 @@ export interface IUser {
   email: string;
   username: string;
   shortname: string;
+  shortname_alt: string;
   role_id: number;
   role?: string;
 }
@@ -17,12 +18,6 @@ interface UsersTableProps {
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ currentUser }) => {
-  useEffect(() => {
-    if (!currentUser) {
-      Router.push("/");
-    }
-  });
-
   const [usersTable, setUsersTable] = useState<IUser[]>([]);
 
   const { doRequest, errorsJSX } = useRequest({

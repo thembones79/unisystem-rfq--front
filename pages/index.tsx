@@ -57,7 +57,7 @@ const Home = ({ currentUser }: HomeProps) => {
         <p>
           Changelog: GUI{" "}
           <a
-            href="https://github.com/thembones79/riverdi-rfq--frontend/blob/main/CHANGELOG.md#changelog"
+            href="https://github.com/thembones79/unisystem-rfq--front/blob/main/CHANGELOG.md#changelog"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -65,7 +65,7 @@ const Home = ({ currentUser }: HomeProps) => {
           </a>
           , API{" "}
           <a
-            href="https://github.com/thembones79/riverdi-rfq--backend/blob/master/CHANGELOG.md#changelog"
+            href="https://github.com/thembones79/unisystem-rfq--back/blob/master/CHANGELOG.md#changelog"
             target="_blank"
             rel="noopener noreferrer"
           >

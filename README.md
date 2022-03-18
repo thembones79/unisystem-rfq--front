@@ -1,4 +1,4 @@
-![Logo](static/riverdiRfqLogo.png)
+![Logo](static/unisystemrfq.png)
 
 # `Frontend` in Next.js React with Typescript, SASS, Bulma for **Riverdi RFQ** System
 
