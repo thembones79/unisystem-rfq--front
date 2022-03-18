@@ -42,7 +42,7 @@ export const Header = ({ currentUser }: HeaderProps) => {
                   <i className="fas fa-pizza-slice"></i>
                 </span>
                 <span className="mx-1"></span>
-                <span>Riverdi RFQ</span>
+                <span>Unisystem RFQ</span>
               </span>
             </Link>
           </div>

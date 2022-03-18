@@ -15,6 +15,7 @@ const EditUser = ({ currentUser }: EditUserProps) => {
   const [newEmail, setEmail] = useState("");
   const [newUsername, setUsername] = useState("");
   const [newShortname, setShortname] = useState("");
+  const [newShortnameAlt, setShortnameAlt] = useState("");
   const [newRoleId, setRoleId] = useState(0);
   const router = useRouter();
   const { userId } = router.query;
@@ -38,17 +39,19 @@ const EditUser = ({ currentUser }: EditUserProps) => {
       email: newEmail,
       username: newUsername,
       shortname: newShortname,
+      shortname_alt: newShortnameAlt,
       role_id: newRoleId,
     },
     onSuccess: () => router.push(`/users`),
   });
 
   const onUser = (data: IUser) => {
-    const { shortname, email, role_id, username } = data;
+    const { shortname, email, role_id, username, shortname_alt } = data;
     setEmail(email);
     setUsername(username);
     setRoleId(role_id);
     setShortname(shortname);
+    setShortnameAlt(shortname_alt);
   };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -97,6 +100,17 @@ const EditUser = ({ currentUser }: EditUserProps) => {
               </div>
 
               <div className="field m-3">
+                <label className="label">Shortname Alternative</label>
+                <input
+                  className={inputStyle("shortname")}
+                  type="text"
+                  value={newShortnameAlt}
+                  required
+                  onChange={(e) => setShortnameAlt(e.target.value)}
+                />
+              </div>
+
+              <div className="field m-3">
                 <label className="label">Email Address</label>
                 <input
                   className={inputStyle("email")}
@@ -122,7 +136,8 @@ const EditUser = ({ currentUser }: EditUserProps) => {
                     <option></option>
                     <option value={1}>admin</option>
                     <option value={2}>PM</option>
-                    <option value={3}>KAM</option>
+                    <option value={3}>KAM PL</option>
+                    <option value={3}>KAM EX</option>
                   </select>
                 </div>
               </div>

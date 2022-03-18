@@ -23,6 +23,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
   const [mpExpected, setMpExpected] = useState("");
   const [eauMax, setEauMax] = useState(0);
   const [extraNote, setExtraNote] = useState("");
+  const [department, setDepartment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { doRequest, errorsJSX, inputStyle } = useRequest({
     url: "/rfqs",
@@ -39,6 +40,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
       mp_expected: mpExpected,
       eau_max: eauMax,
       extra_note: extraNote,
+      department,
     },
     onSuccess: (rfq: IRfq) => onSuccess(rfq),
   });
@@ -129,6 +131,25 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
         />
 
         <div className="field m-3">
+          <label className="label">Department</label>
+          <div className={`select `}>
+            <select
+              name="department"
+              id="department"
+              value={department}
+              required
+              onChange={(e) => {
+                setDepartment(e.target.value);
+              }}
+            >
+              <option></option>
+              <option value={"PL"}>PL</option>
+              <option value={"EX"}>EX</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="field m-3">
           <label className="label">Samples Expected</label>
           <input
             className={inputStyle("samples_expected")}
@@ -185,8 +206,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
   const renderLoader = () => (
     <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
       <p className="title is-4 mb-6 mt-3">Please Wait...</p>
-      <p className="subtitle">Signing into SharePoint...</p>
-      <p className="subtitle">Creating desired folders...</p>
+      <p className="subtitle">Signing into ClickUp...</p>
       <Loader />
     </div>
   );

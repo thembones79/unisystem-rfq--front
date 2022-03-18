@@ -18,6 +18,7 @@ const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [username, setUsername] = useState("");
   const [shortname, setShortname] = useState("");
+  const [shortname_alt, setShortnameAlt] = useState("");
   const [role_id, setRoleId] = useState(0);
 
   const { doRequest, errorsJSX, inputStyle } = useRequest({
@@ -29,6 +30,7 @@ const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
       passwordConfirm,
       username,
       shortname,
+      shortname_alt,
       role_id,
     },
     onSuccess: () => Router.push("/users"),
@@ -72,6 +74,17 @@ const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
                   value={shortname}
                   required
                   onChange={(e) => setShortname(e.target.value)}
+                />
+              </div>
+
+              <div className="field m-3">
+                <label className="label">Shortname Alternative</label>
+                <input
+                  className={inputStyle("shortname")}
+                  type="text"
+                  value={shortname_alt}
+                  required
+                  onChange={(e) => setShortnameAlt(e.target.value)}
                 />
               </div>
 
@@ -123,7 +136,8 @@ const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
                     <option></option>
                     <option value={1}>admin</option>
                     <option value={2}>PM</option>
-                    <option value={3}>KAM</option>
+                    <option value={3}>KAM PL</option>
+                    <option value={3}>KAM EX</option>
                   </select>
                 </div>
               </div>

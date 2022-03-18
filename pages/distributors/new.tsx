@@ -9,12 +9,6 @@ interface NewDistributorProps {
 }
 
 const NewDistributor: React.FC<NewDistributorProps> = ({ currentUser }) => {
-  useEffect(() => {
-    if (!currentUser) {
-      Router.push("/");
-    }
-  });
-
   const [name, setName] = useState("");
   const { doRequest, errorsJSX, inputStyle } = useRequest({
     url: "/distributors",
