@@ -16,6 +16,7 @@ export const Header = ({ currentUser }: HeaderProps) => {
     !currentUser && { label: "🔐 Log In", href: "/auth/login" },
     currentUser && { label: "🎯 New RFQ", href: "/rfqs/new" },
     currentUser && { label: "📋 RFQs", href: "/rfqs" },
+    currentUser && { label: "😘 Clients", href: "/clients" },
     currentUser && { label: "🚀 Distributors", href: "/distributors" },
     currentUser && isAdmin && { label: "👤 Users", href: "/users" },
     currentUser && { label: "💔 Log Out", href: "/auth/logout" },

@@ -15,10 +15,10 @@ const Home = ({ currentUser }: HomeProps) => {
   useEffect(() => {
     const getVersioning = async () => {
       const frontend = await axios.get(
-        `https://raw.githubusercontent.com/thembones79/riverdi-rfq--frontend/main/package.json`
+        `https://raw.githubusercontent.com/thembones79/unisystem-rfq--front/main/package.json`
       );
       const backend = await axios.get(
-        `https://raw.githubusercontent.com/thembones79/riverdi-rfq--backend/master/package.json`
+        `https://raw.githubusercontent.com/thembones79/unisystem-rfq--back/master/package.json`
       );
 
       const guiVersion = frontend.data.version;
