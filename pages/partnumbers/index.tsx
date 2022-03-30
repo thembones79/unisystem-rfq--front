@@ -5,13 +5,14 @@ import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { IColumn, SfTable } from "../../components/sf-table";
 
-interface RfqsTableProps {
+interface PartnumbersTableProps {
   currentUser: IUser;
 }
 
-export interface IProject {
+export interface IPartnumber {
   id: number;
-  project_code: string;
+  pn: string;
+  project: string;
   department: string;
   client: string;
   industry: string;
@@ -20,8 +21,9 @@ export interface IProject {
   updated: string;
 }
 
-const columns: IColumn<IProject>[] = [
-  { name: "project_code", label: "Code" },
+const columns: IColumn<IPartnumber>[] = [
+  { name: "pn", label: "Code" },
+  { name: "project", label: "Project" },
   { name: "client", label: "Client" },
   { name: "industry", label: "Industry" },
   { name: "department", label: "Department" },
@@ -30,15 +32,15 @@ const columns: IColumn<IProject>[] = [
   { name: "updated", label: "Updated" },
 ];
 
-const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
-  const [rows, setRows] = useState<IProject[]>([]);
+const PartnumbersTable: React.FC<PartnumbersTableProps> = ({ currentUser }) => {
+  const [rows, setRows] = useState<IPartnumber[]>([]);
   const { doRequest, errorsJSX } = useRequest({
-    url: "/projects",
+    url: "/partnumbers",
     method: "get",
-    onSuccess: (projects: IProject[]) => setRows(projects),
+    onSuccess: (partnumbers: IPartnumber[]) => setRows(partnumbers),
   });
 
-  const handleNewProject = () => Router.push(`/projects/new`);
+  const handleNewPartnumber = () => Router.push(`/partnumbers/new`);
 
   useEffect(() => {
     doRequest();
@@ -47,13 +49,13 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   return rows.length > 0 ? (
     <div>
       <div className="m-5">
-        <NiceButton onClick={handleNewProject}>
+        <NiceButton onClick={handleNewPartnumber}>
           <i className="far fa-check-circle"></i>
-          <span className="m-1"></span> New Project
+          <span className="m-1"></span> New Partnumber
         </NiceButton>
       </div>
       <div className="table-container">
-        <SfTable columns={columns} rows={rows} route="projects" />
+        <SfTable columns={columns} rows={rows} route="partnumbers" />
         {errorsJSX()}
       </div>
     </div>
@@ -62,4 +64,4 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   );
 };
 
-export default RfqsTable;
+export default PartnumbersTable;

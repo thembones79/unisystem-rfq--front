@@ -5,7 +5,7 @@ import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { IColumn, SfTable } from "../../components/sf-table";
 
-interface RfqsTableProps {
+interface ProjectsTableProps {
   currentUser: IUser;
 }
 
@@ -30,7 +30,7 @@ const columns: IColumn<IProject>[] = [
   { name: "updated", label: "Updated" },
 ];
 
-const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
+const ProjectsTable: React.FC<ProjectsTableProps> = ({ currentUser }) => {
   const [rows, setRows] = useState<IProject[]>([]);
   const { doRequest, errorsJSX } = useRequest({
     url: "/projects",
@@ -62,4 +62,4 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   );
 };
 
-export default RfqsTable;
+export default ProjectsTable;
