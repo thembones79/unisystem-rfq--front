@@ -9,16 +9,10 @@ import { useRequest } from "../../../hooks/useRequest";
 import { IProject } from "..";
 
 interface IProjectWithIds extends IProject {
-  customer_id: number;
-  distributor_id: number;
   pm_id: number;
-  kam_id: number;
-  final_solutions: string;
-  conclusions: string;
-  samples_expected: string;
-  mp_expected: string;
-  eau_max: number;
-  department: string;
+  note: string;
+  version: string;
+  revision: string;
 }
 
 interface EditRfqProps {
@@ -26,39 +20,24 @@ interface EditRfqProps {
 }
 
 const EditRfq = ({ currentUser }: EditRfqProps) => {
-  const [rfq, setRfq] = useState<IRfqWithIds>();
+  const [project, setProject] = useState<IProjectWithIds>();
   const router = useRouter();
-  const { rfqId } = router.query;
-  const [newDepartment, setDepartment] = useState("");
-  const [newExtraNote, setExtraNote] = useState("");
-  const [newEau, setEau] = useState(0);
-  const [newCustomerId, setCustomerId] = useState(0);
-  const [newDistributorId, setDistributorId] = useState(0);
+  const { projectId } = router.query;
+  const [newNote, setNote] = useState("");
+  const [newVersion, setVersion] = useState("");
+  const [newRevision, setRevision] = useState("");
   const [newPmId, setPmId] = useState(0);
-  const [newKamId, setKamId] = useState(0);
-  const [newFinalSolutions, setFinalSolutions] = useState("");
-  const [newConclusions, setConclusions] = useState("");
-  const [newSamplesExpected, setSamplesExpected] = useState("");
-  const [newMpExpected, setMpExpected] = useState("");
-  const [newEauMax, setEauMax] = useState(0);
   const { doRequest, errorsJSX, inputStyle } = useRequest({
-    url: `/rfqs/${rfqId}`,
+    url: `/projects/${projectId}`,
     method: "put",
     body: {
-      extra_note: newExtraNote,
-      eau: newEau,
-      customer_id: newCustomerId,
-      distributor_id: newDistributorId,
+      id: projectId,
       pm_id: newPmId,
-      kam_id: newKamId,
-      department: newDepartment,
-      final_solutions: newFinalSolutions,
-      conclusions: newConclusions,
-      samples_expected: newSamplesExpected,
-      mp_expected: newMpExpected,
-      eau_max: newEauMax,
+      note: newNote,
+      version: newVersion,
+      revision: newRevision,
     },
-    onSuccess: () => router.push(`/rfqs/${rfqId}`),
+    onSuccess: () => router.push(`/projects/${projectId}`),
   });
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -68,42 +47,34 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
 
   const onCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    router.push(`/rfqs/${rfqId}`);
+    router.push(`/projects/${projectId}`);
   };
 
   const initRequest = useRequest({
-    url: `/rfqs/${rfqId}`,
+    url: `/projects/${projectId}`,
     method: "get",
-    onSuccess: (data: IRfqWithIds) => setData(data),
+    onSuccess: (data: IProjectWithIds) => setData(data),
   });
 
-  const setData = (data: IRfqWithIds) => {
-    setRfq(data);
-    setExtraNote(data.extra_note || "");
-    setEau(data.eau);
-    setCustomerId(data.customer_id);
-    setDistributorId(data.distributor_id);
+  const setData = (data: IProjectWithIds) => {
+    setProject(data);
     setPmId(data.pm_id);
-    setKamId(data.kam_id);
-    setDepartment(data.department || "");
-    setFinalSolutions(data.final_solutions || "");
-    setConclusions(data.conclusions || "");
-    setSamplesExpected(data.samples_expected || "");
-    setMpExpected(data.mp_expected || "");
-    setEauMax(data.eau_max || 0);
+    setNote(data.note);
+    setVersion(data.version);
+    setRevision(data.revision);
   };
 
-  const getRfq = initRequest.doRequest;
+  const getProject = initRequest.doRequest;
 
   useEffect(() => {
-    getRfq();
+    getProject();
   }, []);
 
   if (!currentUser) {
     return <div></div>;
   }
 
-  if (!rfq) {
+  if (!project) {
     return <Loader />;
   } else {
     return (
@@ -112,60 +83,9 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
           <div className="card-content">
             <form onSubmit={onSubmit}>
               <h1 className="title m-3 mb-5 is-4">
-                <i className="fas fa-edit mr-1"></i> Edit {rfq.rfq_code}
+                <i className="fas fa-edit mr-1"></i> Edit {project.project_code}
               </h1>
               <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
-                <div className="field m-3">
-                  <label className="label">Extra Note</label>
-                  <input
-                    className={inputStyle("extra_note")}
-                    type="text"
-                    value={newExtraNote}
-                    autoFocus
-                    onChange={(e) => setExtraNote(e.target.value)}
-                  />
-                </div>
-
-                <div className="field m-3">
-                  <label className="label">EAU min</label>
-                  <input
-                    className={inputStyle("eau")}
-                    name="eau"
-                    type="number"
-                    required
-                    autoFocus
-                    value={newEau}
-                    onChange={(e) => setEau(parseInt(e.target.value))}
-                  />
-                </div>
-
-                <div className="field m-3">
-                  <label className="label">EAU max</label>
-                  <input
-                    className={inputStyle("eau_max")}
-                    name="eau_max"
-                    type="number"
-                    value={newEauMax}
-                    onChange={(e) => setEauMax(parseInt(e.target.value))}
-                  />
-                </div>
-
-                <UserPicker
-                  handleChange={setCustomerId}
-                  label="Customer"
-                  fieldname="newCustomerId"
-                  fetch="/customers"
-                  initialValue={newCustomerId}
-                />
-
-                <UserPicker
-                  handleChange={setDistributorId}
-                  label="Distributor"
-                  fieldname="newDistributorId"
-                  fetch="/distributors"
-                  initialValue={newDistributorId}
-                />
-
                 <UserPicker
                   handleChange={setPmId}
                   label="PM"
@@ -174,71 +94,33 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
                   initialValue={newPmId}
                 />
 
-                <UserPicker
-                  handleChange={setKamId}
-                  label="KAM"
-                  fieldname="newKamId"
-                  fetch="/users"
-                  initialValue={newKamId}
-                />
-
                 <div className="field m-3">
-                  <label className="label">Department</label>
-                  <div className={`select `}>
-                    <select
-                      name="department"
-                      id="department"
-                      value={newDepartment}
-                      required
-                      onChange={(e) => {
-                        setDepartment(e.target.value);
-                      }}
-                    >
-                      <option></option>
-                      <option value={"PL"}>PL</option>
-                      <option value={"EX"}>EX</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="field m-3">
-                  <label className="label">Samples Expected</label>
+                  <label className="label">Version</label>
                   <input
-                    className={inputStyle("samples_expected")}
+                    className={inputStyle("version")}
                     type="text"
-                    value={newSamplesExpected}
-                    onChange={(e) => setSamplesExpected(e.target.value)}
+                    value={newVersion}
+                    onChange={(e) => setVersion(e.target.value)}
                   />
                 </div>
 
                 <div className="field m-3">
-                  <label className="label">MP Expected</label>
+                  <label className="label">Revision</label>
                   <input
-                    className={inputStyle("mp_expected")}
+                    className={inputStyle("revision")}
                     type="text"
-                    value={newMpExpected}
-                    onChange={(e) => setMpExpected(e.target.value)}
+                    value={newRevision}
+                    onChange={(e) => setRevision(e.target.value)}
                   />
                 </div>
-              </div>
-              <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
+
                 <div className="field m-3">
-                  <label className="label">Final Solutions</label>
+                  <label className="label">Note</label>
                   <textarea
                     className="textarea is-400"
-                    name="final_solutions"
-                    value={newFinalSolutions}
-                    onChange={(e) => setFinalSolutions(e.target.value)}
-                  />
-                </div>
-
-                <div className="field m-3">
-                  <label className="label">Conclusions</label>
-                  <textarea
-                    className="textarea is-400"
-                    name="conclusions"
-                    value={newConclusions}
-                    onChange={(e) => setConclusions(e.target.value)}
+                    name="note"
+                    value={newNote}
+                    onChange={(e) => setNote(e.target.value)}
                   />
                 </div>
               </div>
@@ -247,7 +129,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
               <div className="m-3 mt-6 ">
                 <NiceButton>
                   <i className="far fa-save"></i>
-                  <span className="m-1"></span> Save RFQ
+                  <span className="m-1"></span> Save Project
                 </NiceButton>
                 <span className="m-3"></span>
                 <NiceButton color="cancel" onClick={onCancel}>
