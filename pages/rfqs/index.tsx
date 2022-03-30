@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Router from "next/router";
 import { IUser } from "../users";
 import { useRequest } from "../../hooks/useRequest";
-
+import { NiceButton } from "../../components/nice-button";
 import { IColumn, SfTable } from "../../components/sf-table";
 
 interface RfqsTableProps {
@@ -41,14 +41,25 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
     method: "get",
     onSuccess: (rfqs: IRfq[]) => setRows(rfqs),
   });
+
+  const handleNewRfq = () => Router.push(`/rfqs/new`);
+
   useEffect(() => {
     doRequest();
   }, []);
 
   return rows.length > 0 ? (
-    <div className="table-container">
-      <SfTable columns={columns} rows={rows} />
-      {errorsJSX()}
+    <div>
+      <div className="m-5">
+        <NiceButton onClick={handleNewRfq}>
+          <i className="far fa-check-circle"></i>
+          <span className="m-1"></span> New RFQ
+        </NiceButton>
+      </div>
+      <div className="table-container">
+        <SfTable columns={columns} rows={rows} route="rfqs" />
+        {errorsJSX()}
+      </div>
     </div>
   ) : (
     <div></div>

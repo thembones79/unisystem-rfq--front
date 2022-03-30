@@ -14,11 +14,12 @@ export const Header = ({ currentUser }: HeaderProps) => {
 
   const links = [
     !currentUser && { label: "🔐 Log In", href: "/auth/login" },
-    currentUser && { label: "🎯 New RFQ", href: "/rfqs/new" },
+    // currentUser && { label: "🎯 New RFQ", href: "/rfqs/new" },
     currentUser && { label: "📋 RFQs", href: "/rfqs" },
+    currentUser && { label: "🍻 Projects", href: "/projects" },
     currentUser && { label: "😘 Clients", href: "/clients" },
     currentUser && { label: "🏭 Industries", href: "/industries" },
-    currentUser && { label: "🚀 Distributors", href: "/distributors" },
+    //  currentUser && { label: "🚀 Distributors", href: "/distributors" },
     currentUser && isAdmin && { label: "👤 Users", href: "/users" },
     currentUser && { label: "💔 Log Out", href: "/auth/logout" },
   ]

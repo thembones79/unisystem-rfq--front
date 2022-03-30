@@ -14,6 +14,7 @@ type OrderType = "asc" | "desc";
 export interface SfTableProps<T> {
   columns: IColumn<T>[];
   rows: RowType<T>;
+  route: string;
 }
 
 interface ITarget {
@@ -24,7 +25,7 @@ interface ITarget {
 }
 
 export const SfTable = <T extends { id: number }>(props: SfTableProps<T>) => {
-  const { columns, rows } = props;
+  const { columns, rows, route } = props;
 
   const columnNames = columns.map((column) => column.name);
 
@@ -139,7 +140,7 @@ export const SfTable = <T extends { id: number }>(props: SfTableProps<T>) => {
       return dataTable.map((row) => {
         const { id } = row;
         return (
-          <tr key={id} onClick={() => Router.push(`/rfqs/${id}`)}>
+          <tr key={id} onClick={() => Router.push(`/${route}/${id}`)}>
             {columnNames.map((columnName, idx) => (
               <td key={idx}>{row[columnName]}</td>
             ))}
