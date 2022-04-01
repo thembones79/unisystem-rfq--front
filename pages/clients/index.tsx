@@ -28,7 +28,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ currentUser }) => {
 
   const renderTableHeader = () => {
     if (clientsTable.length > 0) {
-      const columns = ["name", "code", "kam", ""];
+      const columns = ["Name", "Code", "KAM", ""];
       return columns.map((column) => {
         return (
           <th className={column === "" ? "is-200" : "p-2"} key={column}>

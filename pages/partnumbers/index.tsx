@@ -13,6 +13,7 @@ export interface IPartnumber {
   id: number;
   pn: string;
   project: string;
+  project_id: number;
   department: string;
   client: string;
   industry: string;
@@ -48,12 +49,6 @@ const PartnumbersTable: React.FC<PartnumbersTableProps> = ({ currentUser }) => {
 
   return rows.length > 0 ? (
     <div>
-      <div className="m-5">
-        <NiceButton onClick={handleNewPartnumber}>
-          <i className="far fa-check-circle"></i>
-          <span className="m-1"></span> New Partnumber
-        </NiceButton>
-      </div>
       <div className="table-container">
         <SfTable columns={columns} rows={rows} route="partnumbers" />
         {errorsJSX()}

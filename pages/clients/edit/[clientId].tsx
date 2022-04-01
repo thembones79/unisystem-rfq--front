@@ -31,7 +31,6 @@ const EditClient: React.FC = () => {
   });
 
   const setData = (data: IClient) => {
-    console.log({ data });
     setClient(data);
     setName(data.name);
     setKamId(data.kam_id);

@@ -6,38 +6,28 @@ import { IUser } from "../../users";
 import { Loader } from "../../../components/loader";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { IProject } from "..";
+import { IPartnumberWithNames } from "../[partnumberId]";
 
-interface IProjectWithIds extends IProject {
-  pm_id: number;
-  note: string;
-  version: string;
-  revision: string;
-}
-
-interface EditRfqProps {
+interface EditPartnumberProps {
   currentUser: IUser;
 }
 
-const EditRfq = ({ currentUser }: EditRfqProps) => {
-  const [project, setProject] = useState<IProjectWithIds>();
+const EditPartnumber = ({ currentUser }: EditPartnumberProps) => {
+  const [partnumber, setPartnumber] = useState<IPartnumberWithNames>();
   const router = useRouter();
-  const { projectId } = router.query;
+  const { partnumberId } = router.query;
   const [newNote, setNote] = useState("");
   const [newVersion, setVersion] = useState("");
   const [newRevision, setRevision] = useState("");
-  const [newPmId, setPmId] = useState(0);
   const { doRequest, errorsJSX, inputStyle } = useRequest({
-    url: `/projects/${projectId}`,
+    url: `/partnumbers/${partnumberId}`,
     method: "put",
     body: {
-      id: projectId,
-      pm_id: newPmId,
       note: newNote,
       version: newVersion,
       revision: newRevision,
     },
-    onSuccess: () => router.push(`/projects/${projectId}`),
+    onSuccess: () => router.push(`/partnumbers/${partnumberId}`),
   });
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -47,55 +37,44 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
 
   const onCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    router.push(`/projects/${projectId}`);
+    router.push(`/partnumbers/${partnumberId}`);
   };
 
   const initRequest = useRequest({
-    url: `/projects/${projectId}`,
+    url: `/partnumbers/${partnumberId}`,
     method: "get",
-    onSuccess: (data: IProjectWithIds) => setData(data),
+    onSuccess: (data: IPartnumberWithNames) => setData(data),
   });
 
-  const setData = (data: IProjectWithIds) => {
-    console.log({ data });
-    setProject(data);
-    setPmId(data.pm_id);
+  const setData = (data: IPartnumberWithNames) => {
+    setPartnumber(data);
     setNote(data.note);
     setVersion(data.version);
     setRevision(data.revision);
   };
 
-  const getProject = initRequest.doRequest;
+  const getPartnumber = initRequest.doRequest;
 
   useEffect(() => {
-    getProject();
+    getPartnumber();
   }, []);
 
   if (!currentUser) {
     return <div></div>;
   }
 
-  if (!project) {
+  if (!partnumber) {
     return <Loader />;
   } else {
-    console.log({ newPmId });
     return (
       <div className="full-page">
         <div className="card max-w-900 m-3 big-shadow">
           <div className="card-content">
             <form onSubmit={onSubmit}>
               <h1 className="title m-3 mb-5 is-4">
-                <i className="fas fa-edit mr-1"></i> Edit {project.project_code}
+                <i className="fas fa-edit mr-1"></i> Edit {partnumber.pn}
               </h1>
               <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
-                <UserPicker
-                  handleChange={setPmId}
-                  label="PM"
-                  fieldname="newPmId"
-                  fetch="/users"
-                  initialValue={newPmId}
-                />
-
                 <div className="field m-3">
                   <label className="label">Version</label>
                   <input
@@ -131,7 +110,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
               <div className="m-3 mt-6 ">
                 <NiceButton>
                   <i className="far fa-save"></i>
-                  <span className="m-1"></span> Save Project
+                  <span className="m-1"></span> Save Partnumber
                 </NiceButton>
                 <span className="m-3"></span>
                 <NiceButton color="cancel" onClick={onCancel}>
@@ -159,4 +138,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default EditRfq;
+export default EditPartnumber;

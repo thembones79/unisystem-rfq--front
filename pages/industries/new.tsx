@@ -34,7 +34,7 @@ const NewIndustry: React.FC<NewIndustryProps> = ({ currentUser }) => {
       <div className="card max-w-800 m-3  big-shadow">
         <div className="card-content">
           <form onSubmit={onSubmit}>
-            <h1 className="title m-3 mb-5 is-4">🚀 New Industry</h1>
+            <h1 className="title m-3 mb-5 is-4">🏭 New Industry</h1>
             <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
               <div className="field m-3">
                 <label className="label">Industry Name</label>

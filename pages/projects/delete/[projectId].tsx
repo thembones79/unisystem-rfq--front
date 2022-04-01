@@ -7,11 +7,11 @@ import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
 import { IProject } from "..";
 
-interface DeleteRfqProps {
+interface DeleteProjectProps {
   currentUser: IUser;
 }
 
-const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
+const DeleteProject = ({ currentUser }: DeleteProjectProps) => {
   const [project, setProject] = useState<IProject>();
   const router = useRouter();
   const { projectId } = router.query;
@@ -56,7 +56,7 @@ const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
             <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
               <div className="m-3">
                 <div>
-                  You are going to <b>delete</b> this RFQ!
+                  You are going to <b>delete</b> this project!
                 </div>
                 <div> Are you really sure you want to do this?</div>
               </div>
@@ -67,7 +67,7 @@ const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
               <NiceButton color="danger" onClick={deleteProject}>
                 <i className="far fa-trash-alt"></i>
                 <span className="m-1"></span> Yes, I'm 100% sure. Delete this
-                RFQ
+                project
               </NiceButton>
               <span className="m-3"></span>
               <NiceButton
@@ -97,4 +97,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default DeleteRfq;
+export default DeleteProject;

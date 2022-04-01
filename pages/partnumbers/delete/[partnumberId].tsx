@@ -5,58 +5,58 @@ import { IUser } from "../../users";
 import { Loader } from "../../../components/loader";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { IProject } from "..";
+import { IPartnumber } from "..";
 
-interface DeleteRfqProps {
+interface DeletePartnumberProps {
   currentUser: IUser;
 }
 
-const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
-  const [project, setProject] = useState<IProject>();
+const DeletePartnumber = ({ currentUser }: DeletePartnumberProps) => {
+  const [partnumber, setPartnumber] = useState<IPartnumber>();
   const router = useRouter();
-  const { projectId } = router.query;
+  const { partnumberId } = router.query;
   const initRequest = useRequest({
-    url: `/projects/${projectId}`,
+    url: `/partnumbers/${partnumberId}`,
     method: "get",
-    onSuccess: (data: IProject) => setProject(data),
+    onSuccess: (data: IPartnumber) => setPartnumber(data),
   });
 
   const { doRequest, errorsJSX } = useRequest({
-    url: `/projects/${projectId}`,
+    url: `/partnumbers/${partnumberId}`,
     method: "delete",
-    onSuccess: () => router.push(`/projects`),
+    onSuccess: () => router.push(`/partnumbers`),
   });
 
-  const deleteProject = async () => {
+  const deletePartnumber = async () => {
     await doRequest();
   };
 
-  const getProject = initRequest.doRequest;
+  const getPartnumber = initRequest.doRequest;
 
   useEffect(() => {
-    getProject();
+    getPartnumber();
   }, []);
 
   if (!currentUser) {
     return <div></div>;
   }
 
-  if (!project) {
+  if (!partnumber) {
     return <Loader />;
   } else {
-    const { project_code, id } = project;
+    const { pn, id } = partnumber;
 
     return (
       <div className="full-page">
         <div className="card max-w-800 m-3 big-shadow">
           <div className="card-content">
             <h1 className="title m-3 is-4 mb-6">
-              <i className="fas fa-trash-alt mr-1"></i> Delete {project_code}?
+              <i className="fas fa-trash-alt mr-1"></i> Delete {pn}?
             </h1>
             <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
               <div className="m-3">
                 <div>
-                  You are going to <b>delete</b> this RFQ!
+                  You are going to <b>delete</b> this partnumber!
                 </div>
                 <div> Are you really sure you want to do this?</div>
               </div>
@@ -64,15 +64,15 @@ const DeleteRfq = ({ currentUser }: DeleteRfqProps) => {
 
             {errorsJSX()}
             <div className="m-3 mt-6 ">
-              <NiceButton color="danger" onClick={deleteProject}>
+              <NiceButton color="danger" onClick={deletePartnumber}>
                 <i className="far fa-trash-alt"></i>
                 <span className="m-1"></span> Yes, I'm 100% sure. Delete this
-                RFQ
+                partnumber
               </NiceButton>
               <span className="m-3"></span>
               <NiceButton
                 color="cancel"
-                onClick={() => router.push(`/projects/${id}`)}
+                onClick={() => router.push(`/partnumbers/${id}`)}
               >
                 No. I was wrong. Take me back, please
               </NiceButton>
@@ -97,4 +97,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default DeleteRfq;
+export default DeletePartnumber;

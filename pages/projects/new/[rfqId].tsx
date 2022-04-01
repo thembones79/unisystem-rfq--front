@@ -1,19 +1,21 @@
 import React, { useState } from "react";
-import Router from "next/router";
-import { useRequest } from "../../hooks/useRequest";
-import { UserPicker } from "../../components/user-picker";
-import { NiceButton } from "../../components/nice-button";
-import { Loader } from "../../components/loader";
-import { IUser } from "../users";
-import { IProject } from ".";
+import Router, { useRouter } from "next/router";
+import { useRequest } from "../../../hooks/useRequest";
+import { UserPicker } from "../../../components/user-picker";
+import { GetStaticPaths } from "next";
+import { NiceButton } from "../../../components/nice-button";
+import { Loader } from "../../../components/loader";
+import { IUser } from "../../users";
+import { IProject } from "..";
 
 interface NewProjectProps {
   currentUser: IUser;
-  rfq_id: number;
 }
 
-const NewProject = ({ currentUser, rfq_id }: NewProjectProps) => {
-  const rfqId = rfq_id || 1;
+const NewProject = ({ currentUser }: NewProjectProps) => {
+  const router = useRouter();
+  const rfqId = router.query.rfqId || 1;
+
   const [projectClientId, setProjectClientId] = useState(0);
   const [pmId, setPmId] = useState(0);
   const [industryId, seIndustryId] = useState(0);
@@ -55,7 +57,7 @@ const NewProject = ({ currentUser, rfq_id }: NewProjectProps) => {
   }
   const renderContent = () => (
     <form onSubmit={onSubmit}>
-      <h1 className="title m-3 mb-5">🎯 New Project</h1>
+      <h1 className="title m-3 mb-5">🍻 New Project</h1>
       <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <UserPicker
           handleChange={setProjectClientId}
@@ -147,5 +149,12 @@ export async function getStaticProps(context: any) {
     props: {}, // will be passed to the page component as props
   };
 }
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
+};
 
 export default NewProject;

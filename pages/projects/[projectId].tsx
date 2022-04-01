@@ -4,9 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
-import { IUser } from "../users";
 import { IProject } from ".";
-import { RequirementsTable } from "../../components/requirements/requirements-table";
+import { Partnumbers } from "../../components/partnumbers";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
 interface IProjectWithNames extends IProject {
@@ -51,7 +50,7 @@ const ShowProject: React.FC = () => {
   });
 
   if (!project) {
-    return <h1>RFQ not found</h1>;
+    return <h1>Project not found</h1>;
   } else {
     const {
       id,
@@ -94,6 +93,19 @@ const ShowProject: React.FC = () => {
       </div>
     );
 
+    const renderRfqLink = () => {
+      if (rfq_id > 1) {
+        return (
+          <button
+            className={`button is-success is-light m-4`}
+            onClick={() => Router.push(`/rfqs/${rfq_id}`)}
+          >
+            <span className="m-2 ">go to RFQ: </span> <b>{rfq}</b>
+          </button>
+        );
+      }
+    };
+
     const renderContent = () => (
       <>
         <div className="card-content">
@@ -113,9 +125,11 @@ const ShowProject: React.FC = () => {
                   }
                 }}
               >
-                {status}
+                <span className="m-2 ">status: </span>
+                <b>{status}</b>
               </button>
             </div>
+            {renderRfqLink()}
 
             <div className="my-3 ">
               <button
@@ -148,11 +162,6 @@ const ShowProject: React.FC = () => {
           </div>
 
           <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
-            <div className="field m-3">
-              <label className="label">From RFQ</label>
-              <div>{rfq}</div>
-            </div>
-
             <div className="field m-3">
               <label className="label">Industry</label>
               <div>{industry}</div>
@@ -191,8 +200,14 @@ const ShowProject: React.FC = () => {
             </div>
           </div>
         </div>
+        <div className="m-5">
+          <NiceButton onClick={() => router.push(`/partnumbers/new/${id}`)}>
+            <i className="far fa-check-circle"></i>
+            <span className="m-1"></span> Add Partnumber
+          </NiceButton>
+        </div>
 
-        {/* <RequirementsTable rfq_id={id} /> */}
+        <Partnumbers projectId={project.id} />
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Note</label>

@@ -1,6 +1,6 @@
 import Router, { useRouter } from "next/router";
 import { GetStaticPaths } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo, useCallback } from "react";
 import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
@@ -16,40 +16,39 @@ interface IRfqWithNames extends IRfq {
   status: string;
   final_solutions: string;
   conclusions: string;
+  project_id: number;
+  project_code: string;
   samples_expected: string;
   mp_expected: string;
   eau_max: number;
   department: string;
 }
 
-interface ShowRfqProps {
-  rfq: IRfqWithNames;
-  currentUser: IUser;
-}
-
 const ShowRfq: React.FC = () => {
   const router = useRouter();
   const { rfqId } = router.query;
   const [rfq, setRfq] = useState<IRfqWithNames>({
-    id: 1,
+    id: 0,
     rfq_code: "LOADING",
-    extra_note: "ppp",
-    eau: 5,
-    customer: "pupa",
-    distributor: "pupa",
-    pm: "pupa",
-    kam: "pupa",
-    updated: "pupa",
-    pm_fullname: "string",
-    kam_fullname: "pupa",
-    clickup_id: "pupa",
-    status: "pupa",
-    final_solutions: "pupa",
-    conclusions: "pupa",
-    samples_expected: "pupa",
-    mp_expected: "pupa",
-    eau_max: 6,
-    department: "pupa",
+    extra_note: "",
+    eau: 0,
+    customer: "",
+    distributor: "",
+    pm: "",
+    kam: "",
+    updated: "",
+    pm_fullname: "",
+    kam_fullname: "",
+    clickup_id: "",
+    project_id: 0,
+    project_code: "",
+    status: "",
+    final_solutions: "",
+    conclusions: "",
+    samples_expected: "",
+    mp_expected: "",
+    eau_max: 0,
+    department: "",
   });
 
   const id = rfqId;
@@ -57,8 +56,15 @@ const ShowRfq: React.FC = () => {
   const { doRequest, errorsJSX } = useRequest({
     url: `/rfqs/${id}`,
     method: "get",
-    onSuccess: (data: IRfqWithNames) => setRfq(data),
+    onSuccess: (data: IRfqWithNames) => onSuccess(data),
   });
+
+  const onSuccess = useCallback(
+    (data: IRfqWithNames) => {
+      setRfq(data);
+    },
+    [rfq]
+  );
 
   if (!rfq) {
     return <h1>RFQ not found</h1>;
@@ -75,6 +81,8 @@ const ShowRfq: React.FC = () => {
       kam,
       id,
       kam_fullname,
+      project_id,
+      project_code,
       pm_fullname,
       final_solutions,
       conclusions,
@@ -102,6 +110,27 @@ const ShowRfq: React.FC = () => {
       </div>
     );
 
+    const renderProjectLinkOrButton = () => {
+      if (project_id) {
+        return (
+          <button
+            className={`button is-success is-light m-4`}
+            onClick={() => Router.push(`/projects/${project_id}`)}
+          >
+            <span className="m-2 ">go to project: </span> <b>{project_code}</b>
+          </button>
+        );
+      } else {
+        return (
+          <NiceButton onClick={() => Router.push(`/projects/new/${id}`)}>
+            <i className="fas fa-plus"></i>
+            <span className="m-2 "></span>
+            <span>create project from this RFQ</span>
+          </NiceButton>
+        );
+      }
+    };
+
     const renderContent = () => (
       <>
         <div className="card-content">
@@ -109,7 +138,7 @@ const ShowRfq: React.FC = () => {
             <div className="is-flex is-flex-wrap-wrap">
               <h1 className="title my-3 is-4">
                 {rfq_code} {extra_note}
-              </h1>{" "}
+              </h1>
               <span className="m-3 "></span>
               <button
                 className={`button ${formatStatus()} is-light m-4`}
@@ -123,9 +152,11 @@ const ShowRfq: React.FC = () => {
                   }
                 }}
               >
-                {status}
+                <span className="m-2 ">status: </span>
+                <b>{status}</b>
               </button>
             </div>
+            {renderProjectLinkOrButton()}
 
             <div className="my-3 ">
               <button
@@ -220,6 +251,8 @@ const ShowRfq: React.FC = () => {
       </>
     );
 
+    // const calculation = useMemo(() => expensiveCalculation(count), [count]);
+
     useEffect(() => {
       doRequest();
     }, []);
@@ -246,4 +279,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default ShowRfq;
+export default memo(ShowRfq);

@@ -54,7 +54,7 @@ const DeleteClient: React.FC<IDeleteClient> = ({ clientId }) => {
             <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
               <div className="m-3">
                 <div>
-                  You are going to <b>delete</b> this Client!
+                  You are going to <b>delete</b> this client!
                 </div>
                 <div> Are you really sure you want to do this?</div>
               </div>

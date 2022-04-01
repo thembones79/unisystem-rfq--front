@@ -38,7 +38,7 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ currentUser }) => {
     onSuccess: (projects: IProject[]) => setRows(projects),
   });
 
-  const handleNewProject = () => Router.push(`/projects/new`);
+  const handleNewProject = () => Router.push(`/projects/new/1`);
 
   useEffect(() => {
     doRequest();

@@ -15,11 +15,11 @@ interface IProjectWithIds extends IProject {
   revision: string;
 }
 
-interface EditRfqProps {
+interface EditProjectProps {
   currentUser: IUser;
 }
 
-const EditRfq = ({ currentUser }: EditRfqProps) => {
+const EditProject = ({ currentUser }: EditProjectProps) => {
   const [project, setProject] = useState<IProjectWithIds>();
   const router = useRouter();
   const { projectId } = router.query;
@@ -57,7 +57,6 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
   });
 
   const setData = (data: IProjectWithIds) => {
-    console.log({ data });
     setProject(data);
     setPmId(data.pm_id);
     setNote(data.note);
@@ -78,7 +77,6 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
   if (!project) {
     return <Loader />;
   } else {
-    console.log({ newPmId });
     return (
       <div className="full-page">
         <div className="card max-w-900 m-3 big-shadow">
@@ -159,4 +157,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default EditRfq;
+export default EditProject;

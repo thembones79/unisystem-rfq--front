@@ -5,57 +5,53 @@ import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
 import { IUser } from "../users";
-import { IProject } from ".";
+import { IPartnumber } from ".";
 import { RequirementsTable } from "../../components/requirements/requirements-table";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
-interface IProjectWithNames extends IProject {
-  pm_fullname: string;
-  kam_fullname: string;
-  kam_folder: string;
-  rfq_id: number;
-  rfq: string;
-  clickup_id: string;
+export interface IPartnumberWithNames extends IPartnumber {
   version: string;
   revision: string;
   note: string;
+  pm_fullname: string;
+  kam_fullname: string;
 }
 
-const ShowProject: React.FC = () => {
+const ShowPartnumber: React.FC = () => {
   const router = useRouter();
-  const { projectId } = router.query;
-  const [project, setProject] = useState<IProjectWithNames>({
+  const { partnumberId } = router.query;
+  const [partnumber, setPartnumber] = useState<IPartnumberWithNames>({
     id: 0,
-    project_code: "",
+    project_id: 0,
+    pn: "",
+    project: "",
     department: "",
     client: "",
     industry: "",
     pm: "",
     kam: "",
+    updated: "",
     pm_fullname: "",
     kam_fullname: "",
-    kam_folder: "",
-    rfq_id: 0,
-    rfq: "",
-    clickup_id: "",
     version: "",
     revision: "",
     note: "",
-    updated: "",
   });
 
   const { doRequest, errorsJSX } = useRequest({
-    url: `/projects/${projectId}`,
+    url: `/partnumbers/${partnumberId}`,
     method: "get",
-    onSuccess: (data: IProjectWithNames) => setProject(data),
+    onSuccess: (data: IPartnumberWithNames) => setPartnumber(data),
   });
 
-  if (!project) {
-    return <h1>RFQ not found</h1>;
+  if (!partnumber) {
+    return <h1>Partnumber not found</h1>;
   } else {
     const {
       id,
-      project_code,
+      pn,
+      project,
+      project_id,
       department,
       client,
       industry,
@@ -63,28 +59,10 @@ const ShowProject: React.FC = () => {
       kam,
       pm_fullname,
       kam_fullname,
-      kam_folder,
-      rfq_id,
-      rfq,
-      clickup_id,
       version,
       revision,
       note,
-    } = project;
-
-    const status = ["new", "awaiting customer feedback", "complete"][
-      Math.floor(Math.random() * 3)
-    ];
-
-    const formatStatus = () => {
-      if (status === "awaiting customer feedback") {
-        return "is-warning";
-      } else if (status === "complete") {
-        return "is-success";
-      } else {
-        return "is-link";
-      }
-    };
+    } = partnumber;
 
     const renderLoader = () => (
       <div className="card-content">
@@ -99,48 +77,32 @@ const ShowProject: React.FC = () => {
         <div className="card-content">
           <div className="mb-3 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between is-flex-wrap-wrap">
             <div className="is-flex is-flex-wrap-wrap">
-              <h1 className="title my-3 is-4">{project_code}</h1>
+              <h1 className="title my-3 is-4">{pn}</h1>
               <span className="m-3 "></span>
-              <button
-                className={`button ${formatStatus()} is-light m-4`}
-                onClick={() => {
-                  const win = window.open(
-                    `https://app.clickup.com/t/${clickup_id}`,
-                    "_blank"
-                  );
-                  if (win) {
-                    win.focus();
-                  }
-                }}
-              >
-                {status}
-              </button>
             </div>
 
             <div className="my-3 ">
-              <button
-                className="button is-link is-inverted"
-                onClick={() => {
-                  const win = window.open(
-                    `https://unisystem3.sharepoint.com/sites/Customers-${kam_folder}/Shared%20Documents/${client}`,
-                    "_blank"
-                  );
-                  if (win) {
-                    win.focus();
-                  }
-                }}
-              >
-                <SharePointLogo />
-              </button>
-
               <span className="m-3 mr-6"></span>
-              <NiceButton onClick={() => Router.push(`/projects/edit/${id}`)}>
+              <NiceButton
+                onClick={() => Router.push(`/projects/${project_id}`)}
+              >
+                <i className="fas fa-chevron-left"></i>
+                <span className="m-2"></span>
+                <span>
+                  go to <b>{project}</b>
+                </span>
+              </NiceButton>
+              <span className="mx-5"></span>
+              <span className="m-3 mr-6"></span>
+              <NiceButton
+                onClick={() => Router.push(`/partnumbers/edit/${id}`)}
+              >
                 <i className="fas fa-edit"></i>
               </NiceButton>
               <span className="m-3"></span>
               <NiceButton
                 color="danger"
-                onClick={() => Router.push(`/projects/delete/${id}`)}
+                onClick={() => Router.push(`/partnumbers/delete/${id}`)}
               >
                 <i className="fas fa-trash-alt"></i>
               </NiceButton>
@@ -148,11 +110,6 @@ const ShowProject: React.FC = () => {
           </div>
 
           <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
-            <div className="field m-3">
-              <label className="label">From RFQ</label>
-              <div>{rfq}</div>
-            </div>
-
             <div className="field m-3">
               <label className="label">Industry</label>
               <div>{industry}</div>
@@ -168,7 +125,7 @@ const ShowProject: React.FC = () => {
               <div>{department}</div>
             </div>
             <div className="field m-3">
-              <label className="label">Project Manager</label>
+              <label className="label">Partnumber Manager</label>
               <div>
                 {pm_fullname} ({pm})
               </div>
@@ -208,7 +165,7 @@ const ShowProject: React.FC = () => {
 
     return (
       <div className="card ">
-        {project_code === "" ? renderLoader() : renderContent()}
+        {pn === "" ? renderLoader() : renderContent()}
         {errorsJSX()}
       </div>
     );
@@ -228,4 +185,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default ShowProject;
+export default ShowPartnumber;
