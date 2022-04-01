@@ -1,60 +1,62 @@
 import React, { useEffect, useState } from "react";
 import Router, { useRouter } from "next/router";
 import { GetStaticPaths } from "next";
+import { IUser } from "../../users";
+import { Loader } from "../../../components/loader";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { IClient } from "..";
-import { Loader } from "../../../components/loader";
+import { IProject } from "..";
 
-interface IDeleteClient {
-  clientId: string;
+interface DeleteProjectProps {
+  currentUser: IUser;
 }
 
-const DeleteClient: React.FC<IDeleteClient> = ({ clientId }) => {
-  const { doRequest, errorsJSX } = useRequest({
-    url: `/clients/${clientId}`,
-    method: "delete",
-    onSuccess: () => router.push(`/clients`),
-  });
-
-  useEffect(() => {
-    getClient();
-  }, []);
-
-  const initRequest = useRequest({
-    url: `/clients/${clientId}`,
-    method: "get",
-    onSuccess: (data: IClient) => setData(data),
-  });
-  const getClient = initRequest.doRequest;
-  const [client, setClient] = useState<IClient>();
-
+const DeleteProject = ({ currentUser }: DeleteProjectProps) => {
+  const [project, setProject] = useState<IProject>();
   const router = useRouter();
+  const { projectId } = router.query;
+  const initRequest = useRequest({
+    url: `/projects/${projectId}`,
+    method: "get",
+    onSuccess: (data: IProject) => setProject(data),
+  });
 
-  const setData = (data: IClient) => {
-    setClient(data);
+  const { doRequest, errorsJSX } = useRequest({
+    url: `/projects/${projectId}`,
+    method: "delete",
+    onSuccess: () => router.push(`/projects`),
+  });
+
+  const deleteProject = async () => {
+    await doRequest();
   };
 
-  if (!client) {
+  const getProject = initRequest.doRequest;
+
+  useEffect(() => {
+    getProject();
+  }, []);
+
+  if (!currentUser) {
+    return <div></div>;
+  }
+
+  if (!project) {
     return <Loader />;
   } else {
-    const { name } = client;
-
-    const deleteClient = () => {
-      doRequest();
-    };
+    const { project_code, id } = project;
 
     return (
       <div className="full-page">
         <div className="card max-w-800 m-3 big-shadow">
           <div className="card-content">
-            <h1 className="title m-3 mb-6 is-4">
-              <i className="fas fa-trash-alt mr-1"></i> Delete {name}?
+            <h1 className="title m-3 is-4 mb-6">
+              <i className="fas fa-trash-alt mr-1"></i> Delete {project_code}?
             </h1>
             <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
               <div className="m-3">
                 <div>
-                  You are going to <b>delete</b> this client!
+                  You are going to <b>delete</b> this project!
                 </div>
                 <div> Are you really sure you want to do this?</div>
               </div>
@@ -62,15 +64,15 @@ const DeleteClient: React.FC<IDeleteClient> = ({ clientId }) => {
 
             {errorsJSX()}
             <div className="m-3 mt-6 ">
-              <NiceButton color="danger" onClick={deleteClient}>
+              <NiceButton color="danger" onClick={deleteProject}>
                 <i className="far fa-trash-alt"></i>
                 <span className="m-1"></span> Yes, I'm 100% sure. Delete this
-                guy
+                project
               </NiceButton>
               <span className="m-3"></span>
               <NiceButton
                 color="cancel"
-                onClick={() => router.push(`/clients`)}
+                onClick={() => router.push(`/projects/${id}`)}
               >
                 No. I was wrong. Take me back, please
               </NiceButton>
@@ -84,7 +86,7 @@ const DeleteClient: React.FC<IDeleteClient> = ({ clientId }) => {
 
 export async function getStaticProps(context: any) {
   return {
-    props: { clientId: context.params.clientId }, // will be passed to the page component as props
+    props: {}, // will be passed to the page component as props
   };
 }
 
@@ -95,4 +97,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default DeleteClient;
+export default DeleteProject;

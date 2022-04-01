@@ -1,96 +1,79 @@
 import Router, { useRouter } from "next/router";
 import { GetStaticPaths } from "next";
-import React, { useEffect, useState, memo, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
-import { IUser } from "../users";
-import { IRfq } from ".";
-import { RequirementsTable } from "../../components/requirements/requirements-table";
+import { IProject } from ".";
+import { Partnumbers } from "../../components/partnumbers";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
-interface IRfqWithNames extends IRfq {
+interface IProjectWithNames extends IProject {
   pm_fullname: string;
   kam_fullname: string;
+  kam_folder: string;
+  rfq_id: number;
+  rfq: string;
   clickup_id: string;
-  status: string;
-  final_solutions: string;
-  conclusions: string;
-  project_id: number;
-  project_code: string;
-  samples_expected: string;
-  mp_expected: string;
-  eau_max: number;
-  department: string;
+  version: string;
+  revision: string;
+  note: string;
 }
 
-const ShowRfq: React.FC = () => {
+const ShowProject: React.FC = () => {
   const router = useRouter();
-  const { rfqId } = router.query;
-  const [rfq, setRfq] = useState<IRfqWithNames>({
+  const { projectId } = router.query;
+  const [project, setProject] = useState<IProjectWithNames>({
     id: 0,
-    rfq_code: "LOADING",
-    extra_note: "",
-    eau: 0,
-    customer: "",
-    distributor: "",
+    project_code: "",
+    department: "",
+    client: "",
+    industry: "",
     pm: "",
     kam: "",
-    updated: "",
     pm_fullname: "",
     kam_fullname: "",
+    kam_folder: "",
+    rfq_id: 0,
+    rfq: "",
     clickup_id: "",
-    project_id: 0,
-    project_code: "",
-    status: "",
-    final_solutions: "",
-    conclusions: "",
-    samples_expected: "",
-    mp_expected: "",
-    eau_max: 0,
-    department: "",
+    version: "",
+    revision: "",
+    note: "",
+    updated: "",
   });
-
-  const id = rfqId;
 
   const { doRequest, errorsJSX } = useRequest({
-    url: `/rfqs/${id}`,
+    url: `/projects/${projectId}`,
     method: "get",
-    onSuccess: (data: IRfqWithNames) => onSuccess(data),
+    onSuccess: (data: IProjectWithNames) => setProject(data),
   });
 
-  const onSuccess = useCallback(
-    (data: IRfqWithNames) => {
-      setRfq(data);
-    },
-    [rfq]
-  );
-
-  if (!rfq) {
-    return <h1>RFQ not found</h1>;
+  if (!project) {
+    return <h1>Project not found</h1>;
   } else {
     const {
-      rfq_code,
-      extra_note,
-      eau,
-      customer,
-      clickup_id,
-      status,
-      distributor,
+      id,
+      project_code,
+      department,
+      client,
+      industry,
       pm,
       kam,
-      id,
-      kam_fullname,
-      project_id,
-      project_code,
       pm_fullname,
-      final_solutions,
-      conclusions,
-      samples_expected,
-      mp_expected,
-      eau_max,
-      department,
-    } = rfq;
+      kam_fullname,
+      kam_folder,
+      rfq_id,
+      rfq,
+      clickup_id,
+      version,
+      revision,
+      note,
+    } = project;
+
+    const status = ["new", "awaiting customer feedback", "complete"][
+      Math.floor(Math.random() * 3)
+    ];
 
     const formatStatus = () => {
       if (status === "awaiting customer feedback") {
@@ -110,23 +93,15 @@ const ShowRfq: React.FC = () => {
       </div>
     );
 
-    const renderProjectLinkOrButton = () => {
-      if (project_id) {
+    const renderRfqLink = () => {
+      if (rfq_id > 1) {
         return (
           <button
             className={`button is-success is-light m-4`}
-            onClick={() => Router.push(`/projects/${project_id}`)}
+            onClick={() => Router.push(`/rfqs/${rfq_id}`)}
           >
-            <span className="m-2 ">go to project: </span> <b>{project_code}</b>
+            <span className="m-2 ">go to RFQ: </span> <b>{rfq}</b>
           </button>
-        );
-      } else {
-        return (
-          <NiceButton onClick={() => Router.push(`/projects/new/${id}`)}>
-            <i className="fas fa-plus"></i>
-            <span className="m-2 "></span>
-            <span>create project from this RFQ</span>
-          </NiceButton>
         );
       }
     };
@@ -136,9 +111,7 @@ const ShowRfq: React.FC = () => {
         <div className="card-content">
           <div className="mb-3 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between is-flex-wrap-wrap">
             <div className="is-flex is-flex-wrap-wrap">
-              <h1 className="title my-3 is-4">
-                {rfq_code} {extra_note}
-              </h1>
+              <h1 className="title my-3 is-4">{project_code}</h1>
               <span className="m-3 "></span>
               <button
                 className={`button ${formatStatus()} is-light m-4`}
@@ -156,14 +129,14 @@ const ShowRfq: React.FC = () => {
                 <b>{status}</b>
               </button>
             </div>
-            {renderProjectLinkOrButton()}
+            {renderRfqLink()}
 
             <div className="my-3 ">
               <button
                 className="button is-link is-inverted"
                 onClick={() => {
                   const win = window.open(
-                    `https://riverdi.sharepoint.com/sites/ProjectsManagementGroup/Shared Documents/RIVERDI PROJECTS/${kam}_!PROSPECTS/${rfq_code}`,
+                    `https://unisystem3.sharepoint.com/sites/Customers-${kam_folder}/Shared%20Documents/${client}`,
                     "_blank"
                   );
                   if (win) {
@@ -175,13 +148,13 @@ const ShowRfq: React.FC = () => {
               </button>
 
               <span className="m-3 mr-6"></span>
-              <NiceButton onClick={() => Router.push(`/rfqs/edit/${id}`)}>
+              <NiceButton onClick={() => Router.push(`/projects/edit/${id}`)}>
                 <i className="fas fa-edit"></i>
               </NiceButton>
               <span className="m-3"></span>
               <NiceButton
                 color="danger"
-                onClick={() => Router.push(`/rfqs/delete/${id}`)}
+                onClick={() => Router.push(`/projects/delete/${id}`)}
               >
                 <i className="fas fa-trash-alt"></i>
               </NiceButton>
@@ -190,23 +163,15 @@ const ShowRfq: React.FC = () => {
 
           <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
             <div className="field m-3">
-              <label className="label">EAU min</label>
-              <div>{eau}</div>
+              <label className="label">Industry</label>
+              <div>{industry}</div>
             </div>
 
             <div className="field m-3">
-              <label className="label">EAU max</label>
-              <div>{eau_max}</div>
+              <label className="label">Client</label>
+              <div>{client}</div>
             </div>
 
-            <div className="field m-3">
-              <label className="label">Customer</label>
-              <div>{customer}</div>
-            </div>
-            <div className="field m-3">
-              <label className="label">Distributor</label>
-              <div>{distributor}</div>
-            </div>
             <div className="field m-3">
               <label className="label">Department</label>
               <div>{department}</div>
@@ -225,33 +190,32 @@ const ShowRfq: React.FC = () => {
             </div>
 
             <div className="field m-3">
-              <label className="label">Samples Expected</label>
-              <div>{samples_expected}</div>
+              <label className="label">Version</label>
+              <div>{version}</div>
             </div>
 
             <div className="field m-3">
-              <label className="label">MP Expected</label>
-              <div>{mp_expected}</div>
+              <label className="label">Revision</label>
+              <div>{revision}</div>
             </div>
           </div>
         </div>
+        <div className="m-5">
+          <NiceButton onClick={() => router.push(`/partnumbers/new/${id}`)}>
+            <i className="far fa-check-circle"></i>
+            <span className="m-1"></span> Add Partnumber
+          </NiceButton>
+        </div>
 
-        <RequirementsTable rfq_id={id} />
+        <Partnumbers projectId={project.id} />
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
-            <label className="label">Final Solutions</label>
-            <div>{final_solutions}</div>
-          </div>
-
-          <div className="field m-5">
-            <label className="label">Conclusions</label>
-            <div>{conclusions}</div>
+            <label className="label">Note</label>
+            <div>{note}</div>
           </div>
         </div>
       </>
     );
-
-    // const calculation = useMemo(() => expensiveCalculation(count), [count]);
 
     useEffect(() => {
       doRequest();
@@ -259,7 +223,7 @@ const ShowRfq: React.FC = () => {
 
     return (
       <div className="card ">
-        {rfq_code === "LOADING" ? renderLoader() : renderContent()}
+        {project_code === "" ? renderLoader() : renderContent()}
         {errorsJSX()}
       </div>
     );
@@ -279,4 +243,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default memo(ShowRfq);
+export default ShowProject;

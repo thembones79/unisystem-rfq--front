@@ -5,44 +5,40 @@ import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { IColumn, SfTable } from "../../components/sf-table";
 
-interface RfqsTableProps {
+interface ProjectsTableProps {
   currentUser: IUser;
 }
 
-export interface IRfq {
+export interface IProject {
   id: number;
-  rfq_code: string;
-  extra_note: string;
-  eau: number;
-  customer: string;
-  distributor: string;
+  project_code: string;
+  department: string;
+  client: string;
+  industry: string;
   pm: string;
   kam: string;
   updated: string;
-  department: string;
 }
 
-const columns: IColumn<IRfq>[] = [
-  { name: "rfq_code", label: "RFQ Code" },
-  { name: "extra_note", label: "Extra Note" },
-  { name: "eau", label: "EAU" },
-  { name: "customer", label: "Customer" },
-  { name: "distributor", label: "Distributor" },
+const columns: IColumn<IProject>[] = [
+  { name: "project_code", label: "Code" },
+  { name: "client", label: "Client" },
+  { name: "industry", label: "Industry" },
   { name: "department", label: "Department" },
   { name: "pm", label: "PM" },
   { name: "kam", label: "KAM" },
   { name: "updated", label: "Updated" },
 ];
 
-const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
-  const [rows, setRows] = useState<IRfq[]>([]);
+const ProjectsTable: React.FC<ProjectsTableProps> = ({ currentUser }) => {
+  const [rows, setRows] = useState<IProject[]>([]);
   const { doRequest, errorsJSX } = useRequest({
-    url: "/rfqs",
+    url: "/projects",
     method: "get",
-    onSuccess: (rfqs: IRfq[]) => setRows(rfqs),
+    onSuccess: (projects: IProject[]) => setRows(projects),
   });
 
-  const handleNewRfq = () => Router.push(`/rfqs/new`);
+  const handleNewProject = () => Router.push(`/projects/new/1`);
 
   useEffect(() => {
     doRequest();
@@ -51,13 +47,13 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   return rows.length > 0 ? (
     <div>
       <div className="m-5">
-        <NiceButton onClick={handleNewRfq}>
+        <NiceButton onClick={handleNewProject}>
           <i className="far fa-check-circle"></i>
-          <span className="m-1"></span> New RFQ
+          <span className="m-1"></span> New Project
         </NiceButton>
       </div>
       <div className="table-container">
-        <SfTable columns={columns} rows={rows} route="rfqs" />
+        <SfTable columns={columns} rows={rows} route="projects" />
         {errorsJSX()}
       </div>
     </div>
@@ -66,4 +62,4 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   );
 };
 
-export default RfqsTable;
+export default ProjectsTable;

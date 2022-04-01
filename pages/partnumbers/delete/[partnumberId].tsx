@@ -1,60 +1,62 @@
 import React, { useEffect, useState } from "react";
 import Router, { useRouter } from "next/router";
 import { GetStaticPaths } from "next";
+import { IUser } from "../../users";
+import { Loader } from "../../../components/loader";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
-import { IClient } from "..";
-import { Loader } from "../../../components/loader";
+import { IPartnumber } from "..";
 
-interface IDeleteClient {
-  clientId: string;
+interface DeletePartnumberProps {
+  currentUser: IUser;
 }
 
-const DeleteClient: React.FC<IDeleteClient> = ({ clientId }) => {
-  const { doRequest, errorsJSX } = useRequest({
-    url: `/clients/${clientId}`,
-    method: "delete",
-    onSuccess: () => router.push(`/clients`),
-  });
-
-  useEffect(() => {
-    getClient();
-  }, []);
-
-  const initRequest = useRequest({
-    url: `/clients/${clientId}`,
-    method: "get",
-    onSuccess: (data: IClient) => setData(data),
-  });
-  const getClient = initRequest.doRequest;
-  const [client, setClient] = useState<IClient>();
-
+const DeletePartnumber = ({ currentUser }: DeletePartnumberProps) => {
+  const [partnumber, setPartnumber] = useState<IPartnumber>();
   const router = useRouter();
+  const { partnumberId } = router.query;
+  const initRequest = useRequest({
+    url: `/partnumbers/${partnumberId}`,
+    method: "get",
+    onSuccess: (data: IPartnumber) => setPartnumber(data),
+  });
 
-  const setData = (data: IClient) => {
-    setClient(data);
+  const { doRequest, errorsJSX } = useRequest({
+    url: `/partnumbers/${partnumberId}`,
+    method: "delete",
+    onSuccess: () => router.push(`/partnumbers`),
+  });
+
+  const deletePartnumber = async () => {
+    await doRequest();
   };
 
-  if (!client) {
+  const getPartnumber = initRequest.doRequest;
+
+  useEffect(() => {
+    getPartnumber();
+  }, []);
+
+  if (!currentUser) {
+    return <div></div>;
+  }
+
+  if (!partnumber) {
     return <Loader />;
   } else {
-    const { name } = client;
-
-    const deleteClient = () => {
-      doRequest();
-    };
+    const { pn, id } = partnumber;
 
     return (
       <div className="full-page">
         <div className="card max-w-800 m-3 big-shadow">
           <div className="card-content">
-            <h1 className="title m-3 mb-6 is-4">
-              <i className="fas fa-trash-alt mr-1"></i> Delete {name}?
+            <h1 className="title m-3 is-4 mb-6">
+              <i className="fas fa-trash-alt mr-1"></i> Delete {pn}?
             </h1>
             <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
               <div className="m-3">
                 <div>
-                  You are going to <b>delete</b> this client!
+                  You are going to <b>delete</b> this partnumber!
                 </div>
                 <div> Are you really sure you want to do this?</div>
               </div>
@@ -62,15 +64,15 @@ const DeleteClient: React.FC<IDeleteClient> = ({ clientId }) => {
 
             {errorsJSX()}
             <div className="m-3 mt-6 ">
-              <NiceButton color="danger" onClick={deleteClient}>
+              <NiceButton color="danger" onClick={deletePartnumber}>
                 <i className="far fa-trash-alt"></i>
                 <span className="m-1"></span> Yes, I'm 100% sure. Delete this
-                guy
+                partnumber
               </NiceButton>
               <span className="m-3"></span>
               <NiceButton
                 color="cancel"
-                onClick={() => router.push(`/clients`)}
+                onClick={() => router.push(`/partnumbers/${id}`)}
               >
                 No. I was wrong. Take me back, please
               </NiceButton>
@@ -84,7 +86,7 @@ const DeleteClient: React.FC<IDeleteClient> = ({ clientId }) => {
 
 export async function getStaticProps(context: any) {
   return {
-    props: { clientId: context.params.clientId }, // will be passed to the page component as props
+    props: {}, // will be passed to the page component as props
   };
 }
 
@@ -95,4 +97,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default DeleteClient;
+export default DeletePartnumber;

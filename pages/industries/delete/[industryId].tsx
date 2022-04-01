@@ -61,7 +61,7 @@ const DeleteIndustry: React.FC = () => {
               <NiceButton color="danger" onClick={deleteIndustry}>
                 <i className="far fa-trash-alt"></i>
                 <span className="m-1"></span> Yes, I'm 100% sure. Delete this
-                guy
+                industry
               </NiceButton>
               <span className="m-3"></span>
               <NiceButton
