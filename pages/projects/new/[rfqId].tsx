@@ -38,7 +38,6 @@ const NewProject = ({ currentUser }: NewProjectProps) => {
 
   const onSuccess = (project: IProject) => {
     Router.push(`/projects/${project.id}`);
-    setIsLoading(false);
   };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
