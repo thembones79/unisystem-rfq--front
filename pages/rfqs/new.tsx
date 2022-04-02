@@ -47,7 +47,6 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
 
   const onSuccess = (rfq: IRfq) => {
     Router.push(`/rfqs/${rfq.id}`);
-    setIsLoading(false);
   };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
