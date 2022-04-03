@@ -7,6 +7,8 @@ export interface IError {
   field?: string;
 }
 
+const cache: any = {};
+
 export const useRequest = ({
   url,
   method,
@@ -37,6 +39,14 @@ export const useRequest = ({
   };
 
   const doRequest = async (props = {}) => {
+    if (method === "get") {
+      if (cache[method + url]) {
+        onSuccess(cache[method + url]);
+      }
+    } else {
+      cache["get" + url] = "";
+    }
+
     try {
       const response = await axios[method](
         ROOT_URL + url,
@@ -49,6 +59,9 @@ export const useRequest = ({
         { headers }
       );
       setErrors([]);
+      if (method === "get") {
+        cache[method + url] = response.data;
+      }
 
       if (onSuccess) {
         onSuccess(response.data);
