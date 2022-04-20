@@ -28,7 +28,6 @@ const NewProject = ({ currentUser }: NewProjectProps) => {
     body: {
       project_client_id: projectClientId,
       industry_id: industryId,
-      department,
       pm_id: pmId,
       note,
       rfq_id: rfqId,
@@ -78,25 +77,6 @@ const NewProject = ({ currentUser }: NewProjectProps) => {
           fieldname="pmId"
           fetch="/users"
         />
-
-        <div className="field m-3">
-          <label className="label">Department</label>
-          <div className={`select `}>
-            <select
-              name="department"
-              id="department"
-              value={department}
-              required
-              onChange={(e) => {
-                setDepartment(e.target.value);
-              }}
-            >
-              <option></option>
-              <option value={"PL"}>PL</option>
-              <option value={"EX"}>EX</option>
-            </select>
-          </div>
-        </div>
 
         <div className="field m-3">
           <label className="label">Note</label>
