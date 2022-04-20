@@ -8,6 +8,11 @@ import { IProject } from ".";
 import { Partnumbers } from "../../components/partnumbers";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
+interface IspPath {
+  department: string;
+  kam_folder: string;
+}
+
 interface IProjectWithNames extends IProject {
   pm_fullname: string;
   kam_fullname: string;
@@ -16,6 +21,7 @@ interface IProjectWithNames extends IProject {
   rfq: string;
   clickup_id: string;
   version: string;
+  status: string;
   revision: string;
   note: string;
 }
@@ -38,6 +44,7 @@ const ShowProject: React.FC = () => {
     rfq: "",
     clickup_id: "",
     version: "",
+    status: "",
     revision: "",
     note: "",
     updated: "",
@@ -67,18 +74,26 @@ const ShowProject: React.FC = () => {
       rfq,
       clickup_id,
       version,
+      status,
       revision,
       note,
     } = project;
 
-    const status = ["new", "awaiting customer feedback", "complete"][
-      Math.floor(Math.random() * 3)
-    ];
+    const spPath = ({ department, kam_folder }: IspPath) => {
+      const domain = "https://unisystem3.sharepoint.com/sites/";
+      if (department === "EX") {
+        return `${domain}/SalesEX/Shared Documents/Projects`;
+      } else if (department === "PL") {
+        return `${domain}/Customers-${kam_folder}/Shared Documents`;
+      } else {
+        throw new Error(`Department ${department} does not exist!`);
+      }
+    };
 
     const formatStatus = () => {
-      if (status === "awaiting customer feedback") {
+      if (status === "open") {
         return "is-warning";
-      } else if (status === "complete") {
+      } else if (status === "in progress") {
         return "is-success";
       } else {
         return "is-link";
@@ -135,8 +150,9 @@ const ShowProject: React.FC = () => {
               <button
                 className="button is-link is-inverted"
                 onClick={() => {
+                  const path = spPath({ department, kam_folder });
                   const win = window.open(
-                    `https://unisystem3.sharepoint.com/sites/Customers-${kam_folder}/Shared%20Documents/${client}`,
+                    `${path}/${client}/${project_code}`,
                     "_blank"
                   );
                   if (win) {
