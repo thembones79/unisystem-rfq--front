@@ -6,6 +6,7 @@ import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
 import { IProject } from ".";
 import { Partnumbers } from "../../components/partnumbers";
+import { Rndtasks } from "../../components/rndtasks";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
 interface IspPath {
@@ -224,6 +225,16 @@ const ShowProject: React.FC = () => {
         </div>
 
         <Partnumbers projectId={project.id} />
+        <hr />
+        <div className="m-5">
+          <NiceButton onClick={() => router.push(`/rndtasks/new/${id}`)}>
+            <i className="far fa-check-circle"></i>
+            <span className="m-1"></span> Add Task for R&D
+          </NiceButton>
+        </div>
+
+        <Rndtasks projectId={project.id} />
+        <hr />
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Note</label>

@@ -137,7 +137,7 @@ const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
                     <option value={1}>admin</option>
                     <option value={2}>PM</option>
                     <option value={3}>KAM PL</option>
-                    <option value={3}>KAM EX</option>
+                    <option value={4}>KAM EX</option>
                   </select>
                 </div>
               </div>
