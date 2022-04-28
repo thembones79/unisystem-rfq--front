@@ -46,7 +46,7 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
 
   const onCancel = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    Router.push("/projects");
+    Router.push(`/projects/${projectId}`);
   };
 
   const sizeOptions = [

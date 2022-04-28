@@ -37,7 +37,11 @@ export const Partnumbers: React.FC<PartnumbersTableProps> = ({ projectId }) => {
   const renderTableBody = () => {
     return partnumbersTable.map(({ pn, version, revision, note, id }) => {
       return (
-        <tr key={id} onClick={() => router.push(`/partnumbers/${id}`)}>
+        <tr
+          style={{ cursor: "pointer" }}
+          key={id}
+          onClick={() => router.push(`/partnumbers/${id}`)}
+        >
           <td className="p-2">{pn}</td>
           <td className="p-2">{version}</td>
           <td className="p-2">{revision}</td>

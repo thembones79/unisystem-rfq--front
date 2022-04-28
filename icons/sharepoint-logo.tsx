@@ -1,6 +1,13 @@
 import React from "react";
-export const SharePointLogo = () => (
-  <svg viewBox="-0.12979372698077785 0 32.12979372698078 32" width="32px">
+
+interface ISharepointLogo {
+  width?: number;
+}
+export const SharePointLogo = ({ width }: ISharepointLogo) => (
+  <svg
+    viewBox="-0.12979372698077785 0 32.12979372698078 32"
+    width={`${width || 32}px`}
+  >
     <circle cx="15" cy="9.5" fill="#036c70" r="9.5" />
     <circle cx="23.875" cy="17.875" fill="#1a9ba1" r="8.125" />
     <circle cx="16" cy="25.5" fill="#37c6d0" r="6.5" />
