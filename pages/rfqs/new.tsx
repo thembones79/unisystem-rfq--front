@@ -212,7 +212,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
 
   return (
     <div className="full-page">
-      <div className="card max-w-900 m-3 big-shadow">
+      <div className="card  m-3 big-shadow">
         <div className="card-content">
           {isLoading ? renderLoader() : renderContent()}
 

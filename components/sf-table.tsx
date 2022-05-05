@@ -142,7 +142,9 @@ export const SfTable = <T extends { id: number }>(props: SfTableProps<T>) => {
         return (
           <tr key={id} onClick={() => Router.push(`/${route}/${id}`)}>
             {columnNames.map((columnName, idx) => (
-              <td key={idx}>{row[columnName]}</td>
+              <td className="pl-3" key={idx}>
+                {row[columnName]}
+              </td>
             ))}
           </tr>
         );

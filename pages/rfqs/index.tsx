@@ -15,7 +15,6 @@ export interface IRfq {
   extra_note: string;
   eau: number;
   customer: string;
-  distributor: string;
   pm: string;
   kam: string;
   updated: string;
@@ -24,10 +23,9 @@ export interface IRfq {
 
 const columns: IColumn<IRfq>[] = [
   { name: "rfq_code", label: "RFQ Code" },
-  { name: "extra_note", label: "Extra Note" },
+  { name: "extra_note", label: "Name" },
   { name: "eau", label: "EAU" },
   { name: "customer", label: "Customer" },
-  { name: "distributor", label: "Distributor" },
   { name: "department", label: "Department" },
   { name: "pm", label: "PM" },
   { name: "kam", label: "KAM" },
