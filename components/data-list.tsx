@@ -1,70 +1,38 @@
-import React, { useState, useEffect } from "react";
-import { useRequest } from "../hooks/useRequest";
-
-export interface IOptionalUser {
-  id: number;
-  email?: string;
-  username?: string;
-  name?: string;
-  shortname?: string;
-  role_id?: number;
-}
-
-export interface DataListProps {
-  handleChange: React.Dispatch<React.SetStateAction<number>>;
+import React from "react";
+interface DataListProps {
+  options: string[];
+  value: string;
   label: string;
   fieldname: string;
-  fetch: string;
-  initialValue?: number;
+  className: string;
+  onChange: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const DataList: React.FC<DataListProps> = ({
-  handleChange,
+  options,
+  value,
   label,
   fieldname,
-  fetch,
-  initialValue,
+  onChange,
+  className,
 }) => {
-  const [usersList, setUsersList] = useState<IOptionalUser[]>([]);
-  const { doRequest, errorsJSX, errors } = useRequest({
-    url: fetch,
-    method: "get",
-    onSuccess: (list: IOptionalUser[]) => setUsersList(list),
-  });
-
-  const renderOptions = () => {
-    return usersList.map(({ name, id }) => (
-      <option key={id} value={id}>
-        {name}
-      </option>
-    ));
+  const renderOptions = (opts: string[]) => {
+    return opts.map((x) => <option key={x}>{x}</option>);
   };
 
-  useEffect(() => {
-    doRequest();
-  }, []);
-
-  return errors.length ? (
-    <div>{errorsJSX()}</div>
-  ) : (
-    <div>
-      <div className="field m-3">
-        <label className="label">{label}</label>
-
-        <div className={`select ${usersList.length === 0 ? "is-loading" : ""}`}>
-          <input
-            name={fieldname}
-            list="mechanics"
-            type="text"
-            value={initialValue}
-            required
-            onChange={(e) => {
-              handleChange(parseInt(e.target.value));
-            }}
-          />
-        </div>
-        <datalist id={fieldname}>{renderOptions()}</datalist>
-      </div>
+  return (
+    <div className="field m-3">
+      <label className="label is-small">{label}</label>
+      <input
+        name={fieldname}
+        list={fieldname}
+        className={className}
+        style={{ maxWidth: "150px", width: "100%" }}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <datalist id={fieldname}>{renderOptions(options)}</datalist>
     </div>
   );
 };

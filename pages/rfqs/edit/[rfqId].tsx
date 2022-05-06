@@ -5,6 +5,7 @@ import { UserPicker } from "../../../components/user-picker";
 import { IUser } from "../../users";
 import { Loader } from "../../../components/loader";
 import { NiceButton } from "../../../components/nice-button";
+import { Toggle } from "../../../components/toggle";
 import { useRequest } from "../../../hooks/useRequest";
 import { IRfq } from "../";
 
@@ -18,7 +19,6 @@ interface IRfqWithIds extends IRfq {
   samples_expected: string;
   mp_expected: string;
   eau_max: number;
-  department: string;
 }
 
 interface EditRfqProps {
@@ -32,6 +32,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
   const [newDepartment, setDepartment] = useState("");
   const [newExtraNote, setExtraNote] = useState("");
   const [newEau, setEau] = useState(0);
+  const [newForValuation, setForValuation] = useState(false);
   const [newCustomerId, setCustomerId] = useState(0);
   const [newDistributorId, setDistributorId] = useState(0);
   const [newPmId, setPmId] = useState(0);
@@ -47,6 +48,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
     body: {
       extra_note: newExtraNote,
       eau: newEau,
+      for_valuation: newForValuation,
       customer_id: newCustomerId,
       distributor_id: newDistributorId,
       pm_id: newPmId,
@@ -81,6 +83,7 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
     setRfq(data);
     setExtraNote(data.extra_note || "");
     setEau(data.eau);
+    setForValuation(data.for_valuation || false);
     setCustomerId(data.customer_id);
     setDistributorId(data.distributor_id);
     setPmId(data.pm_id);
@@ -138,6 +141,13 @@ const EditRfq = ({ currentUser }: EditRfqProps) => {
                     onChange={(e) => setEau(parseInt(e.target.value))}
                   />
                 </div>
+
+                <Toggle
+                  handleChange={setForValuation}
+                  label="for valuation"
+                  fieldname="for_valuation"
+                  initialValue={newForValuation}
+                />
 
                 <div className="field m-3">
                   <label className="label">EAU max</label>

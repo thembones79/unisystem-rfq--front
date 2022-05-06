@@ -3,7 +3,10 @@ import Router from "next/router";
 import { useRequest } from "../../hooks/useRequest";
 import { UserPicker } from "../../components/user-picker";
 import { NiceButton } from "../../components/nice-button";
+import { Toggle } from "../../components/toggle";
 import { Loader } from "../../components/loader";
+import { DataList } from "../../components/data-list";
+import { sizeOptions } from "../../utils/datalists-options";
 import { IUser } from "../users";
 import { IRfq } from "./";
 
@@ -13,34 +16,61 @@ interface NewRfqProps {
 
 const NewRfq = ({ currentUser }: NewRfqProps) => {
   const [eau, setEau] = useState(0);
-  const [customerId, setCustomerId] = useState(0);
-  const [distributorId, setDistributorId] = useState(0);
-  const [pmId, setPmId] = useState(0);
-  const [kamId, setKamId] = useState(0);
-  const [finalSolutions, setFinalSolutions] = useState("");
-  const [conclusions, setConclusions] = useState("");
+  const [forValuation, setForValuation] = useState(false);
+  const [projectClientId, setProjectClientId] = useState(0);
   const [samplesExpected, setSamplesExpected] = useState("");
   const [mpExpected, setMpExpected] = useState("");
-  const [eauMax, setEauMax] = useState(0);
-  const [extraNote, setExtraNote] = useState("");
-  const [department, setDepartment] = useState("");
+  const [name, setName] = useState("");
+  const [reqDispTech, setReqDispTech] = useState("");
+  const [reqDispSize, setReqDispSize] = useState("");
+  const [reqDispRes, setReqDispRes] = useState("");
+  const [reqDispBrigt, setReqDispBrigt] = useState("");
+  const [reqDispAngle, setReqDispAngle] = useState("");
+  const [reqDispOd, setReqDispOd] = useState("");
+  const [reqDispAa, setReqDispAa] = useState("");
+  const [reqDispInter, setReqDispInter] = useState("");
+  const [reqDispOt, setReqDispOt] = useState("");
+  const [reqDispSt, setReqDispSt] = useState("");
+  const [reqDispSpec, setReqDispSpec] = useState("");
+  const [reqTpSize, setReqTpSize] = useState("");
+  const [reqTpAa, setReqTpAa] = useState("");
+  const [reqTpTech, setReqTpTech] = useState("");
+  const [reqTpOt, setReqTpOt] = useState("");
+  const [reqTpInter, setReqTpInter] = useState("");
+  const [reqTpGlass, setReqTpGlass] = useState("");
+  const [reqTp, setReqTp] = useState("");
+  const [reqOthers, setReqOthers] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
   const { doRequest, errorsJSX, inputStyle } = useRequest({
     url: "/rfqs",
     method: "post",
     body: {
       eau,
-      customer_id: customerId,
-      distributor_id: distributorId,
-      pm_id: pmId,
-      kam_id: kamId,
-      final_solutions: finalSolutions,
-      conclusions,
+      for_valuation: forValuation,
+      project_client_id: projectClientId,
       samples_expected: samplesExpected,
       mp_expected: mpExpected,
-      eau_max: eauMax,
-      extra_note: extraNote,
-      department,
+      name: name,
+      req_disp_tech: reqDispTech,
+      req_disp_size: reqDispSize,
+      req_disp_res: reqDispRes,
+      req_disp_brigt: reqDispBrigt,
+      req_disp_angle: reqDispAngle,
+      req_disp_od: reqDispOd,
+      req_disp_aa: reqDispAa,
+      req_disp_inter: reqDispInter,
+      req_disp_ot: reqDispOt,
+      req_disp_st: reqDispSt,
+      req_disp_spec: reqDispSpec,
+      req_tp_size: reqTpSize,
+      req_tp_aa: reqTpAa,
+      req_tp_tech: reqTpTech,
+      req_tp_od: reqTpOt,
+      req_tp_inter: reqTpInter,
+      req_tp_glass: reqTpGlass,
+      req_tp_spec: reqTp,
+      req_others: reqOthers,
     },
     onSuccess: (rfq: IRfq) => onSuccess(rfq),
   });
@@ -63,23 +93,32 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
   if (!currentUser) {
     return <div></div>;
   }
+
   const renderContent = () => (
     <form onSubmit={onSubmit}>
       <h1 className="title m-3 mb-5">🎯 New RFQ</h1>
+
       <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <div className="field m-3">
-          <label className="label">Extra Note besides RFQ Code</label>
+          <label className="label">Name</label>
           <input
             className={inputStyle("extra_note")}
             type="text"
-            value={extraNote}
+            value={name}
             autoFocus
-            onChange={(e) => setExtraNote(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
+        <UserPicker
+          handleChange={setProjectClientId}
+          label="Customer"
+          fieldname="projectClientId"
+          fetch="/clients"
+        />
+
         <div className="field m-3">
-          <label className="label">EAU min</label>
+          <label className="label">EAU</label>
           <input
             className={inputStyle("eau")}
             name="eau"
@@ -88,64 +127,6 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
             value={eau}
             onChange={(e) => setEau(parseInt(e.target.value))}
           />
-        </div>
-
-        <div className="field m-3">
-          <label className="label">EAU max</label>
-          <input
-            className={inputStyle("eau_max")}
-            name="eau_max"
-            type="number"
-            value={eauMax}
-            onChange={(e) => setEauMax(parseInt(e.target.value))}
-          />
-        </div>
-
-        <UserPicker
-          handleChange={setCustomerId}
-          label="Customer"
-          fieldname="customerId"
-          fetch="/customers"
-        />
-
-        <UserPicker
-          handleChange={setDistributorId}
-          label="Distributor"
-          fieldname="distributorId"
-          fetch="/distributors"
-        />
-
-        <UserPicker
-          handleChange={setPmId}
-          label="PM"
-          fieldname="pmId"
-          fetch="/users"
-        />
-
-        <UserPicker
-          handleChange={setKamId}
-          label="KAM"
-          fieldname="kamId"
-          fetch="/users"
-        />
-
-        <div className="field m-3">
-          <label className="label">Department</label>
-          <div className={`select `}>
-            <select
-              name="department"
-              id="department"
-              value={department}
-              required
-              onChange={(e) => {
-                setDepartment(e.target.value);
-              }}
-            >
-              <option></option>
-              <option value={"PL"}>PL</option>
-              <option value={"EX"}>EX</option>
-            </select>
-          </div>
         </div>
 
         <div className="field m-3">
@@ -168,26 +149,188 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
           />
         </div>
 
-        <div className="field m-3">
-          <label className="label">Final Solutions</label>
-          <textarea
-            className="textarea is-400"
-            name="final_solutions"
-            value={finalSolutions}
-            onChange={(e) => setFinalSolutions(e.target.value)}
-          />
-        </div>
-
-        <div className="field m-3">
-          <label className="label">Conclusions</label>
-          <textarea
-            className="textarea is-400"
-            name="conclusions"
-            value={conclusions}
-            onChange={(e) => setConclusions(e.target.value)}
-          />
-        </div>
+        <Toggle
+          handleChange={setForValuation}
+          label="For Valuation"
+          fieldname="for_valuation"
+          initialValue={forValuation}
+        />
       </div>
+
+      <article className=" m-3">
+        <div className="panel-block">Display</div>
+
+        <div className="panel-block is-flex-wrap-wrap">
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+        </div>
+      </article>
+
+      <article className=" m-3">
+        <div className="panel-block">Touch</div>
+
+        <div className="panel-block is-flex-wrap-wrap">
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+        </div>
+      </article>
+
+      <article className=" m-3">
+        <div className="panel-block">Others</div>
+
+        <div className="panel-block is-flex-wrap-wrap">
+          <DataList
+            options={sizeOptions}
+            value={reqDispSize}
+            className={inputStyle("req_disp_size")}
+            onChange={setReqDispSize}
+            label="Size"
+            fieldname="reqDispSize"
+          />
+        </div>
+      </article>
 
       <div className="m-3 mt-6 ">
         <NiceButton>

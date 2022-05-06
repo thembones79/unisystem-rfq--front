@@ -13,6 +13,7 @@ export interface IRfq {
   id: number;
   rfq_code: string;
   extra_note: string;
+  for_valuation: boolean;
   eau: number;
   customer: string;
   pm: string;
@@ -29,6 +30,7 @@ const columns: IColumn<IRfq>[] = [
   { name: "department", label: "Department" },
   { name: "pm", label: "PM" },
   { name: "kam", label: "KAM" },
+  { name: "for_valuation", label: "For Valuation" },
   { name: "updated", label: "Updated" },
 ];
 
@@ -45,7 +47,6 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   useEffect(() => {
     doRequest();
   }, []);
-
   return rows.length > 0 ? (
     <div>
       <div className="m-5">
