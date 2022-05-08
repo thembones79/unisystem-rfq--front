@@ -30,7 +30,7 @@ const NewIndustry: React.FC<NewIndustryProps> = ({ currentUser }) => {
   };
 
   return currentUser ? (
-    <div className="full-page">
+    <div className="full-page full-page--centered">
       <div className="card max-w-800 m-3  big-shadow">
         <div className="card-content">
           <form onSubmit={onSubmit}>

@@ -6,7 +6,16 @@ import { NiceButton } from "../../components/nice-button";
 import { Toggle } from "../../components/toggle";
 import { Loader } from "../../components/loader";
 import { DataList } from "../../components/data-list";
-import { sizeOptions } from "../../utils/datalists-options";
+import {
+  sizeOptions,
+  dispTechOptions,
+  resolutionOptions,
+  anglesOptions,
+  dispInterfaceOptions,
+  tpInterfaceOptions,
+  tpTechOptions,
+  tpSizeOptions,
+} from "../../utils/datalists-options";
 import { IUser } from "../users";
 import { IRfq } from "./";
 
@@ -35,10 +44,10 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
   const [reqTpSize, setReqTpSize] = useState("");
   const [reqTpAa, setReqTpAa] = useState("");
   const [reqTpTech, setReqTpTech] = useState("");
-  const [reqTpOt, setReqTpOt] = useState("");
+  const [reqTpOd, setReqTpOd] = useState("");
   const [reqTpInter, setReqTpInter] = useState("");
   const [reqTpGlass, setReqTpGlass] = useState("");
-  const [reqTp, setReqTp] = useState("");
+  const [reqTpSpec, setReqTpSpec] = useState("");
   const [reqOthers, setReqOthers] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -66,10 +75,10 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
       req_tp_size: reqTpSize,
       req_tp_aa: reqTpAa,
       req_tp_tech: reqTpTech,
-      req_tp_od: reqTpOt,
+      req_tp_od: reqTpOd,
       req_tp_inter: reqTpInter,
       req_tp_glass: reqTpGlass,
-      req_tp_spec: reqTp,
+      req_tp_spec: reqTpSpec,
       req_others: reqOthers,
     },
     onSuccess: (rfq: IRfq) => onSuccess(rfq),
@@ -105,6 +114,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
             className={inputStyle("extra_note")}
             type="text"
             value={name}
+            required
             autoFocus
             onChange={(e) => setName(e.target.value)}
           />
@@ -162,94 +172,96 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
 
         <div className="panel-block is-flex-wrap-wrap">
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={dispTechOptions}
+            value={reqDispTech}
+            className={inputStyle("req_disp_tech")}
+            onChange={setReqDispTech}
+            label="Technology"
+            fieldname="setReqDispTech"
           />
           <DataList
             options={sizeOptions}
             value={reqDispSize}
             className={inputStyle("req_disp_size")}
             onChange={setReqDispSize}
-            label="Size"
+            label="Size (inches)"
             fieldname="reqDispSize"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={resolutionOptions}
+            value={reqDispRes}
+            className={inputStyle("req_disp_res")}
+            onChange={setReqDispRes}
+            label="Resolution"
+            fieldname="reqDispRes"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqDispBrigt}
+            className={inputStyle("req_disp_brigt")}
+            onChange={setReqDispBrigt}
+            label="Brightness (cd/m2)"
+            fieldname="setReqDispBrigt"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={anglesOptions}
+            value={reqDispAngle}
+            className={inputStyle("req_disp_angle")}
+            onChange={setReqDispAngle}
+            label="Angle"
+            fieldname="reqDispAngle"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
-          />
-
-          <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={dispInterfaceOptions}
+            value={reqDispInter}
+            className={inputStyle("req_disp_inter")}
+            onChange={setReqDispInter}
+            label="Interface"
+            fieldname="reqDispInter"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqDispAa}
+            className={inputStyle("req_disp_aa")}
+            onChange={setReqDispAa}
+            label="Active Area (mm)"
+            fieldname="reqDispAa"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqDispOd}
+            className={inputStyle("req_disp_od")}
+            onChange={setReqDispOd}
+            label="Outline Dimensions (mm)"
+            fieldname="reqDispOd"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqDispOt}
+            className={inputStyle("req_disp_ot")}
+            onChange={setReqDispOt}
+            label="Oper. Temp. (℃)"
+            fieldname="reqDispOt"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqDispSt}
+            className={inputStyle("req_disp_st")}
+            onChange={setReqDispSt}
+            label="Stor. Temp. (℃)"
+            fieldname="reqDispSt"
           />
+          <div className="field m-3">
+            <label className="label is-small">
+              Special requirements (if any)
+            </label>
+            <textarea
+              className="input is-400"
+              name="req_disp_spec"
+              value={reqDispSpec}
+              onChange={(e) => setReqDispSpec(e.target.value)}
+            />
+          </div>
         </div>
       </article>
 
@@ -258,76 +270,80 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
 
         <div className="panel-block is-flex-wrap-wrap">
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={tpTechOptions}
+            value={reqTpTech}
+            className={inputStyle("req_tp_tech")}
+            onChange={setReqTpTech}
+            label="Technology"
+            fieldname="reqTpTech"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={tpSizeOptions}
+            value={reqTpSize}
+            className={inputStyle("req_tp_size")}
+            onChange={setReqTpSize}
+            label="Size (inches)"
+            fieldname="reqTpSize"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={tpInterfaceOptions}
+            value={reqTpInter}
+            className={inputStyle("req_to_inter")}
+            onChange={setReqTpInter}
+            label="Interface"
+            fieldname="reqTpInter"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqTpGlass}
+            className={inputStyle("req_tp_glass")}
+            onChange={setReqTpGlass}
+            label="Cover glass thickness"
+            fieldname="reqTpGlass"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqTpAa}
+            className={inputStyle("req_tp_aa")}
+            onChange={setReqTpAa}
+            label="Active Area (mm)"
+            fieldname="reqTpAa"
           />
           <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+            options={[]}
+            value={reqTpOd}
+            className={inputStyle("req_tp_od")}
+            onChange={setReqTpOd}
+            label="Outline Dimensions (mm)"
+            fieldname="reqTpOd"
           />
 
-          <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
-          />
+          <div className="field m-3">
+            <label className="label is-small">
+              Special requirements (if any)
+            </label>
+            <textarea
+              className="input is-400"
+              name="req_tp_spec"
+              value={reqTpSpec}
+              onChange={(e) => setReqTpSpec(e.target.value)}
+            />
+          </div>
         </div>
       </article>
 
       <article className=" m-3">
         <div className="panel-block">Others</div>
-
-        <div className="panel-block is-flex-wrap-wrap">
-          <DataList
-            options={sizeOptions}
-            value={reqDispSize}
-            className={inputStyle("req_disp_size")}
-            onChange={setReqDispSize}
-            label="Size"
-            fieldname="reqDispSize"
+        <div className="field m-3">
+          <label className="label is-small">
+            Other devices (eg.: Industrial Computers, etc.) OR just commentary
+            for engineer...
+          </label>
+          <textarea
+            className="input h-70"
+            name="conclusions"
+            value={reqOthers}
+            onChange={(e) => setReqOthers(e.target.value)}
           />
         </div>
       </article>

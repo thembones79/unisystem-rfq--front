@@ -111,7 +111,7 @@ const NewProject = ({ currentUser }: NewProjectProps) => {
   );
 
   return (
-    <div className="full-page">
+    <div className="full-page full-page--centered">
       <div className="card max-w-900 m-3 big-shadow">
         <div className="card-content">
           {isLoading ? renderLoader() : renderContent()}
