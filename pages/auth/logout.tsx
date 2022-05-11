@@ -14,7 +14,7 @@ const Logout = () => {
   }, []);
 
   return (
-    <div className="full-page">
+    <div className="full-page ">
       <div className={styles.wrapper}>
         <p className={styles.floatingTxt}>
           <span className={styles.fat}>⎋ logging you out...</span>

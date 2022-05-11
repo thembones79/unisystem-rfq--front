@@ -5,6 +5,7 @@ import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
 import { IUser } from "../users";
+import { MiniTable } from "../../components/mini-table";
 import { IRfq } from ".";
 import { RequirementsTable } from "../../components/requirements/requirements-table";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
@@ -15,12 +16,10 @@ interface IRfqWithNames extends IRfq {
   clickup_id: string;
   status: string;
   final_solutions: string;
-  conclusions: string;
   project_id: number;
   project_code: string;
   samples_expected: string;
   mp_expected: string;
-  eau_max: number;
   department: string;
 }
 
@@ -33,7 +32,6 @@ const ShowRfq: React.FC = () => {
     extra_note: "",
     eau: 0,
     customer: "",
-    distributor: "",
     pm: "",
     kam: "",
     updated: "",
@@ -44,11 +42,30 @@ const ShowRfq: React.FC = () => {
     project_code: "",
     status: "",
     final_solutions: "",
-    conclusions: "",
     samples_expected: "",
     mp_expected: "",
-    eau_max: 0,
     department: "",
+    for_valuation: false,
+    name: "",
+    req_disp_tech: "",
+    req_disp_size: "",
+    req_disp_res: "",
+    req_disp_brigt: "",
+    req_disp_angle: "",
+    req_disp_od: "",
+    req_disp_aa: "",
+    req_disp_inter: "",
+    req_disp_ot: "",
+    req_disp_st: "",
+    req_disp_spec: "",
+    req_tp_size: "",
+    req_tp_aa: "",
+    req_tp_tech: "",
+    req_tp_od: "",
+    req_tp_inter: "",
+    req_tp_glass: "",
+    req_tp_spec: "",
+    req_others: "",
   });
 
   const id = rfqId;
@@ -71,12 +88,11 @@ const ShowRfq: React.FC = () => {
   } else {
     const {
       rfq_code,
-      extra_note,
+      name,
       eau,
       customer,
       clickup_id,
       status,
-      distributor,
       pm,
       kam,
       id,
@@ -85,11 +101,28 @@ const ShowRfq: React.FC = () => {
       project_code,
       pm_fullname,
       final_solutions,
-      conclusions,
       samples_expected,
       mp_expected,
-      eau_max,
       department,
+      req_disp_tech,
+      req_disp_size,
+      req_disp_res,
+      req_disp_brigt,
+      req_disp_angle,
+      req_disp_od,
+      req_disp_aa,
+      req_disp_inter,
+      req_disp_ot,
+      req_disp_st,
+      req_disp_spec,
+      req_tp_size,
+      req_tp_aa,
+      req_tp_tech,
+      req_tp_od,
+      req_tp_inter,
+      req_tp_glass,
+      req_tp_spec,
+      req_others,
     } = rfq;
 
     const formatStatus = () => {
@@ -100,6 +133,68 @@ const ShowRfq: React.FC = () => {
       } else {
         return "is-link";
       }
+    };
+
+    const renderStatus = () => {
+      return (
+        status !== "privates" && (
+          <button
+            className={`button ${formatStatus()} is-light m-4`}
+            onClick={() => {
+              const win = window.open(
+                `https://app.clickup.com/t/${clickup_id}`,
+                "_blank"
+              );
+              if (win) {
+                win.focus();
+              }
+            }}
+          >
+            <span className="m-2 ">status: </span>
+            <b>{status}</b>
+          </button>
+        )
+      );
+    };
+
+    const displaySpecs = {
+      Technology: req_disp_tech,
+      "Size (inches)": req_disp_size,
+      Resolution: req_disp_res,
+      "Brightness (cd/m2)": req_disp_brigt,
+      Angle: req_disp_angle,
+      Interface: req_disp_inter,
+      "Active Area (mm)": req_disp_aa,
+      "Outline Dimensions (mm)": req_disp_od,
+      "Oper. Temp. (℃)": req_disp_ot,
+      "Stor. Temp. (℃)": req_disp_st,
+      "Special requirements": req_disp_spec,
+    };
+    const touchSpecs = {
+      Technology: req_tp_tech,
+      "Size (inches)": req_tp_size,
+      Interface: req_tp_inter,
+      "Cover glass thickness": req_tp_glass,
+      "Active Area (mm)": req_tp_aa,
+      "Outline Dimensions (mm)": req_tp_od,
+      "Special requirements": req_tp_spec,
+    };
+
+    const renderOtherReqs = () => {
+      return req_others ? (
+        <table className="table is-narrow is-size-7 mx-6 mb-6 is-striped mt-2">
+          <thead>
+            <tr>
+              <th>OTHERS ...or just commentary for an engineer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{req_others}</td>
+            </tr>
+          </tbody>
+        </table>
+      ) : null;
     };
 
     const renderLoader = () => (
@@ -137,24 +232,10 @@ const ShowRfq: React.FC = () => {
           <div className="mb-3 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between is-flex-wrap-wrap">
             <div className="is-flex is-flex-wrap-wrap">
               <h1 className="title my-3 is-4">
-                {rfq_code} {extra_note}
+                {rfq_code} {name}
               </h1>
               <span className="m-3 "></span>
-              <button
-                className={`button ${formatStatus()} is-light m-4`}
-                onClick={() => {
-                  const win = window.open(
-                    `https://app.clickup.com/t/${clickup_id}`,
-                    "_blank"
-                  );
-                  if (win) {
-                    win.focus();
-                  }
-                }}
-              >
-                <span className="m-2 ">status: </span>
-                <b>{status}</b>
-              </button>
+              {renderStatus()}
             </div>
             {renderProjectLinkOrButton()}
 
@@ -190,23 +271,15 @@ const ShowRfq: React.FC = () => {
 
           <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
             <div className="field m-3">
-              <label className="label">EAU min</label>
+              <label className="label">EAU</label>
               <div>{eau}</div>
-            </div>
-
-            <div className="field m-3">
-              <label className="label">EAU max</label>
-              <div>{eau_max}</div>
             </div>
 
             <div className="field m-3">
               <label className="label">Customer</label>
               <div>{customer}</div>
             </div>
-            <div className="field m-3">
-              <label className="label">Distributor</label>
-              <div>{distributor}</div>
-            </div>
+
             <div className="field m-3">
               <label className="label">Department</label>
               <div>{department}</div>
@@ -236,22 +309,21 @@ const ShowRfq: React.FC = () => {
           </div>
         </div>
 
+        <div className="columns">
+          <MiniTable label="DISPLAY" dataObject={displaySpecs} />
+          <MiniTable label="TOUCH" dataObject={touchSpecs} />
+          <>{renderOtherReqs()}</>
+        </div>
+
         <RequirementsTable rfq_id={id} />
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Final Solutions</label>
             <div>{final_solutions}</div>
           </div>
-
-          <div className="field m-5">
-            <label className="label">Conclusions</label>
-            <div>{conclusions}</div>
-          </div>
         </div>
       </>
     );
-
-    // const calculation = useMemo(() => expensiveCalculation(count), [count]);
 
     useEffect(() => {
       doRequest();

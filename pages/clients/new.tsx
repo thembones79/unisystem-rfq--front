@@ -33,7 +33,7 @@ const NewClient: React.FC<NewClientProps> = ({ currentUser }) => {
   };
 
   return currentUser ? (
-    <div className="full-page">
+    <div className="full-page ">
       <div className="card max-w-800 m-3  big-shadow">
         <div className="card-content">
           <form onSubmit={onSubmit}>

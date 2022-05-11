@@ -11,7 +11,6 @@ export const Header = ({ currentUser }: HeaderProps) => {
   const router = useRouter();
 
   const isAdmin = currentUser?.role_id === 1;
-
   const links = [
     !currentUser && { label: "🔐 Log In", href: "/auth/login" },
     currentUser && { label: "🎯 RFQs", href: "/rfqs" },
@@ -33,7 +32,7 @@ export const Header = ({ currentUser }: HeaderProps) => {
     });
 
   return (
-    <div className="tabs is-right is-boxed  m-3 sticky-navbar">
+    <div className="tabs is-right is-boxed mb-3 px-3 pt-3 sticky-navbar">
       <ul>
         <li className={styles.logo}>
           <div className={styles.logo__item}>

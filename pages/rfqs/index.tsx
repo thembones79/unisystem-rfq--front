@@ -13,24 +13,44 @@ export interface IRfq {
   id: number;
   rfq_code: string;
   extra_note: string;
+  for_valuation: boolean;
   eau: number;
   customer: string;
-  distributor: string;
   pm: string;
   kam: string;
   updated: string;
   department: string;
+  name: string;
+  req_disp_tech: string;
+  req_disp_size: string;
+  req_disp_res: string;
+  req_disp_brigt: string;
+  req_disp_angle: string;
+  req_disp_od: string;
+  req_disp_aa: string;
+  req_disp_inter: string;
+  req_disp_ot: string;
+  req_disp_st: string;
+  req_disp_spec: string;
+  req_tp_size: string;
+  req_tp_aa: string;
+  req_tp_tech: string;
+  req_tp_od: string;
+  req_tp_inter: string;
+  req_tp_glass: string;
+  req_tp_spec: string;
+  req_others: string;
 }
 
 const columns: IColumn<IRfq>[] = [
   { name: "rfq_code", label: "RFQ Code" },
-  { name: "extra_note", label: "Extra Note" },
+  { name: "extra_note", label: "Name" },
   { name: "eau", label: "EAU" },
   { name: "customer", label: "Customer" },
-  { name: "distributor", label: "Distributor" },
   { name: "department", label: "Department" },
   { name: "pm", label: "PM" },
   { name: "kam", label: "KAM" },
+  { name: "for_valuation", label: "For Valuation" },
   { name: "updated", label: "Updated" },
 ];
 
@@ -47,7 +67,6 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   useEffect(() => {
     doRequest();
   }, []);
-
   return rows.length > 0 ? (
     <div>
       <div className="m-5">

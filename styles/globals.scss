@@ -104,7 +104,14 @@ td {
   width: 100%;
   height: calc(100vh - 150px);
   justify-content: center;
-  align-items: center;
+  align-items:center;
+  &--top {
+    align-items: baseline;
+  }
+}
+
+.h-70{
+  height: 70px
 }
 
 .max-w-800 {

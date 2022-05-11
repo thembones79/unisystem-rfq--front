@@ -82,7 +82,7 @@ const Login = () => {
   );
 
   return (
-    <div className="full-page">
+    <div className="full-page ">
       <div className="card max-w-800 m-3 big-shadow">
         <div className="card-content">
           {isLoading && !errors.length ? renderContent() : renderLoader()}
