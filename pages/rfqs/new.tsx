@@ -337,7 +337,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
         <div className="field m-3">
           <label className="label is-small">
             Other devices (eg.: Industrial Computers, etc.) OR just commentary
-            for engineer...
+            for an engineer...
           </label>
           <textarea
             className="input h-70"
@@ -362,7 +362,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
   );
 
   const renderLoader = () => (
-    <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+    <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center is-400">
       <p className="title is-4 mb-6 mt-3">Please Wait...</p>
       <p className="subtitle">Signing into ClickUp...</p>
       <Loader />
@@ -370,7 +370,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
   );
 
   return (
-    <div className="full-page">
+    <div className="full-page full-page--top">
       <div className="card  m-3 big-shadow">
         <div className="card-content">
           {isLoading ? renderLoader() : renderContent()}

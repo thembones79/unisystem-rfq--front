@@ -34,7 +34,7 @@ const Home = ({ currentUser }: HomeProps) => {
 
   return (
     <div>
-      <div className="full-page">
+      <div className="full-page ">
         <div className={styles.wrapper}>
           <p className={styles.floatingTitle}>Unisystem RFQ</p>
 

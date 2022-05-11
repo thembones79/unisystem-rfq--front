@@ -104,9 +104,9 @@ td {
   width: 100%;
   height: calc(100vh - 150px);
   justify-content: center;
-  align-items:baseline;
-  &--centered {
-    align-items: center;
+  align-items:center;
+  &--top {
+    align-items: baseline;
   }
 }
 

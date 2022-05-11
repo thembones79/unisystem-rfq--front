@@ -20,6 +20,26 @@ export interface IRfq {
   kam: string;
   updated: string;
   department: string;
+  name: string;
+  req_disp_tech: string;
+  req_disp_size: string;
+  req_disp_res: string;
+  req_disp_brigt: string;
+  req_disp_angle: string;
+  req_disp_od: string;
+  req_disp_aa: string;
+  req_disp_inter: string;
+  req_disp_ot: string;
+  req_disp_st: string;
+  req_disp_spec: string;
+  req_tp_size: string;
+  req_tp_aa: string;
+  req_tp_tech: string;
+  req_tp_od: string;
+  req_tp_inter: string;
+  req_tp_glass: string;
+  req_tp_spec: string;
+  req_others: string;
 }
 
 const columns: IColumn<IRfq>[] = [

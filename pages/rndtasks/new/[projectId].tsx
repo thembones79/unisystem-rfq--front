@@ -131,7 +131,7 @@ const NewRndTask = ({ currentUser }: NewRndTaskProps) => {
   );
 
   return (
-    <div className="full-page full-page--centered">
+    <div className="full-page ">
       <div className="card max-w-900 m-3 big-shadow">
         <div className="card-content">
           {isLoading ? renderLoader() : renderContent()}
