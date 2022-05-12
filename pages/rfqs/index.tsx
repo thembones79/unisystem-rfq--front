@@ -67,7 +67,7 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
   useEffect(() => {
     doRequest();
   }, []);
-  return rows.length > 0 ? (
+  return (
     <div>
       <div className="m-5">
         <NiceButton onClick={handleNewRfq}>
@@ -75,13 +75,15 @@ const RfqsTable: React.FC<RfqsTableProps> = ({ currentUser }) => {
           <span className="m-1"></span> New RFQ
         </NiceButton>
       </div>
-      <div className="table-container">
-        <SfTable columns={columns} rows={rows} route="rfqs" />
-        {errorsJSX()}
-      </div>
+      {rows.length > 0 ? (
+        <div className="table-container">
+          <SfTable columns={columns} rows={rows} route="rfqs" />
+          {errorsJSX()}
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
-  ) : (
-    <div></div>
   );
 };
 
