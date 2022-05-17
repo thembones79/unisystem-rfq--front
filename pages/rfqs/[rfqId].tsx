@@ -20,6 +20,7 @@ interface IRfqWithNames extends IRfq {
   project_code: string;
   samples_expected: string;
   mp_expected: string;
+  sp: string;
   department: string;
 }
 
@@ -55,6 +56,7 @@ const ShowRfq: React.FC = () => {
     req_disp_od: "",
     req_disp_aa: "",
     req_disp_inter: "",
+    sp: "",
     req_disp_ot: "",
     req_disp_st: "",
     req_disp_spec: "",
@@ -96,6 +98,7 @@ const ShowRfq: React.FC = () => {
       pm,
       kam,
       id,
+      sp,
       kam_fullname,
       project_id,
       project_code,
@@ -243,10 +246,7 @@ const ShowRfq: React.FC = () => {
               <button
                 className="button is-link is-inverted"
                 onClick={() => {
-                  const win = window.open(
-                    `https://riverdi.sharepoint.com/sites/ProjectsManagementGroup/Shared Documents/RIVERDI PROJECTS/${kam}_!PROSPECTS/${rfq_code}`,
-                    "_blank"
-                  );
+                  const win = window.open(sp, "_blank");
                   if (win) {
                     win.focus();
                   }
