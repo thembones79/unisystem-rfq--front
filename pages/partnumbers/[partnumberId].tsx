@@ -125,7 +125,7 @@ const ShowPartnumber: React.FC = () => {
               <div>{department}</div>
             </div>
             <div className="field m-3">
-              <label className="label">Partnumber Manager</label>
+              <label className="label">Project Manager</label>
               <div>
                 {pm_fullname} ({pm})
               </div>

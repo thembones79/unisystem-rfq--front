@@ -12,12 +12,15 @@ interface NewClientProps {
 const NewClient: React.FC<NewClientProps> = ({ currentUser }) => {
   const [name, setName] = useState("");
   const [kamId, setKamId] = useState(0);
+
+  const isKam = currentUser?.role_id > 2;
+
   const { doRequest, errorsJSX, inputStyle } = useRequest({
     url: "/clients",
     method: "post",
     body: {
       name,
-      kam_id: kamId,
+      kam_id: isKam ? currentUser.id : kamId,
     },
     onSuccess: () => Router.push("/clients"),
   });
@@ -50,12 +53,15 @@ const NewClient: React.FC<NewClientProps> = ({ currentUser }) => {
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <UserPicker
-                handleChange={setKamId}
-                label="KAM"
-                fieldname="kamId"
-                fetch="/users"
-              />
+
+              {!isKam && (
+                <UserPicker
+                  handleChange={setKamId}
+                  label="KAM"
+                  fieldname="kamId"
+                  fetch="/kams"
+                />
+              )}
             </div>
 
             {errorsJSX()}

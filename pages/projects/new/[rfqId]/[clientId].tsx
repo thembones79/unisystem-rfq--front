@@ -1,26 +1,25 @@
 import React, { useState } from "react";
 import Router, { useRouter } from "next/router";
-import { useRequest } from "../../../hooks/useRequest";
-import { UserPicker } from "../../../components/user-picker";
+import { useRequest } from "../../../../hooks/useRequest";
+import { UserPicker } from "../../../../components/user-picker";
 import { GetStaticPaths } from "next";
-import { NiceButton } from "../../../components/nice-button";
-import { Loader } from "../../../components/loader";
-import { IUser } from "../../users";
-import { IProject } from "..";
+import { NiceButton } from "../../../../components/nice-button";
+import { Loader } from "../../../../components/loader";
+import { IUser } from "../../../users";
+import { IProject } from "../..";
 
 interface NewProjectProps {
   currentUser: IUser;
 }
 
-const NewProject = ({ currentUser }: NewProjectProps) => {
+const NewProjectFromRfq = ({ currentUser }: NewProjectProps) => {
   const router = useRouter();
   const rfqId = router.query.rfqId || 1;
+  const projectClientId = router.query.clientId;
 
-  const [projectClientId, setProjectClientId] = useState(0);
   const [pmId, setPmId] = useState(0);
   const [industryId, seIndustryId] = useState(0);
   const [note, setNote] = useState("");
-  const [department, setDepartment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { doRequest, errorsJSX, inputStyle } = useRequest({
     url: "/projects",
@@ -55,15 +54,8 @@ const NewProject = ({ currentUser }: NewProjectProps) => {
   }
   const renderContent = () => (
     <form onSubmit={onSubmit}>
-      <h1 className="title m-3 mb-5">🍻 New Project</h1>
+      <h1 className="title m-3 mb-5">🍻 New Project from RFQ</h1>
       <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
-        <UserPicker
-          handleChange={setProjectClientId}
-          label="Client"
-          fieldname="projectClientId"
-          fetch="/clients"
-        />
-
         <UserPicker
           handleChange={seIndustryId}
           label="Industry"
@@ -136,4 +128,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default NewProject;
+export default NewProjectFromRfq;
