@@ -17,6 +17,7 @@ interface IRfqWithNames extends IRfq {
   status: string;
   final_solutions: string;
   project_id: number;
+  project_client_id: number;
   project_code: string;
   samples_expected: string;
   mp_expected: string;
@@ -40,6 +41,7 @@ const ShowRfq: React.FC = () => {
     kam_fullname: "",
     clickup_id: "",
     project_id: 0,
+    project_client_id: 0,
     project_code: "",
     status: "",
     final_solutions: "",
@@ -101,6 +103,7 @@ const ShowRfq: React.FC = () => {
       sp,
       kam_fullname,
       project_id,
+      project_client_id,
       project_code,
       pm_fullname,
       final_solutions,
@@ -220,7 +223,11 @@ const ShowRfq: React.FC = () => {
         );
       } else {
         return (
-          <NiceButton onClick={() => Router.push(`/projects/new/${id}`)}>
+          <NiceButton
+            onClick={() =>
+              Router.push(`/projects/new/${id}/${project_client_id}`)
+            }
+          >
             <i className="fas fa-plus"></i>
             <span className="m-2 "></span>
             <span>create project from this RFQ</span>
