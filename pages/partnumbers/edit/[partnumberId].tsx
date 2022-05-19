@@ -76,16 +76,6 @@ const EditPartnumber = ({ currentUser }: EditPartnumberProps) => {
               </h1>
               <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
                 <div className="field m-3">
-                  <label className="label">Version</label>
-                  <input
-                    className={inputStyle("version")}
-                    type="text"
-                    value={newVersion}
-                    onChange={(e) => setVersion(e.target.value)}
-                  />
-                </div>
-
-                <div className="field m-3">
                   <label className="label">Revision</label>
                   <input
                     className={inputStyle("revision")}

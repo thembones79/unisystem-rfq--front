@@ -7,15 +7,12 @@ import { Loader } from "../../components/loader";
 import { IProject } from ".";
 import { Partnumbers } from "../../components/partnumbers";
 import { IUser } from "../users";
+import { spPath } from "../../utils/sp-path";
 import { Rndtasks } from "../../components/rndtasks";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
 interface ShowProjectProps {
   currentUser: IUser;
-}
-interface IspPath {
-  department: string;
-  kam_folder: string;
 }
 
 interface IProjectWithNames extends IProject {
@@ -85,17 +82,6 @@ const ShowProject: React.FC<ShowProjectProps> = ({ currentUser }) => {
       revision,
       note,
     } = project;
-
-    const spPath = ({ department, kam_folder }: IspPath) => {
-      const domain = "https://unisystem3.sharepoint.com/sites/";
-      if (department === "EX") {
-        return `${domain}/SalesEX/Shared Documents/Projects`;
-      } else if (department === "PL") {
-        return `${domain}/Customers-${kam_folder}/Shared Documents`;
-      } else {
-        throw new Error(`Department ${department} does not exist!`);
-      }
-    };
 
     const formatStatus = () => {
       if (status === "open") {
