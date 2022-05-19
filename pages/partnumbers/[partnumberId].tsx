@@ -6,6 +6,7 @@ import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
 import { IUser } from "../users";
 import { IPartnumber } from ".";
+import { spPath } from "../../utils/sp-path";
 import { RequirementsTable } from "../../components/requirements/requirements-table";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
@@ -15,9 +16,14 @@ export interface IPartnumberWithNames extends IPartnumber {
   note: string;
   pm_fullname: string;
   kam_fullname: string;
+  kam_folder: string;
 }
 
-const ShowPartnumber: React.FC = () => {
+interface ShowPartnumberProps {
+  currentUser: IUser;
+}
+
+const ShowPartnumber: React.FC<ShowPartnumberProps> = ({ currentUser }) => {
   const router = useRouter();
   const { partnumberId } = router.query;
   const [partnumber, setPartnumber] = useState<IPartnumberWithNames>({
@@ -30,6 +36,7 @@ const ShowPartnumber: React.FC = () => {
     industry: "",
     pm: "",
     kam: "",
+    kam_folder: "",
     updated: "",
     pm_fullname: "",
     kam_fullname: "",
@@ -37,6 +44,8 @@ const ShowPartnumber: React.FC = () => {
     revision: "",
     note: "",
   });
+
+  const isNotKam = currentUser?.role_id < 3;
 
   const { doRequest, errorsJSX } = useRequest({
     url: `/partnumbers/${partnumberId}`,
@@ -57,6 +66,7 @@ const ShowPartnumber: React.FC = () => {
       industry,
       pm,
       kam,
+      kam_folder,
       pm_fullname,
       kam_fullname,
       version,
@@ -94,18 +104,41 @@ const ShowPartnumber: React.FC = () => {
               </NiceButton>
               <span className="mx-5"></span>
               <span className="m-3 mr-6"></span>
-              <NiceButton
-                onClick={() => Router.push(`/partnumbers/edit/${id}`)}
-              >
-                <i className="fas fa-edit"></i>
-              </NiceButton>
-              <span className="m-3"></span>
-              <NiceButton
-                color="danger"
-                onClick={() => Router.push(`/partnumbers/delete/${id}`)}
-              >
-                <i className="fas fa-trash-alt"></i>
-              </NiceButton>
+              <span className="m-3">
+                <button
+                  className="button is-link is-inverted"
+                  onClick={() => {
+                    const path = spPath({ department, kam_folder });
+                    const win = window.open(
+                      `${path}/${client}/${project}/${pn}`,
+                      "_blank"
+                    );
+                    if (win) {
+                      win.focus();
+                    }
+                  }}
+                >
+                  <SharePointLogo />
+                </button>
+              </span>
+
+              {isNotKam && (
+                <>
+                  <span className="m-3"></span>
+                  <NiceButton
+                    onClick={() => Router.push(`/partnumbers/edit/${id}`)}
+                  >
+                    <i className="fas fa-edit"></i>
+                  </NiceButton>
+                  <span className="m-3"></span>
+                  <NiceButton
+                    color="danger"
+                    onClick={() => Router.push(`/partnumbers/delete/${id}`)}
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </NiceButton>
+                </>
+              )}
             </div>
           </div>
 
@@ -138,18 +171,12 @@ const ShowPartnumber: React.FC = () => {
             </div>
 
             <div className="field m-3">
-              <label className="label">Version</label>
-              <div>{version}</div>
-            </div>
-
-            <div className="field m-3">
               <label className="label">Revision</label>
               <div>{revision}</div>
             </div>
           </div>
         </div>
 
-        {/* <RequirementsTable rfq_id={id} /> */}
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Note</label>

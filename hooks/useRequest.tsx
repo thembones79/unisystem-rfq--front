@@ -20,15 +20,19 @@ export const useRequest = ({
 }) => {
   const [errors, setErrors] = useState<IError[]>([]);
 
-  const errorsJSX = () => (
-    <div>
-      {errors.map((err) => (
-        <div key={err?.message} className="notification is-danger is-light m-3">
-          {err?.message}
-        </div>
-      ))}
-    </div>
-  );
+  const errorsJSX = () =>
+    errors ? (
+      <div>
+        {errors.map((err) => (
+          <div
+            key={err?.message}
+            className="notification is-danger is-light m-3"
+          >
+            {err?.message}
+          </div>
+        ))}
+      </div>
+    ) : null;
 
   const inputStyle = (fieldName: string) => {
     return `input ${

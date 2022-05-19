@@ -19,6 +19,7 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
   const [display, setDisplay] = useState("");
   const [touch, setTouch] = useState("");
   const [mechanics, setMechanics] = useState("");
+  const [thirdPartyPn, setThirdPartyPn] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { doRequest, errorsJSX, inputStyle } = useRequest({
     url: "/partnumbers",
@@ -29,9 +30,12 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
       display,
       touch,
       mechanics,
+      third_party_pn: thirdPartyPn,
     },
     onSuccess: () => onSuccess(),
   });
+
+  const isRequired = thirdPartyPn === "";
 
   const onSuccess = () => {
     Router.push(`/projects/${projectId}`);
@@ -161,6 +165,25 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
       </option>
     ));
 
+  const renderLoader = () =>
+    errorsJSX()?.props.children.length === 0 ? (
+      <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
+        <p className="title is-4 mb-6 mt-3">Please Wait...</p>
+        <p className="subtitle"></p>
+        <p className="subtitle">🔑 Signing into ClickUp...</p>
+        <p className="subtitle">🗝 Signing into Sharepoint...</p>
+        <p className="subtitle"></p>
+        <p className="subtitle">
+          <strong>Copying SharePoint folder structure...</strong>
+        </p>
+        <p></p>
+        <p className="subtitle">💪 💪 💪</p>
+        <Loader />
+      </div>
+    ) : (
+      errorsJSX()
+    );
+
   if (!currentUser) {
     return <div></div>;
   }
@@ -176,7 +199,7 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
             name="size"
             list="size"
             type="text"
-            required
+            required={isRequired}
             value={size}
             onChange={(e) => setSize(sanitizeSize(e.target.value))}
           />
@@ -190,7 +213,7 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
             name="display"
             list="display"
             type="text"
-            required
+            required={isRequired}
             value={display}
             onChange={(e) =>
               setDisplay(sanitizeInput(e.target.value, displayOptions))
@@ -206,7 +229,7 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
             name="touch"
             list="touch"
             type="text"
-            required
+            required={isRequired}
             value={touch}
             onChange={(e) =>
               setTouch(sanitizeInput(e.target.value, touchOptions))
@@ -229,6 +252,18 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
         <datalist id="mechanics">
           <option value={"M"}>Mechanics present</option>
         </datalist>
+
+        <div className="field m-3">
+          <label className="label">Third Party Partnumber</label>
+          <input
+            className={inputStyle("third_party_pn")}
+            name="third_party_pn"
+            list="third_party_pn"
+            type="text"
+            value={thirdPartyPn}
+            onChange={(e) => setThirdPartyPn(e.target.value.toUpperCase())}
+          />
+        </div>
       </div>
 
       <div className="m-3 mt-6 ">
@@ -244,21 +279,11 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
     </form>
   );
 
-  const renderLoader = () => (
-    <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
-      <p className="title is-4 mb-6 mt-3">Please Wait...</p>
-      <p className="subtitle">Signing into ClickUp...</p>
-      <Loader />
-    </div>
-  );
-
   return (
     <div className="full-page ">
       <div className="card max-w-900 m-3 big-shadow">
         <div className="card-content">
           {isLoading ? renderLoader() : renderContent()}
-
-          {errorsJSX()}
         </div>
       </div>
     </div>
