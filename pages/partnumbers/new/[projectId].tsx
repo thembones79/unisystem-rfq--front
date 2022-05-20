@@ -190,7 +190,6 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
   const renderContent = () => (
     <form onSubmit={onSubmit}>
       <h1 className="title m-3 mb-5">🚀 New Partnumber</h1>
-
       <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <div className="field m-3">
           <label className="label">Size</label>
@@ -252,20 +251,22 @@ const NewPartnumber = ({ currentUser }: NewPartnumberProps) => {
         <datalist id="mechanics">
           <option value={"M"}>Mechanics present</option>
         </datalist>
-
-        <div className="field m-3">
-          <label className="label">Third Party Partnumber</label>
-          <input
-            className={inputStyle("third_party_pn")}
-            name="third_party_pn"
-            list="third_party_pn"
-            type="text"
-            value={thirdPartyPn}
-            onChange={(e) => setThirdPartyPn(e.target.value.toUpperCase())}
-          />
-        </div>
       </div>
-
+      <hr />
+      <div className="mx-3 my-5">
+        Supplier PN (fill only if supplier's PN is used)
+      </div>
+      <div className="field m-3">
+        <label className="label">* Supplier Partnumber</label>
+        <input
+          className={inputStyle("third_party_pn")}
+          name="third_party_pn"
+          list="third_party_pn"
+          type="text"
+          value={thirdPartyPn}
+          onChange={(e) => setThirdPartyPn(e.target.value.toUpperCase())}
+        />
+      </div>
       <div className="m-3 mt-6 ">
         <NiceButton>
           <i className="far fa-check-circle"></i>
