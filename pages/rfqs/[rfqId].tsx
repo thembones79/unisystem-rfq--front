@@ -305,7 +305,7 @@ const ShowRfq: React.FC = () => {
             </div>
 
             <div className="field m-3">
-              <label className="label">Samples Expected</label>
+              <label className="label">Number of Samples</label>
               <div>{samples_expected}</div>
             </div>
 
