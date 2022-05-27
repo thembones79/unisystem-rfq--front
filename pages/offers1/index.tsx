@@ -1,4 +1,4 @@
-import { GetStaticPaths } from "next";
+// import { GetStaticPaths } from "next";
 import React, { useEffect, useState } from "react";
 import { IUser } from "../users";
 export interface ICol<T> {
@@ -408,17 +408,17 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
   return <div className="card ">{renderContent()}</div>;
 };
 
-export async function getStaticProps(context: any) {
-  return {
-    props: {}, // will be passed to the page component as props
-  };
-}
+// export async function getStaticProps(context: any) {
+//   return {
+//     props: {}, // will be passed to the page component as props
+//   };
+// }
 
-export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
-  return {
-    paths: [], //indicates that no page needs be created at build time
-    fallback: "blocking", //indicates the type of fallback
-  };
-};
+// export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+//   return {
+//     paths: [], //indicates that no page needs be created at build time
+//     fallback: "blocking", //indicates the type of fallback
+//   };
+// };
 
 export default Offers1;
