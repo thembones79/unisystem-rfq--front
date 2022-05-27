@@ -29,7 +29,6 @@ export interface IOffer1 {
   projectClientId: number;
   kamId: number;
   department: string;
-  currency: CurrencyType;
   footerId: number;
   contents: ContentsEntity[];
 }
@@ -41,6 +40,7 @@ export interface RangesBEntity {
 export interface ContentsEntity {
   id: number;
   Partnumber: string;
+  currency: CurrencyType;
   Description: string;
   Shipment: string;
   ranges1: Object;
@@ -83,13 +83,13 @@ const INIT_OFFER: IOffer1 = {
   projectClientId: 0,
   kamId: 0,
   department: "",
-  currency: "PLN",
   footerId: 0,
   contents: [
     {
       id: 1,
       Partnumber: "#",
       Description: ``,
+      currency: "PLN",
       Shipment: "",
       ranges1: {
         SAMPLE: { basePrice: 0, clientPrice: 0 },
@@ -147,12 +147,12 @@ const offers: IOffer1[] = [
     projectClientId: 2,
     kamId: 7,
     department: "PL",
-    currency: "PLN",
     footerId: 3,
     contents: [
       {
         id: 1,
         Partnumber: "WF0096ATYAA3DNN0#",
+        currency: "PLN",
         Description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         Shipment: "2020-08-08",
         ranges1: {
@@ -333,7 +333,35 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
   const renderBody = () =>
     rows.map((row) => <tr key={row.id}>{renderColumns(row)}</tr>);
 
-  const renderTable = () => {};
+  const renderTableColumns = (row: ContentsEntity) =>
+    Object.entries(offer.contents[0].ranges3).map((key, val) => (
+      <>
+        <td className="pl-3" key={val}>
+          <input
+            style={{ textAlign: "center" }}
+            className="input is-small"
+            // name={name.toString()}
+            defaultValue={val}
+          />
+        </td>
+        {/* <td className="pl-3" style={{ textAlign: "center" }} key={name + 4}>
+      {
+        //@ts-ignore
+        (parseFloat(row[name]) * (margin + 100)) / 100
+      }
+    </td> */}
+      </>
+    ));
+
+  const renderTable = () =>
+    offer.contents.map((row) => (
+      <tr key={row.id}>
+        <td style={getStyle("Partnumber")}>{row.Partnumber}</td>
+        <td style={getStyle("Description")}>{row.Description}</td>
+        {renderTableColumns(row)}
+        <td style={getStyle("Shipment")}>{row.Shipment}</td>
+      </tr>
+    ));
 
   const renderContent = () => (
     <>
@@ -348,7 +376,7 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
           <select
             name="currency"
             id="currency"
-            value={offer.currency}
+            value={offer.contents[0].currency}
             required
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
               const chosenCurrency = e.target.value as CurrencyType;
@@ -371,7 +399,7 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
 
         <table className="table is-striped is-narrow is-hoverable is-fullwidth is-bordered is-size-7">
           {renderMainHeader()}
-          <tbody className="fixed200 ">{renderBody()}</tbody>
+          <tbody className="fixed200 ">{renderTable()}</tbody>
         </table>
       </div>
     </>
