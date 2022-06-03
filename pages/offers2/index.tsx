@@ -125,7 +125,7 @@ const offers: IOffer2[] = [
           },
           {
             range: "11 - 100",
-            basePrice: 80,
+            basePrice: NaN,
             clientPrice: 112,
           },
         ],
@@ -231,7 +231,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
       return { ...prev, currency };
     });
 
-  const setOferValue = (
+  const setOfferBasePrice = (
     newBasePrice: number,
     rowIdx: number,
     colIdx: number
@@ -244,6 +244,21 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
       return draft;
     });
   };
+
+  const setOfferClientPrice = (
+    newClientPrice: number,
+    rowIdx: number,
+    colIdx: number
+  ) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+
+      draft.contents[rowIdx].ranges2[colIdx].clientPrice = newClientPrice;
+
+      return draft;
+    });
+  };
+
   const showOffer = () => console.log(offer);
 
   const getOffer = () => setOffer(offers[0]);
@@ -299,25 +314,39 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   //  const renderBody = () =>
   //    rows.map((row) => <tr key={row.id}>{renderColumns(row)}</tr>);
 
-  const renderTableColumns = (rages: Ranges2Entity[], rowIdx: number) =>
-    rages.map((range, colIdx) => (
+  const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
+    ranges.map((range, colIdx) => (
       <>
-        <td className="pl-3" key={range.range}>
+        <td className="pl-3" key={range.range + "a"}>
           <input
             style={{ textAlign: "center" }}
             className="input is-small"
-            defaultValue={range.basePrice}
+            type="number"
+            defaultValue={range.basePrice + ""}
             onChange={(e) =>
-              setOferValue(parseFloat(e.target.value), rowIdx, colIdx)
+              setOfferBasePrice(parseFloat(e.target.value), rowIdx, colIdx)
             }
           />
         </td>
-        {/* <td className="pl-3" style={{ textAlign: "center" }} key={name + 4}>
-      {
-        //@ts-ignore
-        (parseFloat(row[name]) * (margin + 100)) / 100
-      }
-    </td> */}
+        <td
+          className="pl-3"
+          style={{ textAlign: "center" }}
+          key={range.range + "b"}
+        >
+          {isNaN(range.basePrice) ? (
+            <input
+              style={{ textAlign: "center" }}
+              className="input is-small"
+              type="number"
+              defaultValue={range.clientPrice + ""}
+              onChange={(e) =>
+                setOfferClientPrice(parseFloat(e.target.value), rowIdx, colIdx)
+              }
+            />
+          ) : (
+            (range.basePrice * (offer.rangesB[colIdx].margin + 100)) / 100
+          )}
+        </td>
       </>
     ));
 
