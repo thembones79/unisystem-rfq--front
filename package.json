@@ -1,6 +1,6 @@
 {
   "name": "unisystem-rfq--frontend",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "Frontend written in React Next.js, Typescript for Unisystem RFQ system",
   "private": true,
   "scripts": {
@@ -13,7 +13,8 @@
     "axios": "0.21.1",
     "next": "^10.0.4",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "rich-markdown-editor": "^11.21.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.12.0",

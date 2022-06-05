@@ -1,5 +1,5 @@
 // import { GetStaticPaths } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { IUser } from "../users";
 export interface ICol<T> {
   name: keyof T;
@@ -7,22 +7,11 @@ export interface ICol<T> {
   margin: number;
 }
 
-export interface IOffer {
-  id: number;
-  Partnumber: string;
-  Description: string;
-  SAMPLE: string;
-  "2 - 10": string;
-  "11 - 100": string;
-  Shipment: string;
-}
-
-export interface IOffer1 {
+export interface IOffer2 {
   id: number;
   number: string;
   dateAdded: string;
   dateUpdated: string;
-  rangesA: Object;
   rangesB: RangesBEntity[];
   forBuffer: boolean;
   pickFromBuffer: string;
@@ -44,10 +33,7 @@ export interface ContentsEntity {
   currency: CurrencyType;
   Description: string;
   Shipment: string;
-  ranges1: Object;
   ranges2: Ranges2Entity[];
-  ranges3: {};
-  ranges4: Ranges4Entity[];
 }
 
 export interface Ranges2Entity {
@@ -56,23 +42,13 @@ export interface Ranges2Entity {
   clientPrice: number;
 }
 
-export interface Ranges4Entity {
-  range: string;
-  basePrice: number;
-  clientPrice: number;
-  margin: number;
-}
-
 export type CurrencyType = "PLN" | "USD" | "EUR";
 
-const INIT_OFFER: IOffer1 = {
+const INIT_OFFER: IOffer2 = {
   id: 0,
   number: "",
   dateAdded: "",
   dateUpdated: "",
-  rangesA: {
-    SAMPLE: 0,
-  },
   rangesB: [
     {
       range: "SAMPLE",
@@ -92,9 +68,6 @@ const INIT_OFFER: IOffer1 = {
       Description: ``,
       currency: "PLN",
       Shipment: "",
-      ranges1: {
-        SAMPLE: { basePrice: 0, clientPrice: 0 },
-      },
       ranges2: [
         {
           range: "SAMPLE",
@@ -102,33 +75,16 @@ const INIT_OFFER: IOffer1 = {
           clientPrice: 0,
         },
       ],
-
-      ranges3: {
-        SAMPLE: { basePrice: 0, clientPrice: 0, margin: 0 },
-      },
-      ranges4: [
-        {
-          range: "SAMPLE",
-          basePrice: 0,
-          clientPrice: 0,
-          margin: 0,
-        },
-      ],
     },
   ],
 };
 
-const offers: IOffer1[] = [
+const offers: IOffer2[] = [
   {
     id: 1,
     number: "2022/05/123",
     dateAdded: "2022.05.22",
     dateUpdated: "2022.05.23",
-    rangesA: {
-      SAMPLE: 55,
-      "2 - 10": 50,
-      "11 - 100": 40,
-    },
     rangesB: [
       {
         range: "SAMPLE",
@@ -156,11 +112,6 @@ const offers: IOffer1[] = [
         currency: "PLN",
         Description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         Shipment: "2020-08-08",
-        ranges1: {
-          SAMPLE: { basePrice: 100, clientPrice: 155 },
-          "2 - 10": { basePrice: 90, clientPrice: 135 },
-          "11 - 100": { basePrice: 80, clientPrice: 112 },
-        },
         ranges2: [
           {
             range: "SAMPLE",
@@ -174,34 +125,8 @@ const offers: IOffer1[] = [
           },
           {
             range: "11 - 100",
-            basePrice: 80,
+            basePrice: NaN,
             clientPrice: 112,
-          },
-        ],
-
-        ranges3: {
-          SAMPLE: { basePrice: 100, clientPrice: 155, margin: 55 },
-          "2 - 10": { basePrice: 90, clientPrice: 135, margin: 50 },
-          "11 - 100": { basePrice: 80, clientPrice: 112, margin: 40 },
-        },
-        ranges4: [
-          {
-            range: "SAMPLE",
-            basePrice: 100,
-            clientPrice: 155,
-            margin: 55,
-          },
-          {
-            range: "2 - 10",
-            basePrice: 90,
-            clientPrice: 135,
-            margin: 50,
-          },
-          {
-            range: "11 - 100",
-            basePrice: 80,
-            clientPrice: 112,
-            margin: 40,
           },
         ],
       },
@@ -211,11 +136,6 @@ const offers: IOffer1[] = [
         currency: "PLN",
         Description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         Shipment: "2020-08-08",
-        ranges1: {
-          SAMPLE: { basePrice: 100, clientPrice: 155 },
-          "2 - 10": { basePrice: 90, clientPrice: 135 },
-          "11 - 100": { basePrice: 80, clientPrice: 112 },
-        },
         ranges2: [
           {
             range: "SAMPLE",
@@ -231,32 +151,6 @@ const offers: IOffer1[] = [
             range: "11 - 100",
             basePrice: 80,
             clientPrice: 112,
-          },
-        ],
-
-        ranges3: {
-          SAMPLE: { basePrice: 100, clientPrice: 155, margin: 55 },
-          "2 - 10": { basePrice: 90, clientPrice: 135, margin: 50 },
-          "11 - 100": { basePrice: 80, clientPrice: 112, margin: 40 },
-        },
-        ranges4: [
-          {
-            range: "SAMPLE",
-            basePrice: 100,
-            clientPrice: 155,
-            margin: 55,
-          },
-          {
-            range: "2 - 10",
-            basePrice: 90,
-            clientPrice: 135,
-            margin: 50,
-          },
-          {
-            range: "11 - 100",
-            basePrice: 80,
-            clientPrice: 112,
-            margin: 40,
           },
         ],
       },
@@ -328,14 +222,54 @@ const getStyle = (label: string) => {
   }
 };
 
-const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
-  const [offer, setOffer] = useState<IOffer1>(INIT_OFFER);
+const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
+  const [offer, setOffer] = useState<IOffer2>(INIT_OFFER);
   console.log(currentUser);
 
   const setCurrency = (currency: CurrencyType) =>
     setOffer((prev) => {
       return { ...prev, currency };
     });
+
+  const setRange = (
+    newRange: string,
+
+    colIdx: number
+  ) => {};
+
+  const setOfferBasePrice = (
+    newBasePrice: number,
+    rowIdx: number,
+    colIdx: number
+  ) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+
+      draft.contents[rowIdx].ranges2[colIdx].basePrice = newBasePrice;
+
+      return draft;
+    });
+    setOfferClientPrice(
+      (newBasePrice * (offer.rangesB[colIdx].margin + 100)) / 100,
+      rowIdx,
+      colIdx
+    );
+  };
+
+  const setOfferClientPrice = (
+    newClientPrice: number,
+    rowIdx: number,
+    colIdx: number
+  ) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+
+      draft.contents[rowIdx].ranges2[colIdx].clientPrice = newClientPrice;
+
+      return draft;
+    });
+  };
+
   const showOffer = () => console.log(offer);
 
   const getOffer = () => setOffer(offers[0]);
@@ -356,10 +290,23 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
   );
 
   const renderSubHeader = () =>
-    Object.keys(offer.contents[0].ranges1).map((key) => (
-      <th style={{ textAlign: "center" }} key={"key" + key} colSpan={2}>
-        {key}
-      </th>
+    offer.rangesB.map((key) => (
+      <Fragment key={"key" + key.range}>
+        <th style={{ textAlign: "center", border: 0 }}>
+          <input
+            style={{ textAlign: "center", fontWeight: 700 }}
+            className="input is-small m-0 p-0"
+            defaultValue={key.range}
+          />
+        </th>
+        <th style={{ textAlign: "center" }}>
+          <input
+            style={{ textAlign: "center", fontWeight: 700 }}
+            className="input is-small m-0 p-0"
+            defaultValue={key.margin}
+          />
+        </th>
+      </Fragment>
     ));
   /*
   const renderColumns = (row: IOffer) =>
@@ -367,12 +314,7 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
       ["2 - 10", "11 - 100", "SAMPLE"].includes(name) ? (
         <>
           <td className="pl-3" key={name + 3}>
-            <input
-              style={{ textAlign: "center" }}
-              className="input is-small"
-              name={name.toString()}
-              defaultValue={row[name]}
-            />
+
           </td>
           <td className="pl-3" style={{ textAlign: "center" }} key={name + 4}>
             {
@@ -391,32 +333,44 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
   //  const renderBody = () =>
   //    rows.map((row) => <tr key={row.id}>{renderColumns(row)}</tr>);
 
-  const renderTableColumns = (row: ContentsEntity) =>
-    Object.entries(offer.contents[0].ranges3).map((key, val) => (
-      <>
-        <td className="pl-3" key={key.toString()}>
+  const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
+    ranges.map((range, colIdx) => (
+      <Fragment key={range.range + "a"}>
+        <td className="pl-3">
           <input
             style={{ textAlign: "center" }}
             className="input is-small"
-            name={row.Partnumber}
-            defaultValue={val}
+            type="number"
+            defaultValue={range.basePrice + ""}
+            onChange={(e) =>
+              setOfferBasePrice(parseFloat(e.target.value), rowIdx, colIdx)
+            }
           />
         </td>
-        {/* <td className="pl-3" style={{ textAlign: "center" }} key={name + 4}>
-      {
-        //@ts-ignore
-        (parseFloat(row[name]) * (margin + 100)) / 100
-      }
-    </td> */}
-      </>
+        <td className="pl-3" style={{ textAlign: "center" }}>
+          {isNaN(range.basePrice) ? (
+            <input
+              style={{ textAlign: "center" }}
+              className="input is-small"
+              type="number"
+              defaultValue={range.clientPrice + ""}
+              onChange={(e) =>
+                setOfferClientPrice(parseFloat(e.target.value), rowIdx, colIdx)
+              }
+            />
+          ) : (
+            (range.clientPrice * (offer.rangesB[colIdx].margin + 100)) / 100
+          )}
+        </td>
+      </Fragment>
     ));
 
   const renderTable = () =>
-    offer.contents.map((row) => (
+    offer.contents.map((row, rowIdx) => (
       <tr key={row.id}>
         <td style={getStyle("Partnumber")}>{row.Partnumber}</td>
         <td style={getStyle("Description")}>{row.Description}</td>
-        {renderTableColumns(row)}
+        {renderTableColumns(row.ranges2, rowIdx)}
         <td style={getStyle("Shipment")}>{row.Shipment}</td>
       </tr>
     ));
@@ -483,4 +437,4 @@ const Offers1: React.FC<OffersProps> = ({ currentUser }) => {
 //   };
 // };
 
-export default Offers1;
+export default Offers2;
