@@ -1,6 +1,6 @@
 {
   "name": "unisystem-rfq--frontend",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "Frontend written in React Next.js, Typescript for Unisystem RFQ system",
   "private": true,
   "scripts": {
