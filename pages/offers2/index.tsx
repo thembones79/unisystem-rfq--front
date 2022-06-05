@@ -1,5 +1,5 @@
 // import { GetStaticPaths } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { IUser } from "../users";
 export interface ICol<T> {
   name: keyof T;
@@ -231,6 +231,12 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
       return { ...prev, currency };
     });
 
+  const setRange = (
+    newRange: string,
+
+    colIdx: number
+  ) => {};
+
   const setOfferBasePrice = (
     newBasePrice: number,
     rowIdx: number,
@@ -243,6 +249,11 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
       return draft;
     });
+    setOfferClientPrice(
+      (newBasePrice * (offer.rangesB[colIdx].margin + 100)) / 100,
+      rowIdx,
+      colIdx
+    );
   };
 
   const setOfferClientPrice = (
@@ -280,9 +291,22 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderSubHeader = () =>
     offer.rangesB.map((key) => (
-      <th style={{ textAlign: "center" }} key={"key" + key.range} colSpan={2}>
-        {key.range}
-      </th>
+      <Fragment key={"key" + key.range}>
+        <th style={{ textAlign: "center", border: 0 }}>
+          <input
+            style={{ textAlign: "center", fontWeight: 700 }}
+            className="input is-small m-0 p-0"
+            defaultValue={key.range}
+          />
+        </th>
+        <th style={{ textAlign: "center" }}>
+          <input
+            style={{ textAlign: "center", fontWeight: 700 }}
+            className="input is-small m-0 p-0"
+            defaultValue={key.margin}
+          />
+        </th>
+      </Fragment>
     ));
   /*
   const renderColumns = (row: IOffer) =>
@@ -290,12 +314,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
       ["2 - 10", "11 - 100", "SAMPLE"].includes(name) ? (
         <>
           <td className="pl-3" key={name + 3}>
-            <input
-              style={{ textAlign: "center" }}
-              className="input is-small"
-              name={name.toString()}
-              defaultValue={row[name]}
-            />
+
           </td>
           <td className="pl-3" style={{ textAlign: "center" }} key={name + 4}>
             {
@@ -316,8 +335,8 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
     ranges.map((range, colIdx) => (
-      <>
-        <td className="pl-3" key={range.range + "a"}>
+      <Fragment key={range.range + "a"}>
+        <td className="pl-3">
           <input
             style={{ textAlign: "center" }}
             className="input is-small"
@@ -328,11 +347,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
             }
           />
         </td>
-        <td
-          className="pl-3"
-          style={{ textAlign: "center" }}
-          key={range.range + "b"}
-        >
+        <td className="pl-3" style={{ textAlign: "center" }}>
           {isNaN(range.basePrice) ? (
             <input
               style={{ textAlign: "center" }}
@@ -344,10 +359,10 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
               }
             />
           ) : (
-            (range.basePrice * (offer.rangesB[colIdx].margin + 100)) / 100
+            (range.clientPrice * (offer.rangesB[colIdx].margin + 100)) / 100
           )}
         </td>
-      </>
+      </Fragment>
     ));
 
   const renderTable = () =>
