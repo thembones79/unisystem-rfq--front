@@ -1,4 +1,3 @@
-// import { GetStaticPaths } from "next";
 import React, { useEffect, useState, Fragment } from "react";
 import { IUser } from "../users";
 export interface ICol<T> {
@@ -37,7 +36,6 @@ export interface ContentsEntity {
 }
 
 export interface Ranges2Entity {
-  range: string;
   basePrice: number;
   clientPrice: number;
 }
@@ -70,7 +68,6 @@ const INIT_OFFER: IOffer2 = {
       Shipment: "",
       ranges2: [
         {
-          range: "SAMPLE",
           basePrice: 0,
           clientPrice: 0,
         },
@@ -114,17 +111,14 @@ const offers: IOffer2[] = [
         Shipment: "2020-08-08",
         ranges2: [
           {
-            range: "SAMPLE",
             basePrice: 100,
             clientPrice: 155,
           },
           {
-            range: "2 - 10",
             basePrice: 90,
             clientPrice: 135,
           },
           {
-            range: "11 - 100",
             basePrice: NaN,
             clientPrice: 112,
           },
@@ -133,22 +127,19 @@ const offers: IOffer2[] = [
       {
         id: 2,
         Partnumber: "2WF0096ATYAA3DNN0#",
-        currency: "PLN",
+        currency: "EUR",
         Description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         Shipment: "2020-08-08",
         ranges2: [
           {
-            range: "SAMPLE",
             basePrice: 100,
             clientPrice: 155,
           },
           {
-            range: "2 - 10",
             basePrice: 90,
             clientPrice: 135,
           },
           {
-            range: "11 - 100",
             basePrice: 80,
             clientPrice: 112,
           },
@@ -158,50 +149,8 @@ const offers: IOffer2[] = [
   },
 ];
 
-//const offersString = JSON.stringify(offers);
-
 const currencies: CurrencyType[] = ["PLN", "USD", "EUR"];
-/*
-const columns: ICol<IOffer>[] = [
-  { name: "Partnumber", label: "Partnumber", margin: 0 },
-  { name: "Description", label: "Description", margin: 0 },
-  { name: "SAMPLE", label: "SAMPLE", margin: 55 },
-  { name: "2 - 10", label: "2 - 10", margin: 50 },
-  { name: "11 - 100", label: "11 - 100", margin: 40 },
-  { name: "Shipment", label: "Shipment", margin: 0 },
-];
 
-const rows: IOffer[] = [
-  {
-    id: 1,
-    Partnumber: "WF0096ATYAA3DNN0#",
-    Description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
-    SAMPLE: "100",
-    "2 - 10": "90",
-    "11 - 100": "80",
-    Shipment: "2020-08-08",
-  },
-  {
-    id: 2,
-    Partnumber: "WEO001602BLPP3N00000#",
-    Description: `OLED COG, 16x2, Yellow, Contr:WS0012, Int:8b, 3.3V, AA:30.69x5.94, OL:53.0x20.0x7.6, 80 cd/m2`,
-    SAMPLE: "200",
-    "2 - 10": "190",
-    "11 - 100": "180",
-    Shipment: "2020-08-08",
-  },
-  {
-    id: 3,
-    Partnumber: "RVT7.0A800480LNWN00",
-
-    Description: `LCD TFT 7.00", 800x480, LED XXcd/m^2, LVDS, AA: 154.08x85.92, OL: 164.8x99.8x5.5, FFC50pin x 0.5mm`,
-    SAMPLE: "300",
-    "2 - 10": "280",
-    "11 - 100": "220",
-    Shipment: "2020-08-08",
-  },
-];
-*/
 interface OffersProps {
   currentUser: IUser;
 }
@@ -231,11 +180,21 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
       return { ...prev, currency };
     });
 
-  const setRange = (
-    newRange: string,
+  const setRange = (newRange: string, colIdx: number) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.rangesB[colIdx].range = newRange;
+      return draft;
+    });
+  };
 
-    colIdx: number
-  ) => {};
+  const setMargin = (newMargin: number, colIdx: number) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.rangesB[colIdx].margin = newMargin;
+      return draft;
+    });
+  };
 
   const setOfferBasePrice = (
     newBasePrice: number,
@@ -244,9 +203,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   ) => {
     setOffer((prev) => {
       const draft = { ...prev };
-
       draft.contents[rowIdx].ranges2[colIdx].basePrice = newBasePrice;
-
       return draft;
     });
     setOfferClientPrice(
@@ -263,9 +220,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   ) => {
     setOffer((prev) => {
       const draft = { ...prev };
-
       draft.contents[rowIdx].ranges2[colIdx].clientPrice = newClientPrice;
-
       return draft;
     });
   };
@@ -277,6 +232,29 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   const saveOffer = () => console.log({ endpoint: "/api/offers", body: offer });
 
   useEffect(getOffer, []);
+
+  const renderCurrencySelect = () => (
+    <div className={`select`}>
+      <select
+        name="currency"
+        id="currency"
+        value={offer.contents[0].currency}
+        required
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+          const chosenCurrency = e.target.value as CurrencyType;
+          if (currencies.includes(chosenCurrency)) {
+            setCurrency(chosenCurrency);
+          }
+        }}
+      >
+        {currencies.map((c) => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 
   const renderMainHeader = () => (
     <thead>
@@ -290,13 +268,14 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   );
 
   const renderSubHeader = () =>
-    offer.rangesB.map((key) => (
+    offer.rangesB.map((key, idx) => (
       <Fragment key={"key" + key.range}>
         <th style={{ textAlign: "center", border: 0 }}>
           <input
             style={{ textAlign: "center", fontWeight: 700 }}
             className="input is-small m-0 p-0"
             defaultValue={key.range}
+            onChange={(e) => setRange(e.target.value, idx)}
           />
         </th>
         <th style={{ textAlign: "center" }}>
@@ -304,38 +283,15 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
             style={{ textAlign: "center", fontWeight: 700 }}
             className="input is-small m-0 p-0"
             defaultValue={key.margin}
+            onChange={(e) => setMargin(parseFloat(e.target.value), idx)}
           />
         </th>
       </Fragment>
     ));
-  /*
-  const renderColumns = (row: IOffer) =>
-    columns.map(({ name, margin }) =>
-      ["2 - 10", "11 - 100", "SAMPLE"].includes(name) ? (
-        <>
-          <td className="pl-3" key={name + 3}>
-
-          </td>
-          <td className="pl-3" style={{ textAlign: "center" }} key={name + 4}>
-            {
-              //@ts-ignore
-              (parseFloat(row[name]) * (margin + 100)) / 100
-            }
-          </td>
-        </>
-      ) : (
-        <td style={getStyle(name)} className="pl-3" key={name + 4}>
-          {row[name]}
-        </td>
-      )
-    );
-    */
-  //  const renderBody = () =>
-  //    rows.map((row) => <tr key={row.id}>{renderColumns(row)}</tr>);
 
   const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
     ranges.map((range, colIdx) => (
-      <Fragment key={range.range + "a"}>
+      <Fragment key={range.basePrice + "a"}>
         <td className="pl-3">
           <input
             style={{ textAlign: "center" }}
@@ -423,18 +379,5 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   return <div className="card ">{renderContent()}</div>;
 };
-
-// export async function getStaticProps(context: any) {
-//   return {
-//     props: {}, // will be passed to the page component as props
-//   };
-// }
-
-// export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
-//   return {
-//     paths: [], //indicates that no page needs be created at build time
-//     fallback: "blocking", //indicates the type of fallback
-//   };
-// };
 
 export default Offers2;
