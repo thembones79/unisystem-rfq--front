@@ -6,7 +6,7 @@ export interface ICol<T> {
   margin: number;
 }
 
-export interface IOffer2 {
+export interface IOffer {
   id: number;
   number: string;
   dateAdded: string;
@@ -27,11 +27,10 @@ export interface RangesBEntity {
 }
 
 export interface ContentsEntity {
-  id: number;
-  Partnumber: string;
+  partnumber: string;
   currency: CurrencyType;
-  Description: string;
-  Shipment: string;
+  description: string;
+  shipment: string;
   ranges2: Ranges2Entity[];
 }
 
@@ -42,7 +41,7 @@ export interface Ranges2Entity {
 
 export type CurrencyType = "PLN" | "USD" | "EUR";
 
-const INIT_OFFER: IOffer2 = {
+const INIT_OFFER: IOffer = {
   id: 0,
   number: "",
   dateAdded: "",
@@ -61,11 +60,10 @@ const INIT_OFFER: IOffer2 = {
   footerId: 0,
   contents: [
     {
-      id: 1,
-      Partnumber: "#",
-      Description: ``,
+      partnumber: "#",
+      description: ``,
       currency: "PLN",
-      Shipment: "",
+      shipment: "",
       ranges2: [
         {
           basePrice: 0,
@@ -76,7 +74,7 @@ const INIT_OFFER: IOffer2 = {
   ],
 };
 
-const offers: IOffer2[] = [
+const offers: IOffer[] = [
   {
     id: 1,
     number: "2022/05/123",
@@ -104,11 +102,10 @@ const offers: IOffer2[] = [
     footerId: 3,
     contents: [
       {
-        id: 1,
-        Partnumber: "WF0096ATYAA3DNN0#",
+        partnumber: "WF0096ATYAA3DNN0#",
         currency: "PLN",
-        Description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
-        Shipment: "2020-08-08",
+        description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
+        shipment: "2020-08-08",
         ranges2: [
           {
             basePrice: 100,
@@ -125,22 +122,21 @@ const offers: IOffer2[] = [
         ],
       },
       {
-        id: 2,
-        Partnumber: "2WF0096ATYAA3DNN0#",
+        partnumber: "2WF0096ATYAA3DNN0#",
         currency: "EUR",
-        Description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
-        Shipment: "2020-08-08",
+        description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
+        shipment: "2020-08-08",
         ranges2: [
           {
-            basePrice: 100,
+            basePrice: 200,
             clientPrice: 155,
           },
           {
-            basePrice: 90,
+            basePrice: NaN,
             clientPrice: 135,
           },
           {
-            basePrice: 80,
+            basePrice: 50,
             clientPrice: 112,
           },
         ],
@@ -157,27 +153,40 @@ interface OffersProps {
 
 const getStyle = (label: string) => {
   switch (label) {
-    case "Description":
-      return { width: "500px" };
+    case "description":
+      return { width: "380px" };
 
-    case "Partnumber":
-      return { width: "190px" };
+    case "partnumber":
+      return { width: "160px" };
 
-    case "Shipment":
-      return { width: "100px" };
+    case "shipment":
+      return { width: "80px" };
+
+    case "currency":
+      return { width: "80px" };
+
+    // case "endCol":
+    //   return { width: "70px", textAlign: "center"  };
 
     default:
       return {};
   }
 };
 
+const style = {
+  endCol: { width: "60px", textAlign: "center" as const },
+  currency: { width: "80px" },
+};
+
 const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
-  const [offer, setOffer] = useState<IOffer2>(INIT_OFFER);
+  const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   console.log(currentUser);
 
-  const setCurrency = (currency: CurrencyType) =>
+  const setCurrency = (newCurrency: CurrencyType, rowIdx: number) =>
     setOffer((prev) => {
-      return { ...prev, currency };
+      const draft = { ...prev };
+      draft.contents[rowIdx].currency = newCurrency;
+      return draft;
     });
 
   const setRange = (newRange: string, colIdx: number) => {
@@ -207,7 +216,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
       return draft;
     });
     setOfferClientPrice(
-      (newBasePrice * (offer.rangesB[colIdx].margin + 100)) / 100,
+      Math.round(newBasePrice * (offer.rangesB[colIdx].margin + 100)) / 100,
       rowIdx,
       colIdx
     );
@@ -225,6 +234,63 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
     });
   };
 
+  const addOfferRow = () => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      const ranges2 = draft.rangesB.map((tier) => {
+        return {
+          basePrice: 0,
+          clientPrice: 0,
+        };
+      });
+      const newRow = {
+        partnumber: "",
+        currency: "PLN" as CurrencyType,
+        description: "",
+        shipment: "",
+        ranges2,
+      };
+      draft.contents.push(newRow);
+      return draft;
+    });
+  };
+
+  const addOfferColumn = () => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.rangesB.push({
+        range: "NEW!!!",
+        margin: 0,
+      });
+      draft.contents.forEach((element) => {
+        element.ranges2.push({
+          basePrice: 0,
+          clientPrice: 0,
+        });
+      });
+      return draft;
+    });
+  };
+
+  const removeOfferRow = (rowIdx: number) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.contents.splice(rowIdx, 1);
+      return draft;
+    });
+  };
+
+  const removeOfferColumn = (colIdx: number) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.rangesB.splice(colIdx, 1);
+      draft.contents.forEach((element) => {
+        element.ranges2.splice(colIdx, 1);
+      });
+      return draft;
+    });
+  };
+
   const showOffer = () => console.log(offer);
 
   const getOffer = () => setOffer(offers[0]);
@@ -233,17 +299,17 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   useEffect(getOffer, []);
 
-  const renderCurrencySelect = () => (
+  const renderCurrencySelect = (currency: CurrencyType, rowIdx: number) => (
     <div className={`select`}>
       <select
         name="currency"
         id="currency"
-        value={offer.contents[0].currency}
+        value={currency}
         required
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
           const chosenCurrency = e.target.value as CurrencyType;
           if (currencies.includes(chosenCurrency)) {
-            setCurrency(chosenCurrency);
+            setCurrency(chosenCurrency, rowIdx);
           }
         }}
       >
@@ -259,43 +325,60 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   const renderMainHeader = () => (
     <thead>
       <tr>
-        <th style={getStyle("Partnumber")}>Partnumber</th>
-        <th style={getStyle("Description")}>Description</th>
+        <th style={getStyle("partnumber")}>Partnumber</th>
+        <th style={getStyle("description")}>Description</th>
+        <th style={getStyle("shipment")}>Shipment</th>
+        <th style={getStyle("currency")}>Currency</th>
         {renderSubHeader()}
-        <th style={getStyle("Shipment")}>Shipment</th>
+        <th style={style.endCol}>
+          <button
+            onClick={addOfferColumn}
+            className="button is-link is-inverted is-rounded is-small mx-1 p-3"
+          >
+            <i className="fas fa-plus"></i>
+          </button>
+        </th>
       </tr>
     </thead>
   );
 
   const renderSubHeader = () =>
-    offer.rangesB.map((key, idx) => (
-      <Fragment key={"key" + key.range}>
-        <th style={{ textAlign: "center", border: 0 }}>
+    offer.rangesB.map(({ range, margin }, idx) => (
+      <Fragment key={idx + range + margin}>
+        <th className="pt-1 has-text-centered" style={{ borderRightWidth: 0 }}>
           <input
-            style={{ textAlign: "center", fontWeight: 700 }}
-            className="input is-small m-0 p-0"
-            defaultValue={key.range}
+            style={{ border: 0 }}
+            className="input is-small m-0 p-0 has-text-centered has-text-weight-bold"
+            defaultValue={range}
             onChange={(e) => setRange(e.target.value, idx)}
           />
+          <button
+            onClick={() => {
+              removeOfferColumn(idx);
+            }}
+            className="button is-danger is-inverted  is-rounded is-small mx-1 p-3"
+          >
+            <i className="fas fa-trash-alt"></i>
+          </button>
         </th>
-        <th style={{ textAlign: "center" }}>
+        <th className="pt-1 has-text-centered" style={{ borderLeftWidth: 0 }}>
           <input
-            style={{ textAlign: "center", fontWeight: 700 }}
-            className="input is-small m-0 p-0"
-            defaultValue={key.margin}
+            style={{ border: 0 }}
+            className="input is-small m-0 p-0 has-text-centered has-text-weight-bold"
+            defaultValue={margin}
             onChange={(e) => setMargin(parseFloat(e.target.value), idx)}
           />
+          <p className="is-size-7 mt-1 mb-2">%</p>
         </th>
       </Fragment>
     ));
 
   const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
     ranges.map((range, colIdx) => (
-      <Fragment key={range.basePrice + "a"}>
-        <td className="pl-3">
+      <Fragment key={colIdx + range.basePrice + range.clientPrice}>
+        <td className="px-2" style={{ borderRightWidth: 0 }}>
           <input
-            style={{ textAlign: "center" }}
-            className="input is-small"
+            className="input is-small has-text-centered"
             type="number"
             defaultValue={range.basePrice + ""}
             onChange={(e) =>
@@ -303,11 +386,10 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
             }
           />
         </td>
-        <td className="pl-3" style={{ textAlign: "center" }}>
+        <td className="has-text-centered px-2" style={{ borderLeftWidth: 0 }}>
           {isNaN(range.basePrice) ? (
             <input
-              style={{ textAlign: "center" }}
-              className="input is-small"
+              className="input is-small has-text-centered"
               type="number"
               defaultValue={range.clientPrice + ""}
               onChange={(e) =>
@@ -315,7 +397,8 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
               }
             />
           ) : (
-            (range.clientPrice * (offer.rangesB[colIdx].margin + 100)) / 100
+            Math.round(range.basePrice * (offer.rangesB[colIdx].margin + 100)) /
+            100
           )}
         </td>
       </Fragment>
@@ -323,11 +406,24 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderTable = () =>
     offer.contents.map((row, rowIdx) => (
-      <tr key={row.id}>
-        <td style={getStyle("Partnumber")}>{row.Partnumber}</td>
-        <td style={getStyle("Description")}>{row.Description}</td>
+      <tr key={rowIdx + JSON.stringify(row)}>
+        <td style={getStyle("partnumber")}>{row.partnumber}</td>
+        <td style={getStyle("description")}>{row.description}</td>
+        <td style={getStyle("shipment")}>{row.shipment}</td>
+        <td style={getStyle("currency")}>
+          {renderCurrencySelect(row.currency, rowIdx)}
+        </td>
         {renderTableColumns(row.ranges2, rowIdx)}
-        <td style={getStyle("Shipment")}>{row.Shipment}</td>
+        <td style={style.endCol}>
+          <button
+            onClick={() => {
+              removeOfferRow(rowIdx);
+            }}
+            className="button is-danger is-inverted  is-rounded is-small mx-1 p-3"
+          >
+            <i className="fas fa-trash-alt"></i>
+          </button>
+        </td>
       </tr>
     ));
 
@@ -344,26 +440,6 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
             </span>
           </div>
         </div>
-        <div className={`select`}>
-          <select
-            name="currency"
-            id="currency"
-            value={offer.contents[0].currency}
-            required
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-              const chosenCurrency = e.target.value as CurrencyType;
-              if (currencies.includes(chosenCurrency)) {
-                setCurrency(chosenCurrency);
-              }
-            }}
-          >
-            {currencies.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
         <div></div>
         <button className="button" onClick={showOffer}>
           Show offer
@@ -371,7 +447,19 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
         <table className="table is-striped is-narrow is-hoverable is-fullwidth is-bordered is-size-7">
           {renderMainHeader()}
-          <tbody className="fixed200 ">{renderTable()}</tbody>
+          <tbody className="fixed200 ">
+            {renderTable()}
+            <tr>
+              <td>
+                <button
+                  onClick={addOfferRow}
+                  className="button is-link is-inverted is-rounded is-small mx-1 p-3"
+                >
+                  <i className="fas fa-plus"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </>
