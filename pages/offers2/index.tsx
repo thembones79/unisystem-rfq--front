@@ -27,7 +27,6 @@ export interface RangesBEntity {
 }
 
 export interface ContentsEntity {
-  id: number;
   partnumber: string;
   currency: CurrencyType;
   description: string;
@@ -61,7 +60,6 @@ const INIT_OFFER: IOffer = {
   footerId: 0,
   contents: [
     {
-      id: 1,
       partnumber: "#",
       description: ``,
       currency: "PLN",
@@ -104,7 +102,6 @@ const offers: IOffer[] = [
     footerId: 3,
     contents: [
       {
-        id: 1,
         partnumber: "WF0096ATYAA3DNN0#",
         currency: "PLN",
         description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
@@ -125,22 +122,21 @@ const offers: IOffer[] = [
         ],
       },
       {
-        id: 2,
         partnumber: "2WF0096ATYAA3DNN0#",
         currency: "EUR",
         description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         shipment: "2020-08-08",
         ranges2: [
           {
-            basePrice: 100,
+            basePrice: 200,
             clientPrice: 155,
           },
           {
-            basePrice: 90,
+            basePrice: NaN,
             clientPrice: 135,
           },
           {
-            basePrice: 80,
+            basePrice: 50,
             clientPrice: 112,
           },
         ],
@@ -186,9 +182,11 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   console.log(currentUser);
 
-  const setCurrency = (currency: CurrencyType) =>
+  const setCurrency = (newCurrency: CurrencyType, rowIdx: number) =>
     setOffer((prev) => {
-      return { ...prev, currency };
+      const draft = { ...prev };
+      draft.contents[rowIdx].currency = newCurrency;
+      return draft;
     });
 
   const setRange = (newRange: string, colIdx: number) => {
@@ -236,6 +234,63 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
     });
   };
 
+  const addOfferRow = () => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      const ranges2 = draft.rangesB.map((tier) => {
+        return {
+          basePrice: 0,
+          clientPrice: 0,
+        };
+      });
+      const newRow = {
+        partnumber: "",
+        currency: "PLN" as CurrencyType,
+        description: "",
+        shipment: "",
+        ranges2,
+      };
+      draft.contents.push(newRow);
+      return draft;
+    });
+  };
+
+  const addOfferColumn = () => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.rangesB.push({
+        range: "NEW!!!",
+        margin: 0,
+      });
+      draft.contents.forEach((element) => {
+        element.ranges2.push({
+          basePrice: 0,
+          clientPrice: 0,
+        });
+      });
+      return draft;
+    });
+  };
+
+  const removeOfferRow = (rowIdx: number) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.contents.splice(rowIdx, 1);
+      return draft;
+    });
+  };
+
+  const removeOfferColumn = (colIdx: number) => {
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.rangesB.splice(colIdx, 1);
+      draft.contents.forEach((element) => {
+        element.ranges2.splice(colIdx, 1);
+      });
+      return draft;
+    });
+  };
+
   const showOffer = () => console.log(offer);
 
   const getOffer = () => setOffer(offers[0]);
@@ -244,17 +299,17 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   useEffect(getOffer, []);
 
-  const renderCurrencySelect = () => (
+  const renderCurrencySelect = (currency: CurrencyType, rowIdx: number) => (
     <div className={`select`}>
       <select
         name="currency"
         id="currency"
-        value={offer.contents[0].currency}
+        value={currency}
         required
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
           const chosenCurrency = e.target.value as CurrencyType;
           if (currencies.includes(chosenCurrency)) {
-            setCurrency(chosenCurrency);
+            setCurrency(chosenCurrency, rowIdx);
           }
         }}
       >
@@ -277,9 +332,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
         {renderSubHeader()}
         <th style={style.endCol}>
           <button
-            onClick={() => {
-              console.log("ADD COL");
-            }}
+            onClick={addOfferColumn}
             className="button is-link is-inverted is-rounded is-small mx-1 p-3"
           >
             <i className="fas fa-plus"></i>
@@ -290,40 +343,40 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   );
 
   const renderSubHeader = () =>
-    offer.rangesB.map((key, idx) => (
-      <Fragment key={idx}>
-        <th className="pt-1 has-text-centered">
+    offer.rangesB.map(({ range, margin }, idx) => (
+      <Fragment key={idx + range + margin}>
+        <th className="pt-1 has-text-centered" style={{ borderRightWidth: 0 }}>
           <input
             style={{ border: 0 }}
             className="input is-small m-0 p-0 has-text-centered has-text-weight-bold"
-            defaultValue={key.range}
+            defaultValue={range}
             onChange={(e) => setRange(e.target.value, idx)}
           />
           <button
             onClick={() => {
-              console.log(idx);
+              removeOfferColumn(idx);
             }}
             className="button is-danger is-inverted  is-rounded is-small mx-1 p-3"
           >
             <i className="fas fa-trash-alt"></i>
           </button>
         </th>
-        <th className="pt-1 has-text-centered">
+        <th className="pt-1 has-text-centered" style={{ borderLeftWidth: 0 }}>
           <input
             style={{ border: 0 }}
             className="input is-small m-0 p-0 has-text-centered has-text-weight-bold"
-            defaultValue={key.margin}
+            defaultValue={margin}
             onChange={(e) => setMargin(parseFloat(e.target.value), idx)}
           />
-          <p className="is-size-6">%</p>
+          <p className="is-size-7 mt-1 mb-2">%</p>
         </th>
       </Fragment>
     ));
 
   const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
     ranges.map((range, colIdx) => (
-      <Fragment key={colIdx}>
-        <td className="pl-3">
+      <Fragment key={colIdx + range.basePrice + range.clientPrice}>
+        <td className="px-2" style={{ borderRightWidth: 0 }}>
           <input
             className="input is-small has-text-centered"
             type="number"
@@ -333,7 +386,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
             }
           />
         </td>
-        <td className="pl-3" style={{ textAlign: "center" }}>
+        <td className="has-text-centered px-2" style={{ borderLeftWidth: 0 }}>
           {isNaN(range.basePrice) ? (
             <input
               className="input is-small has-text-centered"
@@ -353,16 +406,18 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderTable = () =>
     offer.contents.map((row, rowIdx) => (
-      <tr key={row.id}>
+      <tr key={rowIdx + JSON.stringify(row)}>
         <td style={getStyle("partnumber")}>{row.partnumber}</td>
         <td style={getStyle("description")}>{row.description}</td>
         <td style={getStyle("shipment")}>{row.shipment}</td>
-        <td style={getStyle("currency")}>{row.currency}</td>
+        <td style={getStyle("currency")}>
+          {renderCurrencySelect(row.currency, rowIdx)}
+        </td>
         {renderTableColumns(row.ranges2, rowIdx)}
         <td style={style.endCol}>
           <button
             onClick={() => {
-              console.log(row.id);
+              removeOfferRow(rowIdx);
             }}
             className="button is-danger is-inverted  is-rounded is-small mx-1 p-3"
           >
@@ -385,26 +440,6 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
             </span>
           </div>
         </div>
-        <div className={`select`}>
-          <select
-            name="currency"
-            id="currency"
-            value={offer.contents[0].currency}
-            required
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-              const chosenCurrency = e.target.value as CurrencyType;
-              if (currencies.includes(chosenCurrency)) {
-                setCurrency(chosenCurrency);
-              }
-            }}
-          >
-            {currencies.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
         <div></div>
         <button className="button" onClick={showOffer}>
           Show offer
@@ -417,9 +452,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
             <tr>
               <td>
                 <button
-                  onClick={() => {
-                    console.log("ADD ROW");
-                  }}
+                  onClick={addOfferRow}
                   className="button is-link is-inverted is-rounded is-small mx-1 p-3"
                 >
                   <i className="fas fa-plus"></i>

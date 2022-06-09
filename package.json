@@ -24,7 +24,6 @@
     "@types/node": "15.6.0",
     "@types/react": "17.0.6",
     "@types/react-dom": "17.0.5",
-    "@zeit/next-sass": "^0.0.4",
     "chance": "1.1.7",
     "cypress": "7.7.0",
     "jest": "26.6.3",
