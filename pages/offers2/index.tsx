@@ -22,11 +22,13 @@ export interface IOffer {
 }
 
 export interface RangesBEntity {
+  id: number;
   range: string;
   margin: number;
 }
 
 export interface ContentsEntity {
+  id: number;
   partnumber: string;
   currency: CurrencyType;
   description: string;
@@ -35,6 +37,7 @@ export interface ContentsEntity {
 }
 
 export interface Ranges2Entity {
+  id: number;
   basePrice: number;
   clientPrice: number;
 }
@@ -48,6 +51,7 @@ const INIT_OFFER: IOffer = {
   dateUpdated: "",
   rangesB: [
     {
+      id: 0,
       range: "SAMPLE",
       margin: 0,
     },
@@ -60,12 +64,14 @@ const INIT_OFFER: IOffer = {
   footerId: 0,
   contents: [
     {
+      id: 0,
       partnumber: "#",
       description: ``,
       currency: "PLN",
       shipment: "",
       ranges2: [
         {
+          id: 0,
           basePrice: 0,
           clientPrice: 0,
         },
@@ -82,14 +88,17 @@ const offers: IOffer[] = [
     dateUpdated: "2022.05.23",
     rangesB: [
       {
+        id: 1,
         range: "SAMPLE",
         margin: 55,
       },
       {
+        id: 2,
         range: "2 - 10",
         margin: 50,
       },
       {
+        id: 3,
         range: "11 - 100",
         margin: 40,
       },
@@ -102,40 +111,48 @@ const offers: IOffer[] = [
     footerId: 3,
     contents: [
       {
+        id: 1,
         partnumber: "WF0096ATYAA3DNN0#",
         currency: "PLN",
         description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         shipment: "2020-08-08",
         ranges2: [
           {
+            id: 1,
             basePrice: 100,
             clientPrice: 155,
           },
           {
+            id: 2,
             basePrice: 90,
             clientPrice: 135,
           },
           {
+            id: 3,
             basePrice: NaN,
             clientPrice: 112,
           },
         ],
       },
       {
+        id: 2,
         partnumber: "2WF0096ATYAA3DNN0#",
         currency: "EUR",
         description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         shipment: "2020-08-08",
         ranges2: [
           {
+            id: 1,
             basePrice: 200,
             clientPrice: 155,
           },
           {
+            id: 2,
             basePrice: NaN,
             clientPrice: 135,
           },
           {
+            id: 3,
             basePrice: 50,
             clientPrice: 112,
           },
@@ -234,16 +251,23 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
     });
   };
 
+  const getId = (arr: ContentsEntity[] | RangesBEntity[] | Ranges2Entity[]) => {
+    const l = arr.length;
+    return l ? arr[l - 1].id + 1 : 1;
+  };
+
   const addOfferRow = () => {
     setOffer((prev) => {
       const draft = { ...prev };
       const ranges2 = draft.rangesB.map((tier) => {
         return {
+          id: tier.id,
           basePrice: 0,
           clientPrice: 0,
         };
       });
       const newRow = {
+        id: getId(draft.contents),
         partnumber: "",
         currency: "PLN" as CurrencyType,
         description: "",
@@ -259,11 +283,13 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
     setOffer((prev) => {
       const draft = { ...prev };
       draft.rangesB.push({
+        id: getId(draft.rangesB),
         range: "NEW!!!",
         margin: 0,
       });
       draft.contents.forEach((element) => {
         element.ranges2.push({
+          id: getId(element.ranges2),
           basePrice: 0,
           clientPrice: 0,
         });
@@ -343,8 +369,8 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   );
 
   const renderSubHeader = () =>
-    offer.rangesB.map(({ range, margin }, idx) => (
-      <Fragment key={idx + range + margin}>
+    offer.rangesB.map(({ range, margin, id }, idx) => (
+      <Fragment key={id}>
         <th className="pt-1 has-text-centered" style={{ borderRightWidth: 0 }}>
           <input
             style={{ border: 0 }}
@@ -375,7 +401,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
     ranges.map((range, colIdx) => (
-      <Fragment key={colIdx + range.basePrice + range.clientPrice}>
+      <Fragment key={range.id}>
         <td className="px-2" style={{ borderRightWidth: 0 }}>
           <input
             className="input is-small has-text-centered"
@@ -406,7 +432,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderTable = () =>
     offer.contents.map((row, rowIdx) => (
-      <tr key={rowIdx + JSON.stringify(row)}>
+      <tr key={row.id}>
         <td style={getStyle("partnumber")}>{row.partnumber}</td>
         <td style={getStyle("description")}>{row.description}</td>
         <td style={getStyle("shipment")}>{row.shipment}</td>
