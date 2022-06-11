@@ -1,6 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useRequest } from "../../hooks/useRequest";
-import { DataList } from "../../components/data-list";
 import { IUser } from "../users";
 
 export interface IProduct {
