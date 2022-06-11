@@ -26,7 +26,7 @@ export interface IOffer {
   projectClientId: number;
   kamId: number;
   department: string;
-  footerid: number;
+  footerId: number;
   contents: ContentsEntity[];
 }
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState, Fragment } from "react";
 import { useRequest } from "../../hooks/useRequest";
 import { DataList } from "../../components/data-list";
 import { IUser } from "../users";
+import Select from "react-select";
 
 export interface IProduct {
   id: number;
@@ -26,7 +27,7 @@ export interface IOffer {
   projectClientId: number;
   kamId: number;
   department: string;
-  footerid: number;
+  footerId: number;
   contents: ContentsEntity[];
 }
 
@@ -207,6 +208,10 @@ const style = {
 const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [options, setOptions] = useState<{ label: string; value: string }[]>(
+    []
+  );
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const setCurrency = (newCurrency: CurrencyType, rowIdx: number) =>
     setOffer((prev) => {
@@ -342,7 +347,13 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   const { doRequest } = useRequest({
     url: `/erpxlproducts`,
     method: "get",
-    onSuccess: (data: IProduct[]) => setProducts(data),
+    onSuccess: (data: IProduct[]) => {
+      const opts = data.map((x) => {
+        return { label: x.partnumber, value: x.partnumber };
+      });
+      setProducts(data);
+      setOptions(opts);
+    },
   });
 
   useEffect(() => {
@@ -465,16 +476,11 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
     offer.contents.map((row, rowIdx) => (
       <tr key={row.id}>
         <td style={getStyle("partnumber")}>
-          <input
-            className="input is-small pl-1"
-            list={"pn" + 60}
-            type="text"
-            value={row.partnumber}
-            onChange={(e) =>
-              setPartnumber(e.target.value.toUpperCase(), rowIdx)
-            }
+          <Select
+            defaultValue={selectedOption}
+            onChange={setSelectedOption}
+            options={options}
           />
-          <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
         </td>
         <td style={getStyle("description")}>{row.description}</td>
         <td style={getStyle("shipment")}>{row.shipment}</td>
