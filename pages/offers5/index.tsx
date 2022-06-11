@@ -203,7 +203,7 @@ const style = {
   currency: { width: "80px" },
 };
 
-const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
+const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   const [products, setProducts] = useState<IProduct[]>([]);
 
@@ -473,7 +473,6 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
               setPartnumber(e.target.value.toUpperCase(), rowIdx)
             }
           />
-          <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
         </td>
         <td style={getStyle("description")}>{row.description}</td>
         <td style={getStyle("shipment")}>{row.shipment}</td>
@@ -497,6 +496,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   const renderContent = () => (
     <>
       <div className="card-content">
+        <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
         <div className="mb-3 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between is-flex-wrap-wrap">
           <div className="is-flex is-flex-wrap-wrap">
             <h1 className="title my-3 is-4">New Offer</h1>
@@ -535,4 +535,4 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
   return <div className="card ">{renderContent()}</div>;
 };
 
-export default Offers2;
+export default Offers5;
