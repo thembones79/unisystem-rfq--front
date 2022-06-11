@@ -478,6 +478,7 @@ const Offers2: React.FC<OffersProps> = ({ currentUser }) => {
         <td style={getStyle("partnumber")}>
           <Select
             defaultValue={selectedOption}
+            //@ts-ignore
             onChange={setSelectedOption}
             options={options}
           />
