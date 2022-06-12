@@ -60,6 +60,10 @@ const ShowProject: React.FC<ShowProjectProps> = ({ currentUser }) => {
     onSuccess: (data: IProjectWithNames) => setProject(data),
   });
 
+  useEffect(() => {
+    doRequest();
+  }, []);
+
   if (!project) {
     return <h1>Project not found</h1>;
   } else {
@@ -247,11 +251,6 @@ const ShowProject: React.FC<ShowProjectProps> = ({ currentUser }) => {
         </div>
       </>
     );
-
-    useEffect(() => {
-      doRequest();
-    }, []);
-
     return (
       <div className="card ">
         {project_code === "" ? renderLoader() : renderContent()}

@@ -9,10 +9,6 @@ interface NewUserProps {
 }
 
 const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
-  if (!currentUser) {
-    return <div></div>;
-  }
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -45,6 +41,10 @@ const NewUser: React.FC<NewUserProps> = ({ currentUser }) => {
     event.preventDefault();
     Router.push("/users");
   };
+
+  if (!currentUser) {
+    return <div></div>;
+  }
 
   return (
     <div>

@@ -47,6 +47,7 @@ export const useRequest = ({
         {
           ...body,
           ...props,
+          //@ts-ignore
           headers,
         },
 

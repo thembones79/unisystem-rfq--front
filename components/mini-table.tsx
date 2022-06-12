@@ -1,6 +1,6 @@
 import React from "react";
 interface MiniTableProps {
-  dataObject: Object;
+  dataObject: {};
   label: string;
 }
 

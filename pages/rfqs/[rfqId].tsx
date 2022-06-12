@@ -87,6 +87,10 @@ const ShowRfq: React.FC = () => {
     [rfq]
   );
 
+  useEffect(() => {
+    doRequest();
+  }, []);
+
   if (!rfq) {
     return <h1>RFQ not found</h1>;
   } else {
@@ -331,11 +335,6 @@ const ShowRfq: React.FC = () => {
         </div>
       </>
     );
-
-    useEffect(() => {
-      doRequest();
-    }, []);
-
     return (
       <div className="card ">
         {rfq_code === "LOADING" ? renderLoader() : renderContent()}

@@ -53,6 +53,10 @@ const ShowPartnumber: React.FC<ShowPartnumberProps> = ({ currentUser }) => {
     onSuccess: (data: IPartnumberWithNames) => setPartnumber(data),
   });
 
+  useEffect(() => {
+    doRequest();
+  }, []);
+
   if (!partnumber) {
     return <h1>Partnumber not found</h1>;
   } else {
@@ -185,11 +189,6 @@ const ShowPartnumber: React.FC<ShowPartnumberProps> = ({ currentUser }) => {
         </div>
       </>
     );
-
-    useEffect(() => {
-      doRequest();
-    }, []);
-
     return (
       <div className="card ">
         {pn === "" ? renderLoader() : renderContent()}
