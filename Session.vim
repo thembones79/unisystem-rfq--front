@@ -9,41 +9,11 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 let s:shortmess_save = &shortmess
 set shortmess=aoO
-badd +349 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers5/index.tsx
+badd +324 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers5/index.tsx
 argglobal
 %argdel
 $argadd ./
 edit ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers5/index.tsx
-let s:save_splitbelow = &splitbelow
-let s:save_splitright = &splitright
-set splitbelow splitright
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
-let &splitbelow = s:save_splitbelow
-let &splitright = s:save_splitright
-wincmd t
-let s:save_winminheight = &winminheight
-let s:save_winminwidth = &winminwidth
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-exe 'vert 1resize ' . ((&columns * 34 + 62) / 124)
-exe 'vert 2resize ' . ((&columns * 89 + 62) / 124)
-argglobal
-enew
-file neo-tree\ filesystem\ \[1]
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-wincmd w
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -55,16 +25,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 507 - ((34 * winheight(0) + 35) / 70)
+let s:l = 324 - ((37 * winheight(0) + 35) / 70)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 507
-normal! 054|
-wincmd w
-2wincmd w
-exe 'vert 1resize ' . ((&columns * 34 + 62) / 124)
-exe 'vert 2resize ' . ((&columns * 89 + 62) / 124)
+keepjumps 324
+normal! 021|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -72,8 +38,6 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
-let &winminheight = s:save_winminheight
-let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)

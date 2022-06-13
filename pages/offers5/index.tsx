@@ -1,4 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
+import { marked } from "marked";
 import { useRequest } from "../../hooks/useRequest";
 import { IUser } from "../users";
 
@@ -25,7 +26,10 @@ export interface IOffer {
   projectClientId: number;
   kamId: number;
   department: string;
-  footerId: number;
+  footerPl: string;
+  footerEn: string;
+  bufferPl: string;
+  bufferEn: string;
   contents: ContentsEntity[];
 }
 
@@ -69,7 +73,10 @@ const INIT_OFFER: IOffer = {
   projectClientId: 0,
   kamId: 0,
   department: "",
-  footerId: 0,
+  footerPl: "",
+  footerEn: "",
+  bufferPl: "",
+  bufferEn: "",
   contents: [
     {
       id: 0,
@@ -116,7 +123,32 @@ const offers: IOffer[] = [
     projectClientId: 2,
     kamId: 7,
     department: "PL",
-    footerId: 3,
+    footerPl: `dupa
+    cyce
+
+    jajca
+    jaja`,
+    footerEn: `ass
+    titz
+
+    balls
+    eggs`,
+    bufferPl: `jeden
+    dwa
+    trzy
+
+    cztery
+
+
+    piec`,
+    bufferEn: `one
+    two
+    three
+
+    four
+
+
+    five`,
     contents: [
       {
         id: 1,
@@ -190,9 +222,6 @@ const getStyle = (label: string) => {
     case "currency":
       return { width: "80px" };
 
-    // case "endCol":
-    //   return { width: "70px", textAlign: "center"  };
-
     default:
       return {};
   }
@@ -214,12 +243,30 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
       return draft;
     });
 
+  const setFooterPl = (newFooterPl: string) => {
+    const newOffer = { ...offer, footerPl: newFooterPl };
+    setOffer(newOffer);
+  };
+
   const setPartnumber = (newPn: string, rowIdx: number) =>
     setOffer((prev) => {
       const draft = { ...prev };
       draft.contents[rowIdx].partnumber = newPn;
       return draft;
     });
+
+  const setDescription = (newDescription: string, rowIdx: number) =>
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.contents[rowIdx].description = newDescription;
+      return draft;
+    });
+
+  const setShipment = (newShipment: string, rowIdx: number) => {
+    const newOffer = { ...offer };
+    newOffer.contents[rowIdx].shipment = newShipment;
+    setOffer(newOffer);
+  };
 
   const setRange = (newRange: string, colIdx: number) => {
     setOffer((prev) => {
@@ -271,6 +318,11 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
     return l ? arr[l - 1].id + 1 : 1;
   };
 
+  const getDescription = (pn: string) => {
+    return products.filter(({ partnumber }) => partnumber === pn)[0]
+      ?.description;
+  };
+
   const addOfferRow = () => {
     console.log("a");
     setOffer((prev) => {
@@ -319,22 +371,18 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   };
 
   const removeOfferRow = (rowIdx: number) => {
-    setOffer((prev) => {
-      const draft = { ...prev };
-      draft.contents.splice(rowIdx, 1);
-      return draft;
-    });
+    const newOffer = { ...offer };
+    newOffer.contents.splice(rowIdx, 1);
+    setOffer(newOffer);
   };
 
   const removeOfferColumn = (colIdx: number) => {
-    setOffer((prev) => {
-      const draft = { ...prev };
-      draft.rangesB.splice(colIdx, 1);
-      draft.contents.forEach((element) => {
-        element.ranges2.splice(colIdx, 1);
-      });
-      return draft;
+    const newOffer = { ...offer };
+    newOffer.rangesB.splice(colIdx, 1);
+    newOffer.contents.forEach((element) => {
+      element.ranges2.splice(colIdx, 1);
     });
+    setOffer(newOffer);
   };
 
   const showOffer = () => console.log(products);
@@ -472,15 +520,34 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
           <input
             className="input is-small pl-1"
             list={"pn" + 60}
+            required
             type="text"
             value={row.partnumber}
-            onChange={(e) =>
-              setPartnumber(e.target.value.toUpperCase(), rowIdx)
-            }
+            onChange={(e) => {
+              const pn = e.target.value.toUpperCase();
+              setPartnumber(pn, rowIdx);
+              setDescription(getDescription(pn), rowIdx);
+            }}
           />
         </td>
-        <td style={getStyle("description")}>{row.description}</td>
-        <td style={getStyle("shipment")}>{row.shipment}</td>
+        <td style={getStyle("description")}>
+          <textarea
+            className="textarea is-small pl-1"
+            rows={2}
+            required
+            value={row.description}
+            onChange={(e) => setDescription(e.target.value, rowIdx)}
+          />
+        </td>
+        <td style={getStyle("shipment")}>
+          <input
+            className="input is-small pl-1"
+            required
+            type="text"
+            value={row.shipment}
+            onChange={(e) => setShipment(e.target.value, rowIdx)}
+          />
+        </td>
         <td style={getStyle("currency")}>
           {renderCurrencySelect(row.currency, rowIdx)}
         </td>
@@ -533,6 +600,21 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
             </tr>
           </tbody>
         </table>
+        <hr />
+        <div>
+          <textarea
+            value={offer.footerPl}
+            onChange={(e) => {
+              console.log(e.target.value);
+              setFooterPl(e.target.value);
+            }}
+          />
+          <hr />
+          <div
+            id="preview"
+            dangerouslySetInnerHTML={{ __html: marked.parse(offer.footerPl) }}
+          />
+        </div>
       </div>
     </>
   );

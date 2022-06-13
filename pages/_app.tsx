@@ -32,6 +32,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
     <div>
       <Header currentUser={currentUser} />
       <div className="container">
+        {/* @ts-ignore */}
         <Component currentUser={currentUser} {...pageProps} />
       </div>
     </div>
