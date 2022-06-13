@@ -272,9 +272,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   };
 
   const addOfferRow = () => {
-    console.log("a");
     setOffer((prev) => {
-      console.log("b");
       const draft = { ...prev };
       const ranges2 = draft.rangesB.map((tier) => {
         return {
@@ -291,31 +289,28 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
         shipment: "",
         ranges2,
       };
-      const dupa = { ...draft };
-
-      console.log({ draft, dupa, prev });
-
-      return { ...draft, contents: [...draft.contents, newRow] };
+      draft.contents.push(newRow);
+      return draft;
     });
   };
 
   const addOfferColumn = () => {
-    const newOffer = { ...offer };
-    console.log("clicked");
-
-    newOffer.rangesB.push({
-      id: getId(newOffer.rangesB),
-      range: "NEW!!!",
-      margin: 0,
-    });
-    newOffer.contents.forEach((element) => {
-      element.ranges2.push({
-        id: getId(element.ranges2),
-        basePrice: 0,
-        clientPrice: 0,
+    setOffer((prev) => {
+      const draft = { ...prev };
+      draft.rangesB.push({
+        id: getId(draft.rangesB),
+        range: "NEW!!!",
+        margin: 0,
       });
+      draft.contents.forEach((element) => {
+        element.ranges2.push({
+          id: getId(element.ranges2),
+          basePrice: 0,
+          clientPrice: 0,
+        });
+      });
+      return draft;
     });
-    setOffer(newOffer);
   };
 
   const removeOfferRow = (rowIdx: number) => {
@@ -504,7 +499,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
         <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
         <div className="mb-3 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between is-flex-wrap-wrap">
           <div className="is-flex is-flex-wrap-wrap">
-            <h1 className="title my-3 is-4">New Offer2</h1>
+            <h1 className="title my-3 is-4">New Offer</h1>
             <span className="m-3 ">
               <button className="button" onClick={saveOffer}>
                 Save

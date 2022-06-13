@@ -9,14 +9,11 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 let s:shortmess_save = &shortmess
 set shortmess=aoO
-badd +28 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers2/index.tsx
-badd +19 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/components/data-list.tsx
-badd +138 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/rfqs/new.tsx
-badd +357 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/o4/index.tsx
+badd +349 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers5/index.tsx
 argglobal
 %argdel
 $argadd ./
-edit ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/o4/index.tsx
+edit ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers5/index.tsx
 let s:save_splitbelow = &splitbelow
 let s:save_splitright = &splitright
 set splitbelow splitright
@@ -33,12 +30,11 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 25 + 127) / 255)
-exe 'vert 2resize ' . ((&columns * 229 + 127) / 255)
+exe 'vert 1resize ' . ((&columns * 34 + 62) / 124)
+exe 'vert 2resize ' . ((&columns * 89 + 62) / 124)
 argglobal
 enew
 file neo-tree\ filesystem\ \[1]
-balt ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers2/index.tsx
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -49,7 +45,6 @@ setlocal fdn=20
 setlocal fen
 wincmd w
 argglobal
-balt ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers2/index.tsx
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -60,16 +55,16 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 517 - ((21 * winheight(0) + 32) / 65)
+let s:l = 507 - ((34 * winheight(0) + 35) / 70)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 517
-normal! 019|
+keepjumps 507
+normal! 054|
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 25 + 127) / 255)
-exe 'vert 2resize ' . ((&columns * 229 + 127) / 255)
+exe 'vert 1resize ' . ((&columns * 34 + 62) / 124)
+exe 'vert 2resize ' . ((&columns * 89 + 62) / 124)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
