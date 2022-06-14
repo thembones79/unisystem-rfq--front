@@ -1,6 +1,9 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { marked } from "marked";
 import { useRequest } from "../../hooks/useRequest";
+import { NiceButton } from "../../components/nice-button";
+import { UserPicker } from "../../components/user-picker";
+import { Toggle } from "../../components/toggle";
+import { Loader } from "../../components/loader";
 import { IUser } from "../users";
 
 export interface IProduct {
@@ -123,32 +126,10 @@ const offers: IOffer[] = [
     projectClientId: 2,
     kamId: 7,
     department: "PL",
-    footerPl: `dupa
-    cyce
-
-    jajca
-    jaja`,
-    footerEn: `ass
-    titz
-
-    balls
-    eggs`,
-    bufferPl: `jeden
-    dwa
-    trzy
-
-    cztery
-
-
-    piec`,
-    bufferEn: `one
-    two
-    three
-
-    four
-
-
-    five`,
+    footerPl: `aaaaa\nbbbbb\n\nccccc\n`,
+    footerEn: `ddddd\neeeee\n\nfffff\n`,
+    bufferPl: `ggggg\nhhhhh\n\niiiii\n`,
+    bufferEn: `jjjjj\nlllll\n\nmmmmm\n`,
     contents: [
       {
         id: 1,
@@ -235,6 +216,15 @@ const style = {
 const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [heightPl, setHeightPl] = useState(36);
+  const [heightEn, setHeightEn] = useState(36);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    await saveOffer();
+  };
 
   const setCurrency = (newCurrency: CurrencyType, rowIdx: number) =>
     setOffer((prev) => {
@@ -245,6 +235,26 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
 
   const setFooterPl = (newFooterPl: string) => {
     const newOffer = { ...offer, footerPl: newFooterPl };
+    setOffer(newOffer);
+  };
+
+  const setProjectClientId = (newProjectClientId: number) => {
+    const newOffer = { ...offer, projectClientId: newProjectClientId };
+    setOffer(newOffer);
+  };
+
+  const setForBuffer = () => {
+    const newOffer = { ...offer, forBuffer: !offer.forBuffer };
+    setOffer(newOffer);
+  };
+
+  const setPickFromBuffer = (newPickFromBuffer: string) => {
+    const newOffer = { ...offer, pickFromBuffer: newPickFromBuffer };
+    setOffer(newOffer);
+  };
+
+  const setFooterEn = (newFooterEn: string) => {
+    const newOffer = { ...offer, footerEn: newFooterEn };
     setOffer(newOffer);
   };
 
@@ -387,11 +397,16 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
 
   const showOffer = () => console.log(products);
 
-  const getOffer = () => setOffer(offers[0]);
+  const getOffer = () => {
+    setOffer(offers[0]);
+
+    setHeightPl(24 * offers[0].footerPl.split("\n").length + 12);
+    setHeightEn(24 * offers[0].footerEn.split("\n").length + 12);
+  };
 
   const saveOffer = () => console.log({ endpoint: "/api/offers", body: offer });
 
-  const { doRequest } = useRequest({
+  const { doRequest, errorsJSX, inputStyle } = useRequest({
     url: `/erpxlproducts`,
     method: "get",
     onSuccess: (data: IProduct[]) => setProducts(data),
@@ -566,25 +581,38 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
     ));
 
   const renderContent = () => (
-    <>
-      <div className="card-content">
-        <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
-        <div className="mb-3 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between is-flex-wrap-wrap">
-          <div className="is-flex is-flex-wrap-wrap">
-            <h1 className="title my-3 is-4">New Offer2</h1>
-            <span className="m-3 ">
-              <button className="button" onClick={saveOffer}>
-                Save
-              </button>
-            </span>
-          </div>
-        </div>
-        <div></div>
-        <button className="button" onClick={showOffer}>
-          Show offer
-        </button>
+    <form onSubmit={onSubmit}>
+      <h1 className="title m-3 mb-5">✨ New Offer</h1>
 
-        <table className="table is-striped is-narrow is-hoverable is-fullwidth is-bordered is-size-7">
+      <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
+
+      <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
+        <UserPicker
+          handleChange={setProjectClientId}
+          label="Customer"
+          fieldname="projectClientId"
+          fetch="/clients"
+        />
+
+        <Toggle
+          handleChange={setForBuffer}
+          label="For Buffer"
+          fieldname="for_buffer"
+          initialValue={offer.forBuffer}
+        />
+        {offer.forBuffer && (
+          <div className="field m-3">
+            <label className="label">When to pick up</label>
+            <input
+              className={inputStyle("for_buffer")}
+              value={offer.pickFromBuffer}
+              onChange={(e) => setPickFromBuffer(e.target.value)}
+              type="text"
+            />
+          </div>
+        )}
+
+        <table className="table is-striped is-narrow is-hoverable is-fullwidth is-bordered is-size-7 m-3">
           {renderMainHeader()}
           <tbody className="fixed200 ">
             {renderTable()}
@@ -600,26 +628,67 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
             </tr>
           </tbody>
         </table>
-        <hr />
-        <div>
+      </div>
+      <article className=" m-1">
+        <div className="panel-block"></div>
+        <div className="field m-2">
+          <label className="label is-small">Disclaimer PL</label>
           <textarea
+            className="input"
             value={offer.footerPl}
+            style={{ height: `${heightPl}px` }}
             onChange={(e) => {
-              console.log(e.target.value);
+              setHeightPl(24 * e.target.value.split("\n").length + 12);
               setFooterPl(e.target.value);
             }}
           />
-          <hr />
-          <div
-            id="preview"
-            dangerouslySetInnerHTML={{ __html: marked.parse(offer.footerPl) }}
+        </div>
+        <div className="field m-2 mt-4">
+          <label className="label is-small">Disclaimer EN</label>
+          <textarea
+            className="input"
+            value={offer.footerEn}
+            style={{ height: `${heightEn}px` }}
+            onChange={(e) => {
+              setHeightEn(24 * e.target.value.split("\n").length + 12);
+              setFooterEn(e.target.value);
+            }}
           />
         </div>
+      </article>
+
+      <div className="m-3 mt-6 ">
+        <NiceButton>
+          <i className="far fa-check-circle"></i>
+          <span className="m-1"></span> Add Offer
+        </NiceButton>
+        <span className="m-3"></span>
+        <NiceButton color="cancel" onClick={showOffer}>
+          Cancel
+        </NiceButton>
       </div>
-    </>
+    </form>
   );
 
-  return <div className="card ">{renderContent()}</div>;
+  const renderLoader = () => (
+    <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center is-400">
+      <p className="title is-4 mb-6 mt-3">Please Wait...</p>
+      <p className="subtitle">Signing into ClickUp...</p>
+      <Loader />
+    </div>
+  );
+
+  return (
+    <div className="full-page full-page--top">
+      <div className="card  m-3 big-shadow">
+        <div className="card-content">
+          {isLoading ? renderLoader() : renderContent()}
+
+          {errorsJSX()}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Offers5;

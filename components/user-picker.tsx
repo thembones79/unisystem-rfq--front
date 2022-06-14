@@ -11,7 +11,9 @@ export interface IOptionalUser {
 }
 
 export interface UserPickerProps {
-  handleChange: React.Dispatch<React.SetStateAction<number>>;
+  handleChange:
+    | React.Dispatch<React.SetStateAction<number>>
+    | ((id: number) => void);
   label: string;
   fieldname: string;
   fetch: string;
