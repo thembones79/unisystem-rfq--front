@@ -655,16 +655,18 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
       </div>
       <article className=" m-1">
         <div className="panel-block"></div>
-        <div className="field m-2">
-          <label className="label is-small">Buffer Notification PL</label>
-          <textarea
-            className="input"
-            value={offer.bufferPl.replace("###", offer.pickFromBuffer)}
-            onChange={(e) => {
-              setBufferPl(e.target.value);
-            }}
-          />
-        </div>
+        {offer.forBuffer && (
+          <div className="field m-2">
+            <label className="label is-small">Buffer Notification PL</label>
+            <textarea
+              className="input"
+              value={offer.bufferPl.replace("###", offer.pickFromBuffer)}
+              onChange={(e) => {
+                setBufferPl(e.target.value);
+              }}
+            />
+          </div>
+        )}
         <div className="field m-2">
           <label className="label is-small">Disclaimer PL</label>
           <textarea
@@ -678,16 +680,18 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
           />
         </div>
         <div className="panel-block"></div>
-        <div className="field m-2">
-          <label className="label is-small">Buffer Notification EN</label>
-          <textarea
-            className="input"
-            value={offer.bufferEn.replace("###", offer.pickFromBuffer)}
-            onChange={(e) => {
-              setBufferEn(e.target.value);
-            }}
-          />
-        </div>
+        {offer.forBuffer && (
+          <div className="field m-2">
+            <label className="label is-small">Buffer Notification EN</label>
+            <textarea
+              className="input"
+              value={offer.bufferEn.replace("###", offer.pickFromBuffer)}
+              onChange={(e) => {
+                setBufferEn(e.target.value);
+              }}
+            />
+          </div>
+        )}
         <div className="field m-2 mt-4">
           <label className="label is-small">Disclaimer EN</label>
           <textarea
