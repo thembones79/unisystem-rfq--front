@@ -9,7 +9,8 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 let s:shortmess_save = &shortmess
 set shortmess=aoO
-badd +324 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers5/index.tsx
+badd +104 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers5/index.tsx
+badd +1 ./
 argglobal
 %argdel
 $argadd ./
@@ -25,12 +26,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 324 - ((37 * winheight(0) + 35) / 70)
+let s:l = 100 - ((45 * winheight(0) + 36) / 72)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 324
-normal! 021|
+keepjumps 100
+normal! 0
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

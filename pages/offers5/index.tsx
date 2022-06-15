@@ -23,35 +23,35 @@ export interface IOffer {
   number: string;
   dateAdded: string;
   dateUpdated: string;
-  rangesB: RangesBEntity[];
+  rangesMargins: IRangesMargins[];
   forBuffer: boolean;
+  rfqId: number;
   pickFromBuffer: string;
   projectClientId: number;
-  kamId: number;
   department: string;
   footerPl: string;
   footerEn: string;
   bufferPl: string;
   bufferEn: string;
-  contents: ContentsEntity[];
+  contents: IContents[];
 }
 
-export interface RangesBEntity {
+export interface IRangesMargins {
   id: number;
   range: string;
   margin: number;
 }
 
-export interface ContentsEntity {
+export interface IContents {
   id: number;
   partnumber: string;
   currency: CurrencyType;
   description: string;
   shipment: string;
-  ranges2: Ranges2Entity[];
+  prices: IPrices[];
 }
 
-export interface Ranges2Entity {
+export interface IPrices {
   id: number;
   basePrice: number;
   clientPrice: number;
@@ -61,10 +61,11 @@ export type CurrencyType = "PLN" | "USD" | "EUR";
 
 const INIT_OFFER: IOffer = {
   id: 0,
+  rfqId: 0,
   number: "",
   dateAdded: "",
   dateUpdated: "",
-  rangesB: [
+  rangesMargins: [
     {
       id: 0,
       range: "SAMPLE",
@@ -74,7 +75,6 @@ const INIT_OFFER: IOffer = {
   forBuffer: false,
   pickFromBuffer: "",
   projectClientId: 0,
-  kamId: 0,
   department: "",
   footerPl: "",
   footerEn: "",
@@ -87,7 +87,7 @@ const INIT_OFFER: IOffer = {
       description: ``,
       currency: "PLN",
       shipment: "",
-      ranges2: [
+      prices: [
         {
           id: 0,
           basePrice: 0,
@@ -101,10 +101,11 @@ const INIT_OFFER: IOffer = {
 const offers: IOffer[] = [
   {
     id: 1,
+    rfqId: 1,
     number: "2022/05/123",
     dateAdded: "2022.05.22",
     dateUpdated: "2022.05.23",
-    rangesB: [
+    rangesMargins: [
       {
         id: 1,
         range: "SAMPLE",
@@ -124,12 +125,11 @@ const offers: IOffer[] = [
     forBuffer: false,
     pickFromBuffer: "2022 Q4",
     projectClientId: 2,
-    kamId: 7,
     department: "PL",
     footerPl: `aaaaa\nbbbbb\n\nccccc\n`,
     footerEn: `ddddd\neeeee\n\nfffff\n`,
-    bufferPl: `ggggg\nhhhhh\n\niiiii\n`,
-    bufferEn: `jjjjj\nlllll\n\nmmmmm\n`,
+    bufferPl: `Prosze odebrac do ###.`,
+    bufferEn: `You have to pick it up till ###.`,
     contents: [
       {
         id: 1,
@@ -137,7 +137,7 @@ const offers: IOffer[] = [
         currency: "PLN",
         description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         shipment: "2020-08-08",
-        ranges2: [
+        prices: [
           {
             id: 1,
             basePrice: 100,
@@ -161,7 +161,7 @@ const offers: IOffer[] = [
         currency: "EUR",
         description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
         shipment: "2020-08-08",
-        ranges2: [
+        prices: [
           {
             id: 1,
             basePrice: 200,
@@ -233,6 +233,20 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
       return draft;
     });
 
+  const setBufferPl = (newBufferPl: string) => {
+    const { pickFromBuffer, bufferPl } = offer;
+
+    const bufferToSet = newBufferPl.includes(pickFromBuffer)
+      ? newBufferPl.replace(pickFromBuffer, "###")
+      : bufferPl;
+
+    const newOffer = {
+      ...offer,
+      bufferPl: bufferToSet,
+    };
+    setOffer(newOffer);
+  };
+
   const setFooterPl = (newFooterPl: string) => {
     const newOffer = { ...offer, footerPl: newFooterPl };
     setOffer(newOffer);
@@ -250,6 +264,20 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
 
   const setPickFromBuffer = (newPickFromBuffer: string) => {
     const newOffer = { ...offer, pickFromBuffer: newPickFromBuffer };
+    setOffer(newOffer);
+  };
+
+  const setBufferEn = (newBufferEn: string) => {
+    const { pickFromBuffer, bufferEn } = offer;
+
+    const bufferToSet = newBufferEn.includes(pickFromBuffer)
+      ? newBufferEn.replace(pickFromBuffer, "###")
+      : bufferEn;
+
+    const newOffer = {
+      ...offer,
+      bufferEn: bufferToSet,
+    };
     setOffer(newOffer);
   };
 
@@ -281,7 +309,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   const setRange = (newRange: string, colIdx: number) => {
     setOffer((prev) => {
       const draft = { ...prev };
-      draft.rangesB[colIdx].range = newRange;
+      draft.rangesMargins[colIdx].range = newRange;
       return draft;
     });
   };
@@ -289,7 +317,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   const setMargin = (newMargin: number, colIdx: number) => {
     setOffer((prev) => {
       const draft = { ...prev };
-      draft.rangesB[colIdx].margin = newMargin;
+      draft.rangesMargins[colIdx].margin = newMargin;
       return draft;
     });
   };
@@ -301,11 +329,12 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   ) => {
     setOffer((prev) => {
       const draft = { ...prev };
-      draft.contents[rowIdx].ranges2[colIdx].basePrice = newBasePrice;
+      draft.contents[rowIdx].prices[colIdx].basePrice = newBasePrice;
       return draft;
     });
     setOfferClientPrice(
-      Math.round(newBasePrice * (offer.rangesB[colIdx].margin + 100)) / 100,
+      Math.round(newBasePrice * (offer.rangesMargins[colIdx].margin + 100)) /
+        100,
       rowIdx,
       colIdx
     );
@@ -318,12 +347,12 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   ) => {
     setOffer((prev) => {
       const draft = { ...prev };
-      draft.contents[rowIdx].ranges2[colIdx].clientPrice = newClientPrice;
+      draft.contents[rowIdx].prices[colIdx].clientPrice = newClientPrice;
       return draft;
     });
   };
 
-  const getId = (arr: ContentsEntity[] | RangesBEntity[] | Ranges2Entity[]) => {
+  const getId = (arr: IContents[] | IRangesMargins[] | IPrices[]) => {
     const l = arr.length;
     return l ? arr[l - 1].id + 1 : 1;
   };
@@ -334,11 +363,9 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   };
 
   const addOfferRow = () => {
-    console.log("a");
     setOffer((prev) => {
-      console.log("b");
       const draft = { ...prev };
-      const ranges2 = draft.rangesB.map((tier) => {
+      const prices = draft.rangesMargins.map((tier) => {
         return {
           id: tier.id,
           basePrice: 0,
@@ -351,11 +378,8 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
         currency: "PLN" as CurrencyType,
         description: "",
         shipment: "",
-        ranges2,
+        prices,
       };
-      const dupa = { ...draft };
-
-      console.log({ draft, dupa, prev });
 
       return { ...draft, contents: [...draft.contents, newRow] };
     });
@@ -363,16 +387,15 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
 
   const addOfferColumn = () => {
     const newOffer = { ...offer };
-    console.log("clicked");
 
-    newOffer.rangesB.push({
-      id: getId(newOffer.rangesB),
+    newOffer.rangesMargins.push({
+      id: getId(newOffer.rangesMargins),
       range: "NEW!!!",
       margin: 0,
     });
     newOffer.contents.forEach((element) => {
-      element.ranges2.push({
-        id: getId(element.ranges2),
+      element.prices.push({
+        id: getId(element.prices),
         basePrice: 0,
         clientPrice: 0,
       });
@@ -388,9 +411,9 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
 
   const removeOfferColumn = (colIdx: number) => {
     const newOffer = { ...offer };
-    newOffer.rangesB.splice(colIdx, 1);
+    newOffer.rangesMargins.splice(colIdx, 1);
     newOffer.contents.forEach((element) => {
-      element.ranges2.splice(colIdx, 1);
+      element.prices.splice(colIdx, 1);
     });
     setOffer(newOffer);
   };
@@ -467,7 +490,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   );
 
   const renderSubHeader = () =>
-    offer.rangesB.map(({ range, margin, id }, idx) => (
+    offer.rangesMargins.map(({ range, margin, id }, idx) => (
       <Fragment key={id}>
         <th className="pt-1 has-text-centered" style={{ borderRightWidth: 0 }}>
           <input
@@ -497,7 +520,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
       </Fragment>
     ));
 
-  const renderTableColumns = (ranges: Ranges2Entity[], rowIdx: number) =>
+  const renderTableColumns = (ranges: IPrices[], rowIdx: number) =>
     ranges.map((range, colIdx) => (
       <Fragment key={range.id}>
         <td className="px-2" style={{ borderRightWidth: 0 }}>
@@ -521,8 +544,9 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
               }
             />
           ) : (
-            Math.round(range.basePrice * (offer.rangesB[colIdx].margin + 100)) /
-            100
+            Math.round(
+              range.basePrice * (offer.rangesMargins[colIdx].margin + 100)
+            ) / 100
           )}
         </td>
       </Fragment>
@@ -566,7 +590,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
         <td style={getStyle("currency")}>
           {renderCurrencySelect(row.currency, rowIdx)}
         </td>
-        {renderTableColumns(row.ranges2, rowIdx)}
+        {renderTableColumns(row.prices, rowIdx)}
         <td style={style.endCol}>
           <button
             onClick={() => {
@@ -632,6 +656,16 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
       <article className=" m-1">
         <div className="panel-block"></div>
         <div className="field m-2">
+          <label className="label is-small">Buffer Notification PL</label>
+          <textarea
+            className="input"
+            value={offer.bufferPl.replace("###", offer.pickFromBuffer)}
+            onChange={(e) => {
+              setBufferPl(e.target.value);
+            }}
+          />
+        </div>
+        <div className="field m-2">
           <label className="label is-small">Disclaimer PL</label>
           <textarea
             className="input"
@@ -640,6 +674,17 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
             onChange={(e) => {
               setHeightPl(24 * e.target.value.split("\n").length + 12);
               setFooterPl(e.target.value);
+            }}
+          />
+        </div>
+        <div className="panel-block"></div>
+        <div className="field m-2">
+          <label className="label is-small">Buffer Notification EN</label>
+          <textarea
+            className="input"
+            value={offer.bufferEn.replace("###", offer.pickFromBuffer)}
+            onChange={(e) => {
+              setBufferEn(e.target.value);
             }}
           />
         </div>
