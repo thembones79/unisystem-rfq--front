@@ -1,10 +1,11 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { useRequest } from "../../hooks/useRequest";
-import { NiceButton } from "../../components/nice-button";
-import { UserPicker } from "../../components/user-picker";
-import { Toggle } from "../../components/toggle";
-import { Loader } from "../../components/loader";
-import { IUser } from "../users";
+import Router, { useRouter } from "next/router";
+import { useRequest } from "../../../hooks/useRequest";
+import { NiceButton } from "../../../components/nice-button";
+import { UserPicker } from "../../../components/user-picker";
+import { Toggle } from "../../../components/toggle";
+import { Loader } from "../../../components/loader";
+import { IUser } from "../../users";
 
 export interface IProduct {
   id: number;
@@ -16,6 +17,13 @@ export interface ICol<T> {
   name: keyof T;
   label: string;
   margin: number;
+}
+
+export interface ITemplate {
+  id: number;
+  name: string;
+  category: string;
+  template: string;
 }
 
 export interface IOffer {
@@ -183,13 +191,13 @@ const offers: IOffer[] = [
   },
 ];
 
-const currencies: CurrencyType[] = ["PLN", "USD", "EUR"];
+export const currencies: CurrencyType[] = ["PLN", "USD", "EUR"];
 
-interface OffersProps {
+export interface OffersProps {
   currentUser: IUser;
 }
 
-const getStyle = (label: string) => {
+export const getStyle = (label: string) => {
   switch (label) {
     case "description":
       return { width: "380px" };
@@ -208,22 +216,26 @@ const getStyle = (label: string) => {
   }
 };
 
-const style = {
+export const style = {
   endCol: { width: "60px", textAlign: "center" as const },
   currency: { width: "80px" },
 };
 
-const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
+const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
+  const router = useRouter();
+  const rfqId = router.query.rfqId || 1;
+
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [heightPl, setHeightPl] = useState(36);
   const [heightEn, setHeightEn] = useState(36);
   const [isLoading, setIsLoading] = useState(false);
+  const [templates, setTemplates] = useState<ITemplate[]>([]);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    await saveOffer();
+    await doRequest();
   };
 
   const setCurrency = (newCurrency: CurrencyType, rowIdx: number) =>
@@ -320,6 +332,12 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
       draft.rangesMargins[colIdx].margin = newMargin;
       return draft;
     });
+  };
+
+  const setRangesMargins = (newRangesMargins: IRangesMargins[]) => {
+    const newOffer = { ...offer };
+    newOffer.rangesMargins = newRangesMargins;
+    setOffer(newOffer);
   };
 
   const setOfferBasePrice = (
@@ -427,16 +445,34 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
     setHeightEn(24 * offers[0].footerEn.split("\n").length + 12);
   };
 
-  const saveOffer = () => console.log(JSON.stringify(offer) + "dupa");
+  const saveOffer = () => console.log(offer);
 
   const { doRequest, errorsJSX, inputStyle } = useRequest({
-    url: `/erpxlproducts`,
+    url: `/offers`,
+    method: "post",
+    onSuccess: (offer: IOffer) => onSuccess(offer),
+  });
+
+  const onSuccess = (offer: IOffer) => {
+    Router.push(`/offers/${offer.id}`);
+  };
+
+  const getProducts = useRequest({
+    url: "/erpxlproducts",
     method: "get",
-    onSuccess: (data: IProduct[]) => setProducts(data),
+    onSuccess: (products: IProduct[]) => setProducts(products),
+  });
+
+  const getTemplates = useRequest({
+    url: "/configs",
+    method: "get",
+    onSuccess: (templates: ITemplate[]) => {
+      setTemplates(templates);
+    },
   });
 
   useEffect(() => {
-    doRequest();
+    getProducts.doRequest();
     getOffer();
   }, []);
 
@@ -722,7 +758,7 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   const renderLoader = () => (
     <div className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center is-400">
       <p className="title is-4 mb-6 mt-3">Please Wait...</p>
-      <p className="subtitle">Signing into ClickUp...</p>
+      <p className="subtitle">One moment, please...</p>
       <Loader />
     </div>
   );
@@ -740,4 +776,4 @@ const Offers5: React.FC<OffersProps> = ({ currentUser }) => {
   );
 };
 
-export default Offers5;
+export default NewOffer;
