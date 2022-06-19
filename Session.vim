@@ -9,32 +9,14 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 let s:shortmess_save = &shortmess
 set shortmess=aoO
-badd +339 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers/new/\[rfqId].tsx
-badd +32 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/projects/new/\[rfqId].tsx
-badd +39 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/projects/edit/\[projectId].tsx
+badd +575 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers/new/\[rfqId].tsx
+badd +1 ~/Projects/work/unisystem-rfq/unisystem-rfq--front/components/user-picker.tsx
 argglobal
 %argdel
 $argadd .
 edit ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/offers/new/\[rfqId].tsx
-let s:save_splitbelow = &splitbelow
-let s:save_splitright = &splitright
-set splitbelow splitright
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
-let &splitbelow = s:save_splitbelow
-let &splitright = s:save_splitright
-wincmd t
-let s:save_winminheight = &winminheight
-let s:save_winminwidth = &winminwidth
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
-exe 'vert 1resize ' . ((&columns * 145 + 146) / 292)
-exe 'vert 2resize ' . ((&columns * 146 + 146) / 292)
 argglobal
+balt ~/Projects/work/unisystem-rfq/unisystem-rfq--front/components/user-picker.tsx
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -45,38 +27,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 337 - ((58 * winheight(0) + 37) / 75)
+let s:l = 568 - ((43 * winheight(0) + 37) / 75)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 337
-normal! 061|
-wincmd w
-argglobal
-if bufexists(fnamemodify("~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/projects/new/\[rfqId].tsx", ":p")) | buffer ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/projects/new/\[rfqId].tsx | else | edit ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/projects/new/\[rfqId].tsx | endif
-if &buftype ==# 'terminal'
-  silent file ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/projects/new/\[rfqId].tsx
-endif
-balt ~/Projects/work/unisystem-rfq/unisystem-rfq--front/pages/projects/edit/\[projectId].tsx
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let &fdl = &fdl
-let s:l = 43 - ((42 * winheight(0) + 37) / 75)
-if s:l < 1 | let s:l = 1 | endif
-keepjumps exe s:l
-normal! zt
-keepjumps 43
-normal! 027|
-wincmd w
-exe 'vert 1resize ' . ((&columns * 145 + 146) / 292)
-exe 'vert 2resize ' . ((&columns * 146 + 146) / 292)
+keepjumps 568
+normal! 012|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -84,8 +40,6 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
-let &winminheight = s:save_winminheight
-let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)

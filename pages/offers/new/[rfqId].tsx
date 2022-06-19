@@ -22,8 +22,8 @@ export interface ICol<T> {
 export interface ITemplate {
   id: number;
   name: string;
-  category: string;
-  template: string;
+  category: "buffers" | "disclaimers" | "ranges";
+  template: IRangesMargins[] | { pl: string; en: string };
 }
 
 export interface IOffer {
@@ -86,24 +86,9 @@ const INIT_OFFER: IOffer = {
   department: "",
   footerPl: "",
   footerEn: "",
-  bufferPl: "",
-  bufferEn: "",
-  contents: [
-    {
-      id: 0,
-      partnumber: "#",
-      description: ``,
-      currency: "PLN",
-      shipment: "",
-      prices: [
-        {
-          id: 0,
-          basePrice: 0,
-          clientPrice: 0,
-        },
-      ],
-    },
-  ],
+  bufferPl: "Odebrac przed ###.",
+  bufferEn: "Pick up before ###.",
+  contents: [],
 };
 
 const offers: IOffer[] = [
@@ -225,10 +210,11 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
   const router = useRouter();
   const rfqId = router.query.rfqId || 1;
 
+  const lineHeight = 36;
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [heightPl, setHeightPl] = useState(36);
-  const [heightEn, setHeightEn] = useState(36);
+  const [heightPl, setHeightPl] = useState(lineHeight);
+  const [heightEn, setHeightEn] = useState(lineHeight);
   const [isLoading, setIsLoading] = useState(false);
   const [templates, setTemplates] = useState<ITemplate[]>([]);
 
@@ -259,6 +245,11 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
     setOffer(newOffer);
   };
 
+  const setRfqId = (newRfqId: number) => {
+    const newOffer = { ...offer, rfqId: newRfqId };
+    setOffer(newOffer);
+  };
+
   const setFooterPl = (newFooterPl: string) => {
     const newOffer = { ...offer, footerPl: newFooterPl };
     setOffer(newOffer);
@@ -281,7 +272,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
 
   const setBufferEn = (newBufferEn: string) => {
     const { pickFromBuffer, bufferEn } = offer;
-
+    console.log({ newBufferEn });
     const bufferToSet = newBufferEn.includes(pickFromBuffer)
       ? newBufferEn.replace(pickFromBuffer, "###")
       : bufferEn;
@@ -290,6 +281,8 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
       ...offer,
       bufferEn: bufferToSet,
     };
+
+    console.log({ newOffer });
     setOffer(newOffer);
   };
 
@@ -463,23 +456,145 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
     onSuccess: (products: IProduct[]) => setProducts(products),
   });
 
+  const getRangesTemplates = (templates: ITemplate[]): ITemplate[] =>
+    templates.filter(({ category }) => category === "ranges");
+
+  const getBufferTemplates = (templates: ITemplate[]): ITemplate[] =>
+    templates.filter(({ category }) => category === "buffers");
+
+  const getDisclaimerTemplates = (templates: ITemplate[]): ITemplate[] =>
+    templates.filter(({ category }) => category === "disclaimers");
+
   const getTemplates = useRequest({
     url: "/configs",
     method: "get",
     onSuccess: (templates: ITemplate[]) => {
+      console.log(templates);
       setTemplates(templates);
+      const rangesTemplate = getRangesTemplates(templates)[0]
+        .template as IRangesMargins[];
+      const bufferTemplate = getBufferTemplates(templates)[0].template as {
+        pl: string;
+        en: string;
+      };
+      const disclaimerTemplate = getDisclaimerTemplates(templates)[0]
+        .template as { pl: string; en: string };
+
+      console.log(JSON.parse(disclaimerTemplate + "").pl);
+
+      const NewBufferPl = JSON.parse(bufferTemplate + "").pl;
+      const NewBufferEn = JSON.parse(bufferTemplate + "").en;
+      const NewFooterPl = JSON.parse(disclaimerTemplate + "").pl;
+      const NewFooterEn = JSON.parse(disclaimerTemplate + "").en;
+      const NewRangesMargins = JSON.parse(rangesTemplate + "");
+
+      const offerCopy = {
+        ...offer,
+        bufferPl: NewBufferPl,
+        bufferEn: NewBufferEn,
+        footerPl: NewFooterPl,
+        footerEn: NewFooterEn,
+        rangesMargins: NewRangesMargins,
+      };
+      setOffer(offerCopy);
     },
   });
 
   useEffect(() => {
     getProducts.doRequest();
-    getOffer();
+    getTemplates.doRequest();
+    //@ts-ignore
+    setRfqId(rfqId);
   }, []);
 
   const renderPartnumberOptions = () => {
     return products.map(({ partnumber }) => (
       <option key={partnumber}>{partnumber}</option>
     ));
+  };
+
+  const renderFooterSelect = () => {
+    return (
+      <div className="field m-3">
+        <label className="label">Footer Template</label>
+        <div className="select">
+          <select
+            name="footer_template"
+            id="footer_template"
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              const selectedId = parseInt(e.target.value);
+              const footer = JSON.parse(
+                templates.filter((t) => t.id === selectedId)[0].template + ""
+              );
+              setOffer({ ...offer, footerPl: footer.pl, footerEn: footer.en });
+              setFooterPl(footer.pl);
+            }}
+          >
+            {getDisclaimerTemplates(templates).map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    );
+  };
+
+  const renderRangesSelect = () => {
+    return (
+      <div className="field m-3">
+        <label className="label">Ranges Template</label>
+        <div className="select">
+          <select
+            name="footer_template"
+            id="footer_template"
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              const selectedId = parseInt(e.target.value);
+              const footer = JSON.parse(
+                templates.filter((t) => t.id === selectedId)[0].template + ""
+              );
+              setOffer({ ...offer, footerPl: footer.pl, footerEn: footer.en });
+              setFooterPl(footer.pl);
+            }}
+          >
+            {getDisclaimerTemplates(templates).map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    );
+  };
+
+  const renderBuffererSelect = () => {
+    return (
+      <div className="field m-3">
+        <label className="label">Buffer Template</label>
+        <div className="select">
+          <select
+            name="footer_template"
+            id="footer_template"
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              const selectedId = parseInt(e.target.value);
+              const footer = JSON.parse(
+                templates.filter((t) => t.id === selectedId)[0].template + ""
+              );
+              setOffer({ ...offer, footerPl: footer.pl, footerEn: footer.en });
+              setFooterPl(footer.pl);
+            }}
+          >
+            {getDisclaimerTemplates(templates).map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    );
   };
 
   const renderCurrencySelect = (currency: CurrencyType, rowIdx: number) => (
@@ -653,7 +768,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
           fieldname="projectClientId"
           fetch="/clients"
         />
-
+        {renderFooterSelect()}
         <Toggle
           handleChange={setForBuffer}
           label="For Buffer"
