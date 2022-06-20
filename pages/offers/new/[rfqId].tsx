@@ -757,7 +757,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderContent = () => (
     <form onSubmit={onSubmit}>
-      <h1 className="title m-3 mb-5">✨ New Offer</h1>
+      <h1 className="title m-3 mb-5">✨ New Offer2</h1>
 
       <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
 
