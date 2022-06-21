@@ -1,4 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
+import { GetStaticPaths } from "next";
 import Router, { useRouter } from "next/router";
 import { useRequest } from "../../../hooks/useRequest";
 import { NiceButton } from "../../../components/nice-button";
@@ -24,6 +25,21 @@ export interface ITemplate {
   name: string;
   category: "buffers" | "disclaimers" | "ranges";
   template: IRangesMargins[] | { pl: string; en: string };
+}
+export interface IOfferFromApi {
+  id: number;
+  number: string;
+  ranges_margins: string;
+  for_buffer: boolean;
+  rfq_id: number;
+  pick_from_buffer: string;
+  project_client_id: number;
+  department: string;
+  footer_pl: string;
+  footer_en: string;
+  buffer_pl: string;
+  buffer_en: string;
+  contents: string;
 }
 
 export interface IOffer {
@@ -91,91 +107,6 @@ const INIT_OFFER: IOffer = {
   contents: [],
 };
 
-const offers: IOffer[] = [
-  {
-    id: 1,
-    rfqId: 1,
-    number: "2022/05/123",
-    dateAdded: "2022.05.22",
-    dateUpdated: "2022.05.23",
-    rangesMargins: [
-      {
-        id: 1,
-        range: "SAMPLE",
-        margin: 55,
-      },
-      {
-        id: 2,
-        range: "2 - 10",
-        margin: 50,
-      },
-      {
-        id: 3,
-        range: "11 - 100",
-        margin: 40,
-      },
-    ],
-    forBuffer: false,
-    pickFromBuffer: "2022 Q4",
-    projectClientId: 2,
-    department: "PL",
-    footerPl: `aaaaa\nbbbbb\n\nccccc\n`,
-    footerEn: `ddddd\neeeee\n\nfffff\n`,
-    bufferPl: `Prosze odebrac do ###.`,
-    bufferEn: `You have to pick it up till ###.`,
-    contents: [
-      {
-        id: 1,
-        partnumber: "WF0096ATYAA3DNN0#",
-        currency: "PLN",
-        description: `LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
-        shipment: "2020-08-08",
-        prices: [
-          {
-            id: 1,
-            basePrice: 100,
-            clientPrice: 155,
-          },
-          {
-            id: 2,
-            basePrice: 90,
-            clientPrice: 135,
-          },
-          {
-            id: 3,
-            basePrice: NaN,
-            clientPrice: 112,
-          },
-        ],
-      },
-      {
-        id: 2,
-        partnumber: "2WF0096ATYAA3DNN0#",
-        currency: "EUR",
-        description: `2LCD TFT 9.6" 80x160, SPI, LED White, 500cd/m^2 , R.G.B., AA: 10.80x21.696, OL: 279.95x12.4x15, ZIF 13pin, 0,8mm`,
-        shipment: "2020-08-08",
-        prices: [
-          {
-            id: 1,
-            basePrice: 200,
-            clientPrice: 155,
-          },
-          {
-            id: 2,
-            basePrice: NaN,
-            clientPrice: 135,
-          },
-          {
-            id: 3,
-            basePrice: 50,
-            clientPrice: 112,
-          },
-        ],
-      },
-    ],
-  },
-];
-
 export const currencies: CurrencyType[] = ["PLN", "USD", "EUR"];
 
 export interface OffersProps {
@@ -206,10 +137,10 @@ export const style = {
   currency: { width: "80px" },
 };
 
-const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
+const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
   const router = useRouter();
-  const rfqId = router.query.rfqId || 1;
-
+  const { offerId } = router.query;
+  console.log(router.query);
   const lineHeight = 36;
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -217,6 +148,31 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
   const [heightEn, setHeightEn] = useState(lineHeight);
   const [isLoading, setIsLoading] = useState(false);
   const [templates, setTemplates] = useState<ITemplate[]>([]);
+
+  const getOffer = useRequest({
+    url: `/offers/${offerId}`,
+    method: "get",
+    onSuccess: (data: IOfferFromApi) => {
+      console.log({ data });
+      setIsLoading(false);
+      setHeightPl(24 * data.footer_pl.split("\n").length + 12);
+      setHeightEn(24 * data.footer_en.split("\n").length + 12);
+      //@ts-ignore
+      setOffer({
+        number: data.number,
+        rfqId: data.rfq_id,
+        rangesMargins: JSON.parse(data.ranges_margins),
+        forBuffer: data.for_buffer,
+        pickFromBuffer: data.pick_from_buffer,
+        projectClientId: data.project_client_id,
+        footerPl: data.footer_pl,
+        footerEn: data.footer_en,
+        bufferPl: data.buffer_pl,
+        bufferEn: data.buffer_en,
+        contents: JSON.parse(data.contents) as IContents[],
+      });
+    },
+  });
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -429,11 +385,11 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
     setOffer(newOffer);
   };
 
-  const getOffer = () => {
-    setOffer(offers[0]);
+  const getOffer2 = () => {
+    setOffer(INIT_OFFER);
 
-    setHeightPl(24 * offers[0].footerPl.split("\n").length + 12);
-    setHeightEn(24 * offers[0].footerEn.split("\n").length + 12);
+    setHeightPl(24 * offer.footerPl.split("\n").length + 12);
+    setHeightEn(24 * offer.footerEn.split("\n").length + 12);
   };
 
   const {
@@ -449,10 +405,9 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
   } = offer;
 
   const { doRequest, errorsJSX, inputStyle } = useRequest({
-    url: `/offers`,
-    method: "post",
+    url: `/offers/${offerId}`,
+    method: "put",
     body: {
-      rfq_id: rfqId,
       ranges_margins: JSON.stringify(rangesMargins),
       for_buffer: forBuffer,
       pick_from_buffer: pickFromBuffer,
@@ -518,10 +473,9 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
   });
 
   useEffect(() => {
+    getOffer.doRequest();
     getProducts.doRequest();
     getTemplates.doRequest();
-    //@ts-ignore
-    setRfqId(rfqId);
   }, []);
 
   const renderPartnumberOptions = () => {
@@ -772,7 +726,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderContent = () => (
     <form onSubmit={onSubmit}>
-      <h1 className="title m-3 mb-5">✨ New Offer</h1>
+      <h1 className="title m-3 mb-5">✨ Edit {offer.number}</h1>
 
       <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
 
@@ -780,6 +734,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
         <UserPicker
           handleChange={setProjectClientId}
           label="Customer"
+          initialValue={offer.projectClientId}
           fieldname="projectClientId"
           fetch="/clients"
         />
@@ -879,8 +834,8 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
 
       <div className="m-3 mt-6 ">
         <NiceButton>
-          <i className="far fa-check-circle"></i>
-          <span className="m-1"></span> Add Offer
+          <i className="far fa-save"></i>
+          <span className="m-1"></span> Save Offer
         </NiceButton>
         <span className="m-3"></span>
         <NiceButton
@@ -909,7 +864,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
       <div className="card  m-3 big-shadow">
         <div className="card-content">
           {isLoading ? renderLoader() : renderContent()}
-
+          {getOffer.errorsJSX()}
           {errorsJSX()}
         </div>
       </div>
@@ -917,4 +872,17 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
   );
 };
 
-export default NewOffer;
+export async function getStaticProps(context: any) {
+  return {
+    props: {}, // will be passed to the page component as props
+  };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking", //indicates the type of fallback
+  };
+};
+
+export default EditOffer;
