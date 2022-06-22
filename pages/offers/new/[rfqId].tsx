@@ -777,12 +777,14 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
       <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
 
       <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
-        <UserPicker
-          handleChange={setProjectClientId}
-          label="Customer"
-          fieldname="projectClientId"
-          fetch="/clients"
-        />
+        {rfqId === "1" && (
+          <UserPicker
+            handleChange={setProjectClientId}
+            label="Customer"
+            fieldname="projectClientId"
+            fetch="/clients"
+          />
+        )}
         {renderRangesSelect()}
         {renderFooterSelect()}
         <Toggle

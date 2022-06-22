@@ -200,7 +200,11 @@ const ShowRfq: React.FC = () => {
           </thead>
           <tbody>
             <tr>
-              <td>{req_others}</td>
+              <td>
+                {req_others?.split("\n")?.map((x) => (
+                  <div key={x}>{x}</div>
+                ))}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -234,7 +238,7 @@ const ShowRfq: React.FC = () => {
           >
             <i className="fas fa-plus"></i>
             <span className="m-2 "></span>
-            <span>create project from this RFQ</span>
+            <span>create project</span>
           </NiceButton>
         );
       }
@@ -253,6 +257,11 @@ const ShowRfq: React.FC = () => {
             </div>
             {renderProjectLinkOrButton()}
 
+            <NiceButton onClick={() => Router.push(`/offers/new/${id}`)}>
+              <i className="fas fa-plus"></i>
+              <span className="m-1 "></span>
+              <span>✨ add offer</span>
+            </NiceButton>
             <div className="my-3 ">
               <button
                 className="button is-link is-inverted"
@@ -296,12 +305,6 @@ const ShowRfq: React.FC = () => {
               <div>{department}</div>
             </div>
             <div className="field m-3">
-              <label className="label">Project Manager</label>
-              <div>
-                {pm_fullname} ({pm})
-              </div>
-            </div>
-            <div className="field m-3">
               <label className="label">Key Account Manager</label>
               <div>
                 {kam_fullname} ({kam})
@@ -330,7 +333,11 @@ const ShowRfq: React.FC = () => {
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Final Solutions</label>
-            <div>{final_solutions}</div>
+            <div>
+              {final_solutions?.split("\n")?.map((x) => (
+                <div key={x}>{x}</div>
+              ))}
+            </div>
           </div>
         </div>
       </>

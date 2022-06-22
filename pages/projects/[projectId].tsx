@@ -246,7 +246,11 @@ const ShowProject: React.FC<ShowProjectProps> = ({ currentUser }) => {
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Note</label>
-            <div>{note}</div>
+            <div>
+              {note?.split("\n")?.map((x) => (
+                <div key={x}>{x}</div>
+              ))}
+            </div>
           </div>
         </div>
       </>
