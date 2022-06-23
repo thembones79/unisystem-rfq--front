@@ -140,7 +140,6 @@ export const style = {
 const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
   const router = useRouter();
   const { offerId } = router.query;
-  console.log(router.query);
   const lineHeight = 36;
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -153,23 +152,26 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
     url: `/offers/${offerId}`,
     method: "get",
     onSuccess: (data: IOfferFromApi) => {
-      console.log({ data });
       setIsLoading(false);
       setHeightPl(24 * data.footer_pl.split("\n").length + 12);
       setHeightEn(24 * data.footer_en.split("\n").length + 12);
       //@ts-ignore
-      setOffer({
-        number: data.number,
-        rfqId: data.rfq_id,
-        rangesMargins: JSON.parse(data.ranges_margins),
-        forBuffer: data.for_buffer,
-        pickFromBuffer: data.pick_from_buffer,
-        projectClientId: data.project_client_id,
-        footerPl: data.footer_pl,
-        footerEn: data.footer_en,
-        bufferPl: data.buffer_pl,
-        bufferEn: data.buffer_en,
-        contents: JSON.parse(data.contents) as IContents[],
+      setOffer((prev) => {
+        if (prev.id === 0) {
+          return {
+            number: data.number,
+            rfqId: data.rfq_id,
+            rangesMargins: JSON.parse(data.ranges_margins),
+            forBuffer: data.for_buffer,
+            pickFromBuffer: data.pick_from_buffer,
+            projectClientId: data.project_client_id,
+            footerPl: data.footer_pl,
+            footerEn: data.footer_en,
+            bufferPl: data.buffer_pl,
+            bufferEn: data.buffer_en,
+            contents: JSON.parse(data.contents) as IContents[],
+          };
+        }
       });
     },
   });
@@ -385,13 +387,6 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
     setOffer(newOffer);
   };
 
-  const getOffer2 = () => {
-    setOffer(INIT_OFFER);
-
-    setHeightPl(24 * offer.footerPl.split("\n").length + 12);
-    setHeightEn(24 * offer.footerEn.split("\n").length + 12);
-  };
-
   const {
     rangesMargins,
     forBuffer,
@@ -473,9 +468,13 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
   });
 
   useEffect(() => {
+    console.log("a");
+    setIsLoading(true);
     getOffer.doRequest();
     getProducts.doRequest();
     getTemplates.doRequest();
+    console.log("b");
+    return setIsLoading(false);
   }, []);
 
   const renderPartnumberOptions = () => {
@@ -842,7 +841,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
           color="cancel"
           onClick={(e) => {
             e.preventDefault();
-            Router.push(`/offers`);
+            Router.push(`/offers/${offerId}`);
           }}
         >
           Cancel
@@ -858,7 +857,6 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
       <Loader />
     </div>
   );
-
   return (
     <div className="full-page full-page--top">
       <div className="card  m-3 big-shadow">

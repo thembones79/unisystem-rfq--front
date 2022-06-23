@@ -50,14 +50,16 @@ const TemplateTable: React.FC<TemplateProps> = ({ templates, category }) => {
             >
               <i className="fas fa-edit"></i>
             </button>
-            <button
-              onClick={() => {
-                handleDeleteReq(id);
-              }}
-              className="button is-danger is-inverted  is-rounded is-small mx-1 p-3"
-            >
-              <i className="fas fa-trash-alt"></i>
-            </button>
+            {filteredTemplates.length > 1 && (
+              <button
+                onClick={() => {
+                  handleDeleteReq(id);
+                }}
+                className="button is-danger is-inverted  is-rounded is-small mx-1 p-3"
+              >
+                <i className="fas fa-trash-alt"></i>
+              </button>
+            )}
           </td>
         </tr>
       );
