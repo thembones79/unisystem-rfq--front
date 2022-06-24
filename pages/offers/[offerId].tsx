@@ -3,8 +3,7 @@ import { GetStaticPaths } from "next";
 import Router, { useRouter } from "next/router";
 import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
-import { UserPicker } from "../../components/user-picker";
-import { Toggle } from "../../components/toggle";
+import PdfDownloader from "../../components/pdf-downloader";
 import { Loader } from "../../components/loader";
 import { IUser } from "../users";
 
@@ -141,12 +140,9 @@ export const getStyle = (label: string) => {
   }
 };
 
-export const style = {
-  endCol: { width: "60px", textAlign: "center" as const },
-  currency: { width: "80px" },
-};
-
 const ShowOffer: React.FC<OffersProps> = ({ currentUser }) => {
+  // PdfMakeWrapper.setFonts(pdfFonts);
+  // const pdf = new PdfMakeWrapper();
   const router = useRouter();
   const { offerId } = router.query;
   const [offer, setOffer] = useState<IOffer>(INIT_OFFER);
@@ -349,6 +345,7 @@ const ShowOffer: React.FC<OffersProps> = ({ currentUser }) => {
           <span className="m-1"></span>
           🇬🇧
         </NiceButton>
+        <PdfDownloader label="download" />
       </div>
     </>
   );
