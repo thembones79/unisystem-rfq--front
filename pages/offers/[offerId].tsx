@@ -327,25 +327,9 @@ const ShowOffer: React.FC<OffersProps> = ({ currentUser }) => {
       </article>
 
       <div className="m-3 mt-6 ">
-        <NiceButton>
-          <i className="fas fa-download"></i>
-          <span className="m-1"></span> Pobierz PDF
-          <span className="ml-2" style={{ fontWeight: 900 }}>
-            PL
-          </span>
-          <span className="m-1"></span> 🇵🇱
-        </NiceButton>
+        <PdfDownloader offer={offer} language="pl" />
         <span className="m-3"></span>
-        <NiceButton>
-          <i className="fas fa-download"></i>
-          <span className="m-1"></span> Download PDF
-          <span className="ml-2" style={{ fontWeight: 900 }}>
-            EN
-          </span>
-          <span className="m-1"></span>
-          🇬🇧
-        </NiceButton>
-        <PdfDownloader label="download" />
+        <PdfDownloader offer={offer} language="en" />
       </div>
     </>
   );
