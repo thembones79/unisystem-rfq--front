@@ -9,12 +9,11 @@ import { NiceButton } from "./nice-button";
 
 export interface PdfDownloaderProps {
   offer: IOffer;
-  language: "pl" | "en";
+  lang: "pl" | "en";
 }
-const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
+const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
   const {
     number,
-    dateUpdated,
     rangesMargins,
     forBuffer,
     pickFromBuffer,
@@ -28,12 +27,51 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
 
   const subheader = rangesMargins.map(({ range }) => range);
 
+  const trans = {
+    description: {
+      pl: "Opis",
+      en: "Description",
+    },
+    currency: {
+      pl: "Waluta",
+      en: "Currency",
+    },
+    shipment: {
+      pl: "Wysyłka",
+      en: "Shipment",
+    },
+    offer: {
+      pl: "Oferta",
+      en: "Offer",
+    },
+    client: {
+      pl: "Klient",
+      en: "Client",
+    },
+    conditions: {
+      pl: "Warunki",
+      en: "Disclaimer",
+    },
+    date: {
+      pl: "Data",
+      en: "Date",
+    },
+    disclaimer: {
+      pl: forBuffer
+        ? [bufferPl.replace("###", pickFromBuffer), ...footerPl.split("\n")]
+        : footerPl.split("\n"),
+      en: forBuffer
+        ? [bufferEn.replace("###", pickFromBuffer), ...footerEn.split("\n")]
+        : footerEn.split("\n"),
+    },
+  };
+
   const tableHeader = [
     "Partnumber",
-    "Description",
-    "Currency",
+    trans.description[lang],
+    trans.currency[lang],
     ...subheader,
-    "Shipment",
+    trans.shipment[lang],
   ];
 
   const subcolumns = (prices: IPrices[]) =>
@@ -59,7 +97,7 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
     },
     content: [
       {
-        text: `${language === "pl" ? "Oferta" : "Offer"} ${number}`,
+        text: `${trans.offer[lang]} ${number}`,
         style: "header",
         margin: [0, 40, 0, 40],
         alignment: "center",
@@ -68,12 +106,12 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
       {
         columns: [
           {
-            text: "Client",
+            text: trans.client[lang],
             alignment: "left",
             style: "subheader",
           },
           {
-            text: "Data",
+            text: trans.date[lang],
             alignment: "right",
             style: "subheader",
           },
@@ -106,9 +144,9 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
         },
       },
 
-      { text: "Warunki", style: "disclaimer" },
+      { text: trans.conditions[lang], style: "disclaimer" },
       {
-        ol: [bufferPl.replace("###", pickFromBuffer), ...footerPl.split("\n")],
+        ol: trans.disclaimer[lang],
         style: ["small"],
       },
     ],
@@ -145,15 +183,15 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
         pdfMake
           .createPdf(dd)
           .download(
-            `${number.replaceAll("/", "")}${language[0].toUpperCase()}.pdf`
+            `${number.replaceAll("/", "")}${lang[0].toUpperCase()}.pdf`
           );
       }}
     >
       <i className="fas fa-download"></i>
       <span className="m-1"></span>
-      {language === "pl" ? "Pobierz PDF" : "Download PDF"}
+      {lang === "pl" ? "Pobierz PDF" : "Download PDF"}
       <span className="ml-2" style={{ fontWeight: 900 }}>
-        {language.toLocaleUpperCase()}
+        {lang.toLocaleUpperCase()}
       </span>
     </NiceButton>
   );

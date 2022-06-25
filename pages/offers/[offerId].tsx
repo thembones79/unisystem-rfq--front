@@ -314,22 +314,26 @@ const ShowOffer: React.FC<OffersProps> = ({ currentUser }) => {
       <article className=" m-3">
         <label className="label is-small mb-0 mt-6">Warunki:</label>
         <div className="panel-block"></div>
-        {forBuffer && bufferPl.replace("###", pickFromBuffer)}
-        {footerPl?.split("\n")?.map((x) => (
-          <div key={x}>{x}</div>
-        ))}
+        <ol className="ml-4">
+          {forBuffer && <li>{bufferPl.replace("###", pickFromBuffer)}</li>}
+          {footerPl?.split("\n")?.map((x) => (
+            <li key={x}>{x}</li>
+          ))}
+        </ol>
         <label className="label is-small mb-0 mt-6">Disclaimer:</label>
         <div className="panel-block"></div>
-        {forBuffer && bufferEn.replace("###", pickFromBuffer)}
-        {footerEn?.split("\n")?.map((x) => (
-          <div key={x}>{x}</div>
-        ))}
+        <ol className="ml-4">
+          {forBuffer && <li>{bufferEn.replace("###", pickFromBuffer)}</li>}
+          {footerEn?.split("\n")?.map((x) => (
+            <li key={x}>{x}</li>
+          ))}
+        </ol>
       </article>
 
       <div className="m-3 mt-6 ">
-        <PdfDownloader offer={offer} language="pl" />
+        <PdfDownloader offer={offer} lang="pl" />
         <span className="m-3"></span>
-        <PdfDownloader offer={offer} language="en" />
+        <PdfDownloader offer={offer} lang="en" />
       </div>
     </>
   );
