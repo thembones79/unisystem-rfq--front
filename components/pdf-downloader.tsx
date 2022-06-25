@@ -61,6 +61,8 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
       {
         text: `${language === "pl" ? "Oferta" : "Offer"} ${number}`,
         style: "header",
+        margin: [0, 40, 0, 40],
+        alignment: "center",
       },
 
       {
@@ -83,35 +85,31 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
           {
             text: client,
             alignment: "left",
+            margin: [0, 10, 0, 40],
           },
           {
-            text: dateUpdated,
+            text: new Date().toISOString().substring(0, 10),
             alignment: "right",
+            margin: [0, 10, 0, 40],
           },
         ],
       },
-
-      { text: "\n\nOrdered list with longer lines", style: "header" },
-      {
-        ol: [
-          "item 1",
-          "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Malit profecta versatur nomine ocurreret multavit",
-          "item 3",
-        ],
-      },
-
       {
         layout: "lightHorizontalLines", // optional
         style: "small",
         table: {
-          // headers are automatically repeated if the table spans over multiple pages
-          // you can declare how many rows should be treated as headers
           headerRows: 1,
           // widths: ["*", "auto", 100, "*"],
 
           body: [tableHeader, ...tableRows],
           style: ["small"],
         },
+      },
+
+      { text: "Warunki", style: "disclaimer" },
+      {
+        ol: [bufferPl.replace("###", pickFromBuffer), ...footerPl.split("\n")],
+        style: ["small"],
       },
     ],
     styles: {
@@ -128,6 +126,11 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, language }) => {
       },
       small: {
         fontSize: 8,
+      },
+      disclaimer: {
+        fontSize: 8,
+        bold: true,
+        margin: [0, 20, 0, 10],
       },
       tableHeader: {
         bold: true,
