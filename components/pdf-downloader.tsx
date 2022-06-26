@@ -87,6 +87,66 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
     ]
   );
 
+  //const cp = contents[0].prices[0].clientPrice;
+  //const curr = contents[0].currency;
+
+  //@ts-ignore
+  const currencies = [...new Set(contents.map(({ currency }) => currency))];
+
+  //console.log({ currencies });
+
+  const summary = currencies.map((c) => {
+    const filteredByCurrency = contents.filter(
+      ({ currency }) => c === currency
+    );
+
+    const singleRow = filteredByCurrency
+      .map(({ prices }) => prices)
+      .map((item) => item.map(({ clientPrice }) => clientPrice));
+
+    const multiRow = rangesMargins.map((_, i) =>
+      filteredByCurrency
+        .map(({ prices }) => prices)
+        //@ts-ignore
+        .reduce((a, b) => {
+          if (a[i]) return a[i].clientPrice + b[i].clientPrice;
+        })
+    );
+
+    return {
+      currency: c,
+      totals: singleRow,
+      // totals: filteredByCurrency.length === 1 ? singleRow : multiRow,
+    };
+  });
+
+  console.log(summary);
+  var array = [
+      [1, 2, 3, 0],
+      [1, 2, 3],
+      [1, 2],
+    ],
+    result = array.reduce(function (r, a) {
+      a.forEach(function (b, i) {
+        r[i] = (r[i] || 0) + b;
+      });
+      return r;
+    }, []);
+
+  const sumArray = (array: number[][]) => {
+    const newArray: number[] = [];
+    array.forEach((sub) => {
+      sub.forEach((num, index) => {
+        if (newArray[index]) {
+          newArray[index] += num;
+        } else {
+          newArray[index] = num;
+        }
+      });
+    });
+    return newArray;
+  };
+
   // @ts-ignore
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
   const dd: any = {
