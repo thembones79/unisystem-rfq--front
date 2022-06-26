@@ -1,9 +1,10 @@
 import React from "react";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from "pdfmake/build/vfs_fonts";
-import { headerFooter } from "./header-footer";
-import { IOffer, IPrices } from "../pages/offers/[offerId]";
+import { headerFooter } from "../utils/header-footer";
+import { IOffer, IPrices, IContents } from "../pages/offers/[offerId]";
 import { NiceButton } from "./nice-button";
+import { getSummary } from "../utils/get-summary";
 // import { PdfMakeWrapper } from "pdfmake-wrapper";
 // import * as pdfFonts from "pdfmake/build/vfs_fonts"; // fonts provided for pdfmake
 
@@ -90,7 +91,7 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
   //@ts-ignore
   const currencies = [...new Set(contents.map(({ currency }) => currency))];
 
-  const summary = currencies.map((c) => {
+  const summary2 = currencies.map((c) => {
     const filteredByCurrency = contents.filter(
       ({ currency }) => c === currency
     );
@@ -112,28 +113,8 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
     };
   });
 
+  const summary = getSummary(contents);
   console.log(summary);
-
-  const dupa = () => {
-    //@ts-ignore
-    [...new Set(contents.map(({ currency }) => currency))].map((c) => {
-      const totals = contents
-        .filter(({ currency }) => c === currency)
-        .map(({ prices }) => prices)
-        .map((item) => item.map(({ clientPrice }) => clientPrice))
-        .reduce(function (r, a) {
-          a.forEach(function (b, i) {
-            r[i] = (r[i] || 0) + b;
-          });
-          return r;
-        }, []);
-
-      return {
-        currency: c,
-        totals,
-      };
-    });
-  };
 
   // @ts-ignore
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
