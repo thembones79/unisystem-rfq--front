@@ -57,6 +57,14 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
       pl: "Data",
       en: "Date",
     },
+    total: {
+      pl: "Razem",
+      en: "Total",
+    },
+    label: {
+      pl: "Pobierz PDF",
+      en: "Download PDF",
+    },
     disclaimer: {
       pl: forBuffer
         ? [bufferPl.replace("###", pickFromBuffer), ...footerPl.split("\n")]
@@ -89,32 +97,44 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
   );
 
   //@ts-ignore
-  const currencies = [...new Set(contents.map(({ currency }) => currency))];
+  // const currencies = [...new Set(contents.map(({ currency }) => currency))];
 
-  const summary2 = currencies.map((c) => {
-    const filteredByCurrency = contents.filter(
-      ({ currency }) => c === currency
-    );
+  // const summary2 = currencies.map((c) => {
+  //   const filteredByCurrency = contents.filter(
+  //     ({ currency }) => c === currency
+  //   );
 
-    const singleRow = filteredByCurrency
-      .map(({ prices }) => prices)
-      .map((item) => item.map(({ clientPrice }) => clientPrice));
+  //   const singleRow = filteredByCurrency
+  //     .map(({ prices }) => prices)
+  //     .map((item) => item.map(({ clientPrice }) => clientPrice));
 
-    const result = singleRow.reduce(function (r, a) {
-      a.forEach(function (b, i) {
-        r[i] = (r[i] || 0) + b;
-      });
-      return r;
-    }, []);
+  //   const result = singleRow.reduce(function (r, a) {
+  //     a.forEach(function (b, i) {
+  //       r[i] = (r[i] || 0) + b;
+  //     });
+  //     return r;
+  //   }, []);
 
-    return {
-      currency: c,
-      totals: result,
-    };
-  });
+  //   return {
+  //     currency: c,
+  //     totals: result,
+  //   };
+  // });
 
-  const summary = getSummary(contents);
-  console.log(summary);
+  const summary = getSummary(contents).map(({ currency, totals }) => [
+    { text: " ", fillColor: "#eeeeee" },
+    {
+      text: trans.total[lang],
+      alignment: "right",
+      bold: true,
+      fillColor: "#eeeeee",
+    },
+    { text: currency + ":", bold: true, fillColor: "#eeeeee" },
+    ...totals.map((t) => {
+      return { text: t, bold: true, fillColor: "#eeeeee" };
+    }),
+    { text: " ", fillColor: "#eeeeee" },
+  ]);
 
   // @ts-ignore
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -168,7 +188,7 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
           headerRows: 1,
           // widths: ["*", "auto", 100, "*"],
 
-          body: [tableHeader, ...tableRows],
+          body: [tableHeader, ...tableRows, ...summary],
           style: ["small"],
         },
       },
@@ -218,7 +238,7 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
     >
       <i className="fas fa-download"></i>
       <span className="m-1"></span>
-      {lang === "pl" ? "Pobierz PDF" : "Download PDF"}
+      {trans.label[lang]}
       <span className="ml-2" style={{ fontWeight: 900 }}>
         {lang.toLocaleUpperCase()}
       </span>

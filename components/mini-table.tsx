@@ -19,8 +19,6 @@ export const MiniTable: React.FC<MiniTableProps> = ({ dataObject, label }) => {
       ));
   };
 
-  console.log(renderRows());
-
   return renderRows().length ? (
     <table className="table is-narrow is-size-7 mx-6 mb-6 is-striped mt-2">
       <thead>

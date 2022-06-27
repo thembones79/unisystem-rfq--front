@@ -4,6 +4,7 @@ import Router, { useRouter } from "next/router";
 import { useRequest } from "../../../hooks/useRequest";
 import { NiceButton } from "../../../components/nice-button";
 import { UserPicker } from "../../../components/user-picker";
+import { getSummary } from "../../../utils/get-summary";
 import { Toggle } from "../../../components/toggle";
 import { Loader } from "../../../components/loader";
 import { IUser } from "../../users";
@@ -145,7 +146,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [heightPl, setHeightPl] = useState(lineHeight);
   const [heightEn, setHeightEn] = useState(lineHeight);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [templates, setTemplates] = useState<ITemplate[]>([]);
 
   const getOffer = useRequest({
@@ -468,13 +469,21 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
   });
 
   useEffect(() => {
-    console.log("a");
-    setIsLoading(true);
-    getOffer.doRequest();
+    // setIsLoading(true);
     getProducts.doRequest();
+    // return setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    // setIsLoading(true);
     getTemplates.doRequest();
-    console.log("b");
-    return setIsLoading(false);
+    // return setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const data = getOffer.doRequest();
+    return setIsLoading(!data);
   }, []);
 
   const renderPartnumberOptions = () => {
@@ -615,6 +624,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
           <input
             style={{ border: 0 }}
             className="input is-small m-0 p-0 has-text-centered has-text-weight-bold"
+            required
             defaultValue={range}
             onChange={(e) => setRange(e.target.value, idx)}
           />
@@ -631,6 +641,9 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
           <input
             style={{ border: 0 }}
             className="input is-small m-0 p-0 has-text-centered has-text-weight-bold"
+            required
+            type="number"
+            min={0}
             defaultValue={margin}
             onChange={(e) => setMargin(parseFloat(e.target.value), idx)}
           />
@@ -646,6 +659,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
           <input
             className="input is-small has-text-centered"
             type="number"
+            min={0}
             defaultValue={range.basePrice + ""}
             onChange={(e) =>
               setOfferBasePrice(parseFloat(e.target.value), rowIdx, colIdx)
@@ -657,6 +671,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
             <input
               className="input is-small has-text-centered"
               type="number"
+              min={0}
               defaultValue={range.clientPrice + ""}
               onChange={(e) =>
                 setOfferClientPrice(parseFloat(e.target.value), rowIdx, colIdx)
@@ -671,6 +686,32 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
       </Fragment>
     ));
 
+  const renderSummary = () =>
+    getSummary(contents).map(({ currency, totals }, idx) => (
+      <tr key={idx}>
+        <td style={{ ...getStyle("partnumber"), border: 0 }}></td>
+        <td
+          className="has-text-centered"
+          style={{ ...getStyle("description"), border: 0 }}
+        ></td>
+        <td style={{ ...getStyle("shipment"), border: 0 }}></td>
+        <td
+          className="has-text-centered"
+          style={{ ...getStyle("currency"), border: 0 }}
+        >
+          <strong>Total {currency}:</strong>
+        </td>
+        {totals.map((t, i) => (
+          <Fragment key={i}>
+            <td style={{ border: 0 }}>&nbsp;</td>
+            <td style={{ border: 0 }} className="has-text-centered" key={i}>
+              <strong>{t}</strong>
+            </td>
+          </Fragment>
+        ))}
+        <td style={{ ...style.endCol, border: 0 }}></td>
+      </tr>
+    ));
   const renderTable = () =>
     offer.contents.map((row, rowIdx) => (
       <tr key={row.id}>
@@ -730,13 +771,15 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
       <datalist id={"pn" + 60}>{renderPartnumberOptions()}</datalist>
 
       <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
-        <UserPicker
-          handleChange={setProjectClientId}
-          label="Customer"
-          initialValue={offer.projectClientId}
-          fieldname="projectClientId"
-          fetch="/clients"
-        />
+        {offer.rfqId === 1 && (
+          <UserPicker
+            handleChange={setProjectClientId}
+            label="Customer"
+            initialValue={offer.projectClientId}
+            fieldname="projectClientId"
+            fetch="/clients"
+          />
+        )}
         {renderRangesSelect()}
         {renderFooterSelect()}
         <Toggle
@@ -775,6 +818,10 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
                 </button>
               </td>
             </tr>
+            <tr>
+              <td style={{ border: 0 }}>&nbsp;</td>
+            </tr>
+            {renderSummary()}
           </tbody>
         </table>
       </div>

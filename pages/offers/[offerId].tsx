@@ -5,6 +5,7 @@ import { useRequest } from "../../hooks/useRequest";
 import { NiceButton } from "../../components/nice-button";
 import PdfDownloader from "../../components/pdf-downloader";
 import { Loader } from "../../components/loader";
+import { getSummary } from "../../utils/get-summary";
 import { IUser } from "../users";
 
 export interface IProduct {
@@ -259,6 +260,29 @@ const ShowOffer: React.FC<OffersProps> = ({ currentUser }) => {
       </tr>
     ));
 
+  const renderSummary = () =>
+    getSummary(contents).map(({ currency, totals }, idx) => (
+      <tr key={idx}>
+        <td style={{ ...getStyle("partnumber"), border: 0 }}></td>
+        <td
+          className="has-text-centered"
+          style={{ ...getStyle("description"), border: 0 }}
+        ></td>
+        <td
+          className="has-text-centered"
+          style={{ ...getStyle("currency"), border: 0 }}
+        >
+          <strong>Total {currency}:</strong>
+        </td>
+        {totals.map((t, i) => (
+          <td style={{ border: 0 }} className="has-text-centered" key={i}>
+            <strong>{t}</strong>
+          </td>
+        ))}
+        <td style={{ ...getStyle("shipment"), border: 0 }}></td>
+      </tr>
+    ));
+
   const renderContent = () => (
     <>
       <div className="mb-3 is-flex is-flex-direction-row is-align-items-center is-justify-content-space-between is-flex-wrap-wrap">
@@ -309,7 +333,13 @@ const ShowOffer: React.FC<OffersProps> = ({ currentUser }) => {
 
       <table className="table is-striped is-narrow is-hoverable is-fullwidth is-bordered is-size-7 m-3">
         {renderMainHeader()}
-        <tbody className="fixed200 ">{renderTable()}</tbody>
+        <tbody className="fixed200 ">
+          {renderTable()}
+          <tr>
+            <td style={{ border: 0 }}>&nbsp;</td>
+          </tr>
+          {renderSummary()}
+        </tbody>
       </table>
       <article className=" m-3">
         <label className="label is-small mb-0 mt-6">Warunki:</label>
