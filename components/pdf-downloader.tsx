@@ -1,9 +1,10 @@
 import React from "react";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from "pdfmake/build/vfs_fonts";
-import { headerFooter } from "./header-footer";
-import { IOffer, IPrices } from "../pages/offers/[offerId]";
+import { headerFooter } from "../utils/header-footer";
+import { IOffer, IPrices, IContents } from "../pages/offers/[offerId]";
 import { NiceButton } from "./nice-button";
+import { getSummary } from "../utils/get-summary";
 // import { PdfMakeWrapper } from "pdfmake-wrapper";
 // import * as pdfFonts from "pdfmake/build/vfs_fonts"; // fonts provided for pdfmake
 
@@ -56,6 +57,14 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
       pl: "Data",
       en: "Date",
     },
+    total: {
+      pl: "Razem",
+      en: "Total",
+    },
+    label: {
+      pl: "Pobierz PDF",
+      en: "Download PDF",
+    },
     disclaimer: {
       pl: forBuffer
         ? [bufferPl.replace("###", pickFromBuffer), ...footerPl.split("\n")]
@@ -86,6 +95,46 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
       shipment,
     ]
   );
+
+  //@ts-ignore
+  // const currencies = [...new Set(contents.map(({ currency }) => currency))];
+
+  // const summary2 = currencies.map((c) => {
+  //   const filteredByCurrency = contents.filter(
+  //     ({ currency }) => c === currency
+  //   );
+
+  //   const singleRow = filteredByCurrency
+  //     .map(({ prices }) => prices)
+  //     .map((item) => item.map(({ clientPrice }) => clientPrice));
+
+  //   const result = singleRow.reduce(function (r, a) {
+  //     a.forEach(function (b, i) {
+  //       r[i] = (r[i] || 0) + b;
+  //     });
+  //     return r;
+  //   }, []);
+
+  //   return {
+  //     currency: c,
+  //     totals: result,
+  //   };
+  // });
+
+  const summary = getSummary(contents).map(({ currency, totals }) => [
+    { text: " ", fillColor: "#eeeeee" },
+    {
+      text: trans.total[lang],
+      alignment: "right",
+      bold: true,
+      fillColor: "#eeeeee",
+    },
+    { text: currency + ":", bold: true, fillColor: "#eeeeee" },
+    ...totals.map((t) => {
+      return { text: t, bold: true, fillColor: "#eeeeee" };
+    }),
+    { text: " ", fillColor: "#eeeeee" },
+  ]);
 
   // @ts-ignore
   pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -139,7 +188,7 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
           headerRows: 1,
           // widths: ["*", "auto", 100, "*"],
 
-          body: [tableHeader, ...tableRows],
+          body: [tableHeader, ...tableRows, ...summary],
           style: ["small"],
         },
       },
@@ -189,7 +238,7 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
     >
       <i className="fas fa-download"></i>
       <span className="m-1"></span>
-      {lang === "pl" ? "Pobierz PDF" : "Download PDF"}
+      {trans.label[lang]}
       <span className="ml-2" style={{ fontWeight: 900 }}>
         {lang.toLocaleUpperCase()}
       </span>
