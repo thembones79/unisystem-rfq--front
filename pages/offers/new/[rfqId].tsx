@@ -683,8 +683,6 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
           <input
             style={{ border: 0 }}
             className="input is-small m-0 p-0 has-text-centered has-text-weight-bold"
-            type="number"
-            min={0}
             required
             defaultValue={margin}
             onChange={(e) => setMargin(parseFloat(e.target.value), idx)}
@@ -700,8 +698,6 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
         <td className="px-2" style={{ borderRightWidth: 0 }}>
           <input
             className="input is-small has-text-centered"
-            type="number"
-            min={0}
             defaultValue={range.basePrice + ""}
             onChange={(e) =>
               setOfferBasePrice(parseFloat(e.target.value), rowIdx, colIdx)
@@ -712,8 +708,6 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
           {isNaN(range.basePrice) ? (
             <input
               className="input is-small has-text-centered"
-              type="number"
-              min={0}
               defaultValue={range.clientPrice + ""}
               onChange={(e) =>
                 setOfferClientPrice(parseFloat(e.target.value), rowIdx, colIdx)
