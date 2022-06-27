@@ -544,6 +544,8 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
                 templates.filter((t) => t.id === selectedId)[0].template + ""
               );
               setOffer({ ...offer, footerPl: footer.pl, footerEn: footer.en });
+              setHeightPl(24 * footer.pl.split("\n").length + 12);
+              setHeightEn(24 * footer.en.split("\n").length + 12);
             }}
           >
             {getDisclaimerTemplates(templates).map((t) => (
