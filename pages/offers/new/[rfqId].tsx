@@ -514,6 +514,8 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
         rangesMargins: NewRangesMargins,
       };
       setOffer(offerCopy);
+      setHeightPl(24 * NewFooterPl.split("\n").length + 12);
+      setHeightEn(24 * NewFooterEn.split("\n").length + 12);
     },
   });
 
