@@ -5,8 +5,6 @@ import { headerFooter } from "../utils/header-footer";
 import { IOffer, IPrices, IContents } from "../pages/offers/[offerId]";
 import { NiceButton } from "./nice-button";
 import { getSummary } from "../utils/get-summary";
-// import { PdfMakeWrapper } from "pdfmake-wrapper";
-// import * as pdfFonts from "pdfmake/build/vfs_fonts"; // fonts provided for pdfmake
 
 export interface PdfDownloaderProps {
   offer: IOffer;
@@ -95,31 +93,6 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({ offer, lang }) => {
       shipment,
     ]
   );
-
-  //@ts-ignore
-  // const currencies = [...new Set(contents.map(({ currency }) => currency))];
-
-  // const summary2 = currencies.map((c) => {
-  //   const filteredByCurrency = contents.filter(
-  //     ({ currency }) => c === currency
-  //   );
-
-  //   const singleRow = filteredByCurrency
-  //     .map(({ prices }) => prices)
-  //     .map((item) => item.map(({ clientPrice }) => clientPrice));
-
-  //   const result = singleRow.reduce(function (r, a) {
-  //     a.forEach(function (b, i) {
-  //       r[i] = (r[i] || 0) + b;
-  //     });
-  //     return r;
-  //   }, []);
-
-  //   return {
-  //     currency: c,
-  //     totals: result,
-  //   };
-  // });
 
   const summary = getSummary(contents).map(({ currency, totals }) => [
     { text: " ", fillColor: "#eeeeee" },

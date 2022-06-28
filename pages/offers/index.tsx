@@ -41,22 +41,23 @@ const OffersTable: React.FC<OffersTableProps> = ({ currentUser }) => {
   useEffect(() => {
     doRequest();
   }, []);
-
-  return rows.length > 0 ? (
+  return (
     <div>
-      {
-        <div className="m-5">
-          <NiceButton onClick={handleNewOffer}>
-            <i className="far fa-check-circle"></i>
-            <span className="m-1"></span> New Offer
-          </NiceButton>
+      <div className="m-5">
+        <NiceButton onClick={handleNewOffer}>
+          <i className="far fa-check-circle"></i>
+          <span className="m-1"></span> New Offer
+        </NiceButton>
+      </div>
+      {rows.length > 0 ? (
+        <div className="table-container">
+          <SfTable columns={columns} rows={rows} route="offers" />
+          {errorsJSX()}
         </div>
-      }
-      <SfTable columns={columns} rows={rows} route="offers" />
-      <div className="table-container">{errorsJSX()}</div>
+      ) : (
+        <div></div>
+      )}
     </div>
-  ) : (
-    <div></div>
   );
 };
 
