@@ -366,7 +366,7 @@ html {
   -webkit-font-smoothing: antialiased;
   min-width: 300px;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   text-rendering: optimizeLegibility;
   -webkit-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
@@ -4872,6 +4872,7 @@ button.dropdown-item.is-active {
   max-height: calc(100vh - 40px);
   overflow: hidden;
   -ms-overflow-y: visible;
+  overflow-y: visible;
 }
 .modal-card-foot,
 .modal-card-head {

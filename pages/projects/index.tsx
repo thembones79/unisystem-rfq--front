@@ -40,22 +40,24 @@ const ProjectsTable: React.FC<ProjectsTableProps> = ({ currentUser }) => {
 
   const handleNewProject = () => Router.push(`/projects/new/1`);
 
+  const isNotKam = currentUser?.role_id < 3;
+
   useEffect(() => {
     doRequest();
   }, []);
 
   return rows.length > 0 ? (
     <div>
-      <div className="m-5">
-        <NiceButton onClick={handleNewProject}>
-          <i className="far fa-check-circle"></i>
-          <span className="m-1"></span> New Project
-        </NiceButton>
-      </div>
-      <div className="table-container">
-        <SfTable columns={columns} rows={rows} route="projects" />
-        {errorsJSX()}
-      </div>
+      {isNotKam && (
+        <div className="m-5">
+          <NiceButton onClick={handleNewProject}>
+            <i className="far fa-check-circle"></i>
+            <span className="m-1"></span> New Project
+          </NiceButton>
+        </div>
+      )}
+      <SfTable columns={columns} rows={rows} route="projects" />
+      <div className="table-container">{errorsJSX()}</div>
     </div>
   ) : (
     <div></div>

@@ -21,10 +21,11 @@ thead,
 tr {
   display: table;
   width: 100%;
+  vertical-align: middle !important;
   table-layout: fixed; /* even columns width , fix width of table too*/
 }
 
-td {
+td, th {
   vertical-align: middle !important;
 }
 
@@ -38,7 +39,9 @@ td {
   background-color: transparent;
   transition: 0.3s;
   &:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
+    padding-top: 0;
+    padding-bottom: 0;
     background-color: transparent;
   }
 }
@@ -97,6 +100,7 @@ td {
   z-index: 10;
   top: 0;
   backdrop-filter: saturate(180%) blur(20px);
+  background-color: #ffffffa4;
 }
 
 .full-page {
@@ -142,4 +146,31 @@ td {
 
 .is-50 {
   width: 50px;
+}
+
+.is-small.input, .is-small.textarea {
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-size: 0.7rem;
+  padding: 0;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

@@ -140,10 +140,14 @@ export const SfTable = <T extends { id: number }>(props: SfTableProps<T>) => {
       return dataTable.map((row) => {
         const { id } = row;
         return (
-          <tr key={id} onClick={() => Router.push(`/${route}/${id}`)}>
+          <tr
+            style={{ cursor: "pointer" }}
+            key={id}
+            onClick={() => Router.push(`/${route}/${id}`)}
+          >
             {columnNames.map((columnName, idx) => (
               <td className="pl-3" key={idx}>
-                {row[columnName]}
+                {row[columnName] + ""}
               </td>
             ))}
           </tr>

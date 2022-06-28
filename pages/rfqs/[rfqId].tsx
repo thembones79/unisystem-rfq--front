@@ -17,9 +17,11 @@ interface IRfqWithNames extends IRfq {
   status: string;
   final_solutions: string;
   project_id: number;
+  project_client_id: number;
   project_code: string;
   samples_expected: string;
   mp_expected: string;
+  sp: string;
   department: string;
 }
 
@@ -39,6 +41,7 @@ const ShowRfq: React.FC = () => {
     kam_fullname: "",
     clickup_id: "",
     project_id: 0,
+    project_client_id: 0,
     project_code: "",
     status: "",
     final_solutions: "",
@@ -55,6 +58,7 @@ const ShowRfq: React.FC = () => {
     req_disp_od: "",
     req_disp_aa: "",
     req_disp_inter: "",
+    sp: "",
     req_disp_ot: "",
     req_disp_st: "",
     req_disp_spec: "",
@@ -83,6 +87,10 @@ const ShowRfq: React.FC = () => {
     [rfq]
   );
 
+  useEffect(() => {
+    doRequest();
+  }, []);
+
   if (!rfq) {
     return <h1>RFQ not found</h1>;
   } else {
@@ -96,8 +104,10 @@ const ShowRfq: React.FC = () => {
       pm,
       kam,
       id,
+      sp,
       kam_fullname,
       project_id,
+      project_client_id,
       project_code,
       pm_fullname,
       final_solutions,
@@ -190,7 +200,11 @@ const ShowRfq: React.FC = () => {
           </thead>
           <tbody>
             <tr>
-              <td>{req_others}</td>
+              <td>
+                {req_others?.split("\n")?.map((x) => (
+                  <div key={x}>{x}</div>
+                ))}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -217,10 +231,14 @@ const ShowRfq: React.FC = () => {
         );
       } else {
         return (
-          <NiceButton onClick={() => Router.push(`/projects/new/${id}`)}>
+          <NiceButton
+            onClick={() =>
+              Router.push(`/projects/new/${id}/${project_client_id}`)
+            }
+          >
             <i className="fas fa-plus"></i>
             <span className="m-2 "></span>
-            <span>create project from this RFQ</span>
+            <span>create project</span>
           </NiceButton>
         );
       }
@@ -239,14 +257,16 @@ const ShowRfq: React.FC = () => {
             </div>
             {renderProjectLinkOrButton()}
 
+            <NiceButton onClick={() => Router.push(`/offers/new/${id}`)}>
+              <i className="fas fa-plus"></i>
+              <span className="m-1 "></span>
+              <span>✨ add offer</span>
+            </NiceButton>
             <div className="my-3 ">
               <button
                 className="button is-link is-inverted"
                 onClick={() => {
-                  const win = window.open(
-                    `https://riverdi.sharepoint.com/sites/ProjectsManagementGroup/Shared Documents/RIVERDI PROJECTS/${kam}_!PROSPECTS/${rfq_code}`,
-                    "_blank"
-                  );
+                  const win = window.open(sp, "_blank");
                   if (win) {
                     win.focus();
                   }
@@ -285,12 +305,6 @@ const ShowRfq: React.FC = () => {
               <div>{department}</div>
             </div>
             <div className="field m-3">
-              <label className="label">Project Manager</label>
-              <div>
-                {pm_fullname} ({pm})
-              </div>
-            </div>
-            <div className="field m-3">
               <label className="label">Key Account Manager</label>
               <div>
                 {kam_fullname} ({kam})
@@ -298,7 +312,7 @@ const ShowRfq: React.FC = () => {
             </div>
 
             <div className="field m-3">
-              <label className="label">Samples Expected</label>
+              <label className="label">Number of Samples</label>
               <div>{samples_expected}</div>
             </div>
 
@@ -319,16 +333,15 @@ const ShowRfq: React.FC = () => {
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Final Solutions</label>
-            <div>{final_solutions}</div>
+            <div>
+              {final_solutions?.split("\n")?.map((x) => (
+                <div key={x}>{x}</div>
+              ))}
+            </div>
           </div>
         </div>
       </>
     );
-
-    useEffect(() => {
-      doRequest();
-    }, []);
-
     return (
       <div className="card ">
         {rfq_code === "LOADING" ? renderLoader() : renderContent()}

@@ -1,6 +1,6 @@
 import React from "react";
 interface MiniTableProps {
-  dataObject: Object;
+  dataObject: {};
   label: string;
 }
 
@@ -18,8 +18,6 @@ export const MiniTable: React.FC<MiniTableProps> = ({ dataObject, label }) => {
         </tr>
       ));
   };
-
-  console.log(renderRows());
 
   return renderRows().length ? (
     <table className="table is-narrow is-size-7 mx-6 mb-6 is-striped mt-2">

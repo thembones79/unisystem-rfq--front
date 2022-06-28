@@ -6,12 +6,13 @@ import { NiceButton } from "../../components/nice-button";
 import { Loader } from "../../components/loader";
 import { IProject } from ".";
 import { Partnumbers } from "../../components/partnumbers";
+import { IUser } from "../users";
+import { spPath } from "../../utils/sp-path";
 import { Rndtasks } from "../../components/rndtasks";
 import { SharePointLogo } from "../../icons/sharepoint-logo";
 
-interface IspPath {
-  department: string;
-  kam_folder: string;
+interface ShowProjectProps {
+  currentUser: IUser;
 }
 
 interface IProjectWithNames extends IProject {
@@ -27,7 +28,7 @@ interface IProjectWithNames extends IProject {
   note: string;
 }
 
-const ShowProject: React.FC = () => {
+const ShowProject: React.FC<ShowProjectProps> = ({ currentUser }) => {
   const router = useRouter();
   const { projectId } = router.query;
   const [project, setProject] = useState<IProjectWithNames>({
@@ -51,11 +52,17 @@ const ShowProject: React.FC = () => {
     updated: "",
   });
 
+  const isNotKam = currentUser?.role_id < 3;
+
   const { doRequest, errorsJSX } = useRequest({
     url: `/projects/${projectId}`,
     method: "get",
     onSuccess: (data: IProjectWithNames) => setProject(data),
   });
+
+  useEffect(() => {
+    doRequest();
+  }, []);
 
   if (!project) {
     return <h1>Project not found</h1>;
@@ -79,17 +86,6 @@ const ShowProject: React.FC = () => {
       revision,
       note,
     } = project;
-
-    const spPath = ({ department, kam_folder }: IspPath) => {
-      const domain = "https://unisystem3.sharepoint.com/sites/";
-      if (department === "EX") {
-        return `${domain}/SalesEX/Shared Documents/Projects`;
-      } else if (department === "PL") {
-        return `${domain}/Customers-${kam_folder}/Shared Documents`;
-      } else {
-        throw new Error(`Department ${department} does not exist!`);
-      }
-    };
 
     const formatStatus = () => {
       if (status === "open") {
@@ -164,17 +160,23 @@ const ShowProject: React.FC = () => {
                 <SharePointLogo />
               </button>
 
-              <span className="m-3 mr-6"></span>
-              <NiceButton onClick={() => Router.push(`/projects/edit/${id}`)}>
-                <i className="fas fa-edit"></i>
-              </NiceButton>
-              <span className="m-3"></span>
-              <NiceButton
-                color="danger"
-                onClick={() => Router.push(`/projects/delete/${id}`)}
-              >
-                <i className="fas fa-trash-alt"></i>
-              </NiceButton>
+              {isNotKam && (
+                <>
+                  <span className="m-3 mr-6"></span>
+                  <NiceButton
+                    onClick={() => Router.push(`/projects/edit/${id}`)}
+                  >
+                    <i className="fas fa-edit"></i>
+                  </NiceButton>
+                  <span className="m-3"></span>
+                  <NiceButton
+                    color="danger"
+                    onClick={() => Router.push(`/projects/delete/${id}`)}
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </NiceButton>
+                </>
+              )}
             </div>
           </div>
 
@@ -217,37 +219,42 @@ const ShowProject: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="m-5">
-          <NiceButton onClick={() => router.push(`/partnumbers/new/${id}`)}>
-            <i className="far fa-check-circle"></i>
-            <span className="m-1"></span> Add Partnumber
-          </NiceButton>
-        </div>
+        {isNotKam && (
+          <div className="m-5">
+            <NiceButton onClick={() => router.push(`/partnumbers/new/${id}`)}>
+              <i className="far fa-check-circle"></i>
+              <span className="m-1"></span> Add Partnumber
+            </NiceButton>
+          </div>
+        )}
 
         <Partnumbers projectId={project.id} />
         <hr />
-        <div className="m-5">
-          <NiceButton onClick={() => router.push(`/rndtasks/new/${id}`)}>
-            <i className="far fa-check-circle"></i>
-            <span className="m-1"></span> Add Task for R&D
-          </NiceButton>
-        </div>
+        {isNotKam && (
+          <>
+            <div className="m-5">
+              <NiceButton onClick={() => router.push(`/rndtasks/new/${id}`)}>
+                <i className="far fa-check-circle"></i>
+                <span className="m-1"></span> Add Task for R&D
+              </NiceButton>
+            </div>
+            <Rndtasks projectId={project.id} />
+            <hr />
+          </>
+        )}
 
-        <Rndtasks projectId={project.id} />
-        <hr />
         <div className="is-flex is-flex-direction-row is-justify-content-space-between is-flex-wrap-wrap">
           <div className="field m-5">
             <label className="label">Note</label>
-            <div>{note}</div>
+            <div>
+              {note?.split("\n")?.map((x) => (
+                <div key={x}>{x}</div>
+              ))}
+            </div>
           </div>
         </div>
       </>
     );
-
-    useEffect(() => {
-      doRequest();
-    }, []);
-
     return (
       <div className="card ">
         {project_code === "" ? renderLoader() : renderContent()}

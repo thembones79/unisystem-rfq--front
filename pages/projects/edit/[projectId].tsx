@@ -90,7 +90,7 @@ const EditProject = ({ currentUser }: EditProjectProps) => {
                   handleChange={setPmId}
                   label="PM"
                   fieldname="newPmId"
-                  fetch="/users"
+                  fetch="/pms"
                   initialValue={newPmId}
                 />
 

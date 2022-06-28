@@ -140,7 +140,7 @@ const NewRfq = ({ currentUser }: NewRfqProps) => {
         </div>
 
         <div className="field m-3">
-          <label className="label">Samples Expected</label>
+          <label className="label">Number of Samples</label>
           <input
             className={inputStyle("samples_expected")}
             type="text"

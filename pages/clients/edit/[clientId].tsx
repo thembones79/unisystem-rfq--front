@@ -5,12 +5,19 @@ import { NiceButton } from "../../../components/nice-button";
 import { Loader } from "../../../components/loader";
 import { useRequest } from "../../../hooks/useRequest";
 import { IClient } from "..";
+import { IUser } from "../../users";
 import { UserPicker } from "../../../components/user-picker";
 
-const EditClient: React.FC = () => {
+interface EditClientProps {
+  currentUser: IUser;
+}
+
+const EditClient: React.FC<EditClientProps> = ({ currentUser }) => {
   const router = useRouter();
   const { clientId } = router.query;
   const [client, setClient] = useState<IClient>();
+
+  const isKam = currentUser?.role_id > 2;
 
   const [newName, setName] = useState("");
   const [newKamId, setKamId] = useState(0);
@@ -20,7 +27,7 @@ const EditClient: React.FC = () => {
     method: "put",
     body: {
       name: newName,
-      kam_id: newKamId,
+      kam_id: isKam ? currentUser.id : newKamId,
     },
     onSuccess: () => router.push(`/clients`),
   });
@@ -77,13 +84,15 @@ const EditClient: React.FC = () => {
                     onChange={(e) => setName(e.target.value)}
                   />
                 </div>
-                <UserPicker
-                  handleChange={setKamId}
-                  label="KAM"
-                  fieldname="newKamId"
-                  fetch="/users"
-                  initialValue={newKamId}
-                />
+                {!isKam && (
+                  <UserPicker
+                    handleChange={setKamId}
+                    label="KAM"
+                    fieldname="newKamId"
+                    fetch="/kams"
+                    initialValue={newKamId}
+                  />
+                )}
               </div>
 
               {errorsJSX()}

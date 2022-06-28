@@ -13,12 +13,14 @@ export const Header = ({ currentUser }: HeaderProps) => {
   const isAdmin = currentUser?.role_id === 1;
   const links = [
     !currentUser && { label: "🔐 Log In", href: "/auth/login" },
+    currentUser && { label: "✨ Offers", href: "/offers" },
     currentUser && { label: "🎯 RFQs", href: "/rfqs" },
     currentUser && { label: "🍻 Projects", href: "/projects" },
-    currentUser && { label: "🚀  Partnumbers", href: "/partnumbers" },
+    currentUser && { label: "🚀 Partnumbers", href: "/partnumbers" },
     currentUser && { label: "😘 Clients", href: "/clients" },
     currentUser && { label: "🏭 Industries", href: "/industries" },
     currentUser && isAdmin && { label: "👤 Users", href: "/users" },
+    currentUser && { label: "🕹️  Config", href: "/config" },
     currentUser && { label: "💔 Log Out", href: "/auth/logout" },
   ]
     .filter((truthyLink) => truthyLink)
