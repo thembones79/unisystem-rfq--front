@@ -148,6 +148,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
   const [heightEn, setHeightEn] = useState(lineHeight);
   const [isLoading, setIsLoading] = useState(true);
   const [templates, setTemplates] = useState<ITemplate[]>([]);
+  const [selectedRangesTemplateId, setSelectedRangesTemplateId] = useState(0);
 
   const getOffer = useRequest({
     url: `/offers/${offerId}`,
@@ -534,6 +535,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
               const ranges = JSON.parse(
                 templates.filter((t) => t.id === selectedId)[0].template + ""
               );
+              setSelectedRangesTemplateId(selectedId);
               setOffer({ ...offer, rangesMargins: ranges });
             }}
           >
@@ -621,7 +623,7 @@ const EditOffer: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderSubHeader = () =>
     offer.rangesMargins.map(({ range, margin, id }, idx) => (
-      <Fragment key={id}>
+      <Fragment key={selectedRangesTemplateId + "_" + id}>
         <th className="pt-1 has-text-centered" style={{ borderRightWidth: 0 }}>
           <input
             style={{ border: 0 }}

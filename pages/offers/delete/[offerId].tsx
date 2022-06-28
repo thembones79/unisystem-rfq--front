@@ -4,26 +4,26 @@ import { GetStaticPaths } from "next";
 import { NiceButton } from "../../../components/nice-button";
 import { useRequest } from "../../../hooks/useRequest";
 
-const DeleteTemplate: React.FC = () => {
+const DeleteOffer: React.FC = () => {
   const router = useRouter();
-  const { configId } = router.query;
+  const { offerId } = router.query;
   const { doRequest, errorsJSX } = useRequest({
-    url: `/configs/${configId}`,
+    url: `/offers/${offerId}`,
     method: "delete",
-    onSuccess: () => router.push(`/config`),
+    onSuccess: () => router.push(`/offers`),
   });
 
   useEffect(() => {
-    getTemplate();
+    getOffer();
   }, []);
 
   const initRequest = useRequest({
-    url: `/configs/${configId}`,
+    url: `/offers/${offerId}`,
     method: "get",
-    onSuccess: (data: { name: string }) => setName(data.name),
+    onSuccess: (data: { number: string }) => setName(data.number),
   });
-  const getTemplate = initRequest.doRequest;
-  const [name, setName] = useState("");
+  const getOffer = initRequest.doRequest;
+  const [number, setName] = useState("");
 
   const deleteIndustry = () => {
     doRequest();
@@ -34,12 +34,12 @@ const DeleteTemplate: React.FC = () => {
       <div className="card max-w-800 m-3 big-shadow">
         <div className="card-content">
           <h1 className="title m-3 mb-6 is-4">
-            <i className="fas fa-trash-alt mr-1"></i> Delete {name}?
+            <i className="fas fa-trash-alt mr-1"></i> Delete {number}?
           </h1>
           <div className="is-flex is-flex-direction-row is-flex-wrap-wrap">
             <div className="m-3">
               <div>
-                You are going to <b>delete</b> this template!
+                You are going to <b>delete</b> this offer!
               </div>
               <div> Are you really sure you want to do this?</div>
             </div>
@@ -53,7 +53,7 @@ const DeleteTemplate: React.FC = () => {
               sucker
             </NiceButton>
             <span className="m-3"></span>
-            <NiceButton color="cancel" onClick={() => router.push(`/config`)}>
+            <NiceButton color="cancel" onClick={() => router.push(`/offers`)}>
               No. I was wrong. Take me back, please
             </NiceButton>
           </div>
@@ -76,4 +76,4 @@ export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
   };
 };
 
-export default DeleteTemplate;
+export default DeleteOffer;

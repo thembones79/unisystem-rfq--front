@@ -218,6 +218,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
   const [heightEn, setHeightEn] = useState(lineHeight);
   const [isLoading, setIsLoading] = useState(false);
   const [templates, setTemplates] = useState<ITemplate[]>([]);
+  const [selectedRangesTemplateId, setSelectedRangesTemplateId] = useState(0);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -326,12 +327,6 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
     });
   };
 
-  const setRangesMargins = (newRangesMargins: IRangesMargins[]) => {
-    const newOffer = { ...offer };
-    newOffer.rangesMargins = newRangesMargins;
-    setOffer(newOffer);
-  };
-
   const setOfferBasePrice = (
     newBasePrice: number,
     rowIdx: number,
@@ -428,13 +423,6 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
       element.prices.splice(colIdx, 1);
     });
     setOffer(newOffer);
-  };
-
-  const getOffer = () => {
-    setOffer(offers[0]);
-
-    setHeightPl(24 * offers[0].footerPl.split("\n").length + 12);
-    setHeightEn(24 * offers[0].footerEn.split("\n").length + 12);
   };
 
   const {
@@ -575,6 +563,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
               const ranges = JSON.parse(
                 templates.filter((t) => t.id === selectedId)[0].template + ""
               );
+              setSelectedRangesTemplateId(selectedId);
               setOffer({ ...offer, rangesMargins: ranges });
             }}
           >
@@ -662,7 +651,7 @@ const NewOffer: React.FC<OffersProps> = ({ currentUser }) => {
 
   const renderSubHeader = () =>
     offer.rangesMargins.map(({ range, margin, id }, idx) => (
-      <Fragment key={id}>
+      <Fragment key={selectedRangesTemplateId + "_" + id}>
         <th className="pt-1 has-text-centered" style={{ borderRightWidth: 0 }}>
           <input
             style={{ border: 0 }}
